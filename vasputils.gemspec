@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "vasputils"
-  s.version = ""
+  s.version = "0.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["ippei94da"]
@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
     "LICENSE.txt",
     "README.rdoc",
     "Rakefile",
+    "VERSION",
     "bin/addVolumeToten.rb",
     "bin/latticeconstants",
     "bin/lsvaspdir",
@@ -223,7 +224,8 @@ Gem::Specification.new do |s|
     "test/vaspdir/not-yet-ISIF3/INCAR",
     "test/vaspdir/not-yet-ISIF3/KPOINTS",
     "test/vaspdir/not-yet-ISIF3/POSCAR",
-    "test/vaspdir/not-yet-ISIF3/POTCAR"
+    "test/vaspdir/not-yet-ISIF3/POTCAR",
+    "vasputils.gemspec"
   ]
   s.homepage = "http://github.com/ippei94da/vasputils"
   s.licenses = ["MIT"]
