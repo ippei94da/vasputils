@@ -1,0 +1,95 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+# vasp の計算シリーズの状態を表示する。
+#   - total ionic steps
+#   - total electronic steps
+#   - total elapsed time
+#   - final TOTEN
+#   - final cell parameter
+
+require "vasputils/calcseries.rb"
+require "vasputils/vaspdir.rb"
+require "optparse"
+
+## option analysis
+OPTIONS = Hash.new
+op = OptionParser.new
+op.on("-c", "--cutoff"          , "Show cutoff energy.    "){ OPTIONS[:cutoff ] = true }
+op.on("-e", "--electronic-steps", "Show electronic-steps." ){ OPTIONS[:e_steps] = true }
+op.on("-i", "--ionic-steps"     , "Show ionic-steps."      ){ OPTIONS[:i_steps] = true }
+op.on("-k", "--k-mesh"          , "Show k-mesh."           ){ OPTIONS[:k_mesh] = true }
+op.on("-K", "--irr-kpoints"     , "Show irreducible k-points."){ OPTIONS[:irr_k    ] = true }
+op.on("-l", "--lattice-const"   , "Show lattice constants."){ OPTIONS[:lattice] = true }
+op.on("-t", "--elapsed-time"    , "Show elapsed-time."     ){ OPTIONS[:time   ] = true }
+op.on("-T", "--time-estesp"     , "Show time per elec. steps."){ OPTIONS[:time_e] = true }
+op.on("-E", "--toten"           , "Show toten."            ){ OPTIONS[:toten  ] = true }
+op.on("-a", "--all"             , "Show all information."  ){
+	# -a で出力される順序はここで決まる。
+	OPTIONS[:cutoff    ] = true
+	OPTIONS[:irr_k     ] = true
+	OPTIONS[:k_mesh    ] = true
+	OPTIONS[:i_steps   ] = true
+	OPTIONS[:e_steps   ] = true
+	OPTIONS[:time      ] = true
+	OPTIONS[:time_e    ] = true
+	OPTIONS[:lattice   ] = true
+	OPTIONS[:toten     ] = true
+}
+
+op.parse!(ARGV)
+
+dirs = ARGV
+dirs = Dir.glob("*").sort if ARGV.empty?
+
+# generate headline
+items  = []
+OPTIONS.each do |key, val|
+	case key
+	when :cutoff    then items << sprintf("%6s", "ENCUT")
+	when :k_mesh    then items << sprintf("%2s, %2s, %2s, %8s, %8s, %8s",
+		"ka", "kb", "kc", "ka_shift", "kb_shift", "kc_shift")
+	when :irr_k     then items << sprintf("%4s", "ir_k")
+	when :lattice   then
+		items << sprintf("%9s, %9s, %9s, %9s, %9s, %9s",
+			"a", "b", "c", "alpha", "beta", "gamma")
+	when :e_steps   then items << sprintf("%4s", "el_s")
+	when :i_steps   then items << sprintf("%4s", "io_s")
+	when :time      then items << sprintf("%8s", "time")
+	when :time_e    then items << sprintf("%8s", "time/ele")
+	when :toten     then items << sprintf("%16s", "TOTEN")
+	end
+end
+items << "calc_name"
+puts "#" + items.join(", ")
+
+dirs.each do |dir|
+	begin
+		cs = CalcSeries.new(dir)
+		results = []
+		names = []
+		OPTIONS.each do |key, val|
+			case key
+			when :cutoff
+				results << sprintf("%6s", cs.finished_calc.incar["ENCUT"])
+			when :k_mesh    then results << sprintf("%2d, %2d, %2d, %8.5f, %8.5f, %8.5f",
+				* cs.finished_calc.kpoints[:mesh], * cs.finished_calc.kpoints[:shift])
+			when :irr_k     then results << sprintf("%4d", cs.finished_calc.outcar[:irreducible_kpoints])
+			when :lattice   then
+				results << sprintf("%9.5f, %9.5f, %9.5f, %9.5f, %9.5f, %9.5f",
+					* cs.finished_calc.contcar.axes.get_lattice_constants)
+			when :e_steps   then results << sprintf("%4d", cs.internal_steps)
+			when :i_steps   then results << sprintf("%4d", cs.external_steps)
+			when :time      then results << sprintf("%8d", cs.elapsed_time)
+			when :time_e    then results << sprintf("%8d", cs.elapsed_time/cs.internal_steps)
+			when :toten     then results << sprintf("%16.4f", cs.finished_calc.outcar[:totens][-1])
+			end
+		end
+		results << dir
+		puts " " + results.join(", ")
+	rescue
+		puts "Something wrong: #{dir}"
+		next
+	end
+
+end

@@ -1,0 +1,60 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+# vasp の計算ディレクトリの状態を表示する。
+# 
+#  - YET       未計算(lock がない)
+#  - STARTED   計算中 or 計算が終了したが、何らかのエラーが生じた。
+#              (lock があるが、normal_ended ではない)
+#              計算が中断されたか、計算中かの判断は原理上つけられない。
+#  - NEXT      計算が正常に終了し、収束していない。次の計算が生成された。
+#  - FINISHED  計算が正常に終了し、収束した。
+#  
+#  引数でディレクトリを指定できる。
+#  引数なしだとカレントディレクトリの全てのディレクトリ。
+#
+#  オプションをつけると、指定の状態のディレクトリを出力。
+#    -y : YET
+#    -s : STARTED
+#    -n : NEXT
+#    -f : FINISHED
+#   -c -n のように複数指定できる。
+#  
+#  デフォルトでは引数のディレクトリまたは
+#  -S オプションで状態を出力せず、ディレクトリ名だけを出力する。
+#    このオプションはシェルの backquote `` 機能から使うことを想定している。
+
+require "vasputils/calcinspector.rb"
+require "vasputils/vaspdir.rb"
+require "optparse"
+
+OPTIONS = {}
+OPTIONS[:target_status] = ["YET", "STARTED", "NEXT", "FINISHED"]
+tmp = []
+op = OptionParser.new
+op.on("-y", "--yet"      , "Show calcs of YET."     ){tmp << "YET"      }
+op.on("-s", "--started"  , "Show calcs of STARTED." ){tmp << "STARTED"  }
+op.on("-n", "--next"     , "Show calcs of NEXT."    ){tmp << "NEXT"     }
+op.on("-f", "--finished" , "Show calcs of FINISHED."){tmp << "FINISHED"}
+op.on("-S", "--no-status", "Not output status."     ){OPTIONS[:nostatus] = true}
+op.parse!(ARGV)
+OPTIONS[:target_status] = tmp unless tmp.empty?
+
+#pp OPTIONS
+
+dirs = ARGV
+dirs = Dir.glob("*").sort if ARGV.empty?
+dirs.each do |dir|
+	begin
+		vd = VaspDir.new(dir)
+		status = CalcInspector.inspect(vd)
+		#pp status
+		if OPTIONS[:target_status].include?(status)
+			printf("%10s ", status) unless OPTIONS[:nostatus]
+			printf("%s\n", dir)
+		end
+	rescue VaspDir::InitializeError
+		#pp "Something wrong."
+		next
+	end
+end

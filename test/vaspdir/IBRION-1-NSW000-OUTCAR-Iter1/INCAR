@@ -1,0 +1,27 @@
+# SCF input for VASP
+
+SYSTEM = Untitled (VASP)
+    PREC = High
+  IBRION = -1     #-1:atoms not moved, 1:quasi-Newton, 2:conjugate-gradient
+     NSW = 0      #maximum number of ionic steps
+   ENCUT = 400
+    NELM = 60       #maximum number of electronic steps
+  NELMIN = 2        #minimum number of electronic steps
+   EDIFF = 1.0e-05
+  EDIFFG = -0.02
+ VOSKOWN = 1
+  NBLOCK = 1
+   ISPIN = 1        #1:non spin polarized, 2:spin polarized
+  INIWAV = 1
+  ISTART = 1
+  ICHARG = 1
+   LWAVE = .TRUE.
+  LCHARG = .TRUE.
+  ISMEAR = 0
+   SIGMA = 0.1
+   IALGO = 38       #38:KosugiAlgorithm, 48:RMM-DIIS
+   #LREAL = .FALSE.
+   LREAL = Auto     #fast & not accurate
+     NGX = 36
+     NGY = 36
+     NGZ = 42

@@ -1,0 +1,14 @@
+#! /usr/bin/env ruby
+
+require "vasputils/poscar.rb"
+require "crystal/latticeaxes.rb"
+require "crystal/cell2.rb"
+
+puts "       a,        b,        c,  alpha,   beta,  gamma,     volume, file"
+ARGV.each do |file|
+	axes = Poscar.load_file(file).axes
+	printf("%8.5f, %8.5f, %8.5f, %6.2f, %6.2f, %6.2f, ",
+		*(axes.get_lattice_constants))
+	printf("%10.5f, ", Cell2.new(axes).calc_volume) # show volume
+	puts file
+end

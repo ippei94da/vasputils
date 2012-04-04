@@ -1,0 +1,165 @@
+   VRHFIN =Ac:
+   VRHFIN =Ac:
+   VRHFIN =Ag : s1 d10
+   VRHFIN =Al: s2p1
+   VRHFIN =Al: s2p1
+   VRHFIN =Ar: s2p6
+   VRHFIN =As: s2p3
+   VRHFIN =Au: s1d10
+   VRHFIN =B: s2p1
+   VRHFIN =B: s2p1
+   VRHFIN =B: s2p1
+   VRHFIN =Ba: 5s5p6s
+   VRHFIN =Be: s2p0
+   VRHFIN =Be: s2p0
+   VRHFIN =Bi:
+   VRHFIN =Bi:
+   VRHFIN =Br: s2p5
+   VRHFIN =C: s2p2
+   VRHFIN =C: s2p2
+   VRHFIN =C: s2p2
+   VRHFIN =Ca: p6s2d0.01
+   VRHFIN =Ca: 3s3p4s
+   VRHFIN =Cd : s2 d10
+   VRHFIN =Ce : [core=Xe4] s2d1f1
+   VRHFIN =Ce : [core=Xe4] s2d1f1
+   VRHFIN =Cl: s2p5
+   VRHFIN =Cl: s2p5
+   VRHFIN =Co: d8 s1
+   VRHFIN =Cr : d5 s1
+   VRHFIN =Cr : p6d5s1
+   VRHFIN =Cs: 5s5p6s
+   VRHFIN =Cu: d10 p1
+   VRHFIN =Cu: d10 p1
+   VRHFIN =Dy : [core=Xe4]
+   VRHFIN =Er : [core=Xe4]
+   VRHFIN =Er : [core=Xe4]
+   VRHFIN =Eu : [core=Kr4d]
+   VRHFIN =Eu : [core=Kr4d]
+   VRHFIN =F: s2p5
+   VRHFIN =F: s2p5
+   VRHFIN =F: s2p5
+   VRHFIN =Fe:  d7 s1
+   VRHFIN =Fe:  3pd7s1
+   VRHFIN =Ga: s2p1
+   VRHFIN =Ga: s2p1
+   VRHFIN =Ga: s2p1
+   VRHFIN =Gd : [core=Xe4]
+   VRHFIN =Gd : [core=Xe4]
+   VRHFIN =Ge: s2p2
+   VRHFIN =Ge: 3d4s4p
+   VRHFIN =Ge: 3d4s4p
+   VRHFIN =H: Z=1/2 to saturate dangling bonds
+   VRHFIN =H: Z=3/4 to saturate III/V dangling bond
+   VRHFIN =H: ultrasoft test
+   VRHFIN =H: Z=3/2 to saturate dangling bonds
+   VRHFIN =H: ultrasoft test
+   VRHFIN =H: ultrasoft test
+   VRHFIN =He: 1s
+   VRHFIN =Hf: 6s5d
+   VRHFIN =Hf: 5p6s5d
+   VRHFIN =Hg: 10s 2d fine mesh  91
+   VRHFIN =Ho : [core=Xe4]
+   VRHFIN =I : s2p5
+   VRHFIN =In: s2p1
+   VRHFIN =In: s2p1
+   VRHFIN =Ir: s1d8
+   VRHFIN =K:  p6s1
+   VRHFIN =K:  3s3p4s
+   VRHFIN =Kr: s2p6
+   VRHFIN =La : [core=Kr4d]
+   VRHFIN =La : 4p5s26d1
+   VRHFIN =Li: s1p0
+   VRHFIN =Li: 1s2s2p
+   VRHFIN =Lu : [core=Xe4]
+   VRHFIN =Lu : [core=Xe4]
+   VRHFIN =Mg: s2p0
+   VRHFIN =Mg: p6s2
+   VRHFIN =Mn: d6 s1
+   VRHFIN =Mn: 3p4s3d
+   VRHFIN =Mo: 4p5s4d
+   VRHFIN =Mo: 4p5s4d
+   VRHFIN =N: s2p3
+   VRHFIN =N: s2p3
+   VRHFIN =N: s2p3
+   VRHFIN =Na: s1p0
+   VRHFIN =Na: p6s1
+   VRHFIN =Na: s1p0
+   VRHFIN =Nb: 4p5s4d
+   VRHFIN =Nb: 4p5s4d
+   VRHFIN =Nd : [core=Xe4]
+   VRHFIN =Nd : [core=Xe4]
+   VRHFIN =Ne: s2p6
+   VRHFIN =Ni:
+   VRHFIN =Ni:
+   VRHFIN =Np:  [Xe,5d,4f]
+   VRHFIN =Np:  [Xe,5d,4f]
+   VRHFIN =O: s2p4
+   VRHFIN =O: s2p4
+   VRHFIN =O: s2p4
+   VRHFIN =Os: 6s5d
+   VRHFIN =Os: 5p6s5d
+   VRHFIN =P : s2p3
+   VRHFIN =P : s2p3
+   VRHFIN =Pa:  [Xe,5d,4f]
+   VRHFIN =Pa:  [Xe,5d,4f]
+   VRHFIN =Pb:
+   VRHFIN =Pb:
+   VRHFIN =Pd : s1 d9
+   VRHFIN =Pd: 4p5s4d
+   VRHFIN =Pm : [core=Xe4]
+   VRHFIN =Pm : [core=Xe4]
+   VRHFIN =Pr : [core=Xe4]
+   VRHFIN =Pr : [core=Xe4]
+   VRHFIN =Pt: s1d9
+   VRHFIN =Pu:  [Xe,5d,4f]
+   VRHFIN =Pu:  [Xe,5d,4f]
+   VRHFIN =Rb: p6s1
+   VRHFIN =Rb: 4s4p5s
+   VRHFIN =Re: 5p6s5d
+   VRHFIN =Re: 5p6s5d
+   VRHFIN =Rh: s1 d8
+   VRHFIN =Rh: 4p5s4d
+   VRHFIN =Ru: s1 d7
+   VRHFIN =Ru: 4p5s4d
+   VRHFIN =S : s2p4
+   VRHFIN =S : s2p4
+   VRHFIN =Sb: s2p3
+   VRHFIN =Sc: 3p4s3d
+   VRHFIN =Se: s2p4
+   VRHFIN =Si: s2p2
+   VRHFIN =Si: s2p2
+   VRHFIN =Sm : [core=Xe4]
+   VRHFIN =Sm : [core=Xe4]
+   VRHFIN =Sn: s2p2
+   VRHFIN =Sn: s2p2
+   VRHFIN =Sr: 4s4p5s
+   VRHFIN =Ta:  6s5d
+   VRHFIN =Ta:  5p6s5d
+   VRHFIN =Tb : [core=Xe4]
+   VRHFIN =Tc: 4p5s4d
+   VRHFIN =Tc: 4p5s4d
+   VRHFIN =Te: s2p4
+   VRHFIN =Th:  [Xe,5d,4f]
+   VRHFIN =Th:  [Xe,5d,4f]
+   VRHFIN =Ti: d3 s1
+   VRHFIN =Ti: d3 s1
+   VRHFIN =Ti: 3p4s3d
+   VRHFIN =Tl:
+   VRHFIN =Tl:
+   VRHFIN =Tm : [core=Xe4]
+   VRHFIN =Tm : [core=Xe4]
+   VRHFIN =U:  [Xe,5d,4f]
+   VRHFIN =U:  [Xe,5d,4f]
+   VRHFIN =V: p6 d4 s1
+   VRHFIN =V: p6 d4 s1
+   VRHFIN =V: p6 d4 s1
+   VRHFIN =W : 6s5d
+   VRHFIN =W : 5p6s5d
+   VRHFIN =X : s2p6
+   VRHFIN =Y: 4s4p5s4d
+   VRHFIN =Yb : [core=Xe4]
+   VRHFIN =Yb : [core=Xe4]
+   VRHFIN =Zn: d10 p2
+   VRHFIN =Zr: 5s4d5p
+   VRHFIN =Zr: 4s4p5s4d
