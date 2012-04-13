@@ -24,9 +24,12 @@
 #  -S オプションで状態を出力せず、ディレクトリ名だけを出力する。
 #    このオプションはシェルの backquote `` 機能から使うことを想定している。
 
+require "optparse"
+
+require "rubygems"
+gem "vasputils"
 require "vasputils/calcinspector.rb"
 require "vasputils/vaspdir.rb"
-require "optparse"
 
 OPTIONS = {}
 OPTIONS[:target_status] = ["YET", "STARTED", "NEXT", "FINISHED"]
