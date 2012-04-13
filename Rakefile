@@ -18,7 +18,7 @@ Jeweler::Tasks.new do |gem|
   gem.homepage = "http://github.com/ippei94da/vasputils"
   gem.license = "MIT"
   gem.summary = %Q{Utilities for VASP, first-principles calculation code.}
-  gem.description = %Q{This gem provides parsers for some VASP input and output files.
+  gem.description = %Q{This gem provides parsers for some of input and output files for VASP.
     This will provide support command for computations.}
   gem.email = "ippei94da@gmail.com"
   gem.authors = ["ippei94da"]
