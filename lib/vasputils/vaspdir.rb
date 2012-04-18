@@ -5,11 +5,14 @@ require "fileutils"
 require "pp"
 require "date"
 
+require "rubygems"
+gem "comana"
+require "comana.rb"
+
 require "vasputils/incar.rb"
 require "vasputils/outcar.rb"
 require "vasputils/poscar.rb"
 require "vasputils/kpoints.rb"
-
 
 # vasp 実行ディレクトリ(入力・出力ファイルを含む)を扱うクラス
 #
