@@ -34,66 +34,14 @@ class VaspDir
   class LockedError < Exception; end
   class PostfixMismatchError < Exception; end
 
-
-  LOCK_FILE = "lock"
-  POSTFIX = /try(\d+)$/
-
-  YET         = 0# - 未計算。
-  STARTED     = 1# - 開始した。
-  INTERRUPTED = 2# - 中断された。
-  CONTINUED   = 3# - 終了し、次の計算を生成した。
-  COMPLETED   = 4# - 終了し、収束した。
+  #POSTFIX = /try(\d+)$/ for geom opt
 
   attr_reader :mode
-  #attr_reader :dir
 
-  #INCAR 解析とかして、モードを調べる。
-  #- 格子定数の構造最適化モード(ISIF = 3)
-  #- 格子定数を固定した構造最適化モード(ISIF = 2)
-  ##- k 点探索モードは無理だろう。
-  def initialize(dir_name)
-    @dir = dir_name
-
-    %w(INCAR KPOINTS POSCAR POTCAR).each do |file|
-      infile = "#{@dir}/#{file}"
-      raise InitializeError, infile unless FileTest.exist? infile
-    end
-
-    @incar = Incar.load_file("#{@dir}/INCAR")
-    case @incar["IBRION"]
-    when "-1"
-      @mode = :single_point
-    #when "1"
-    # @mode = :molecular_dynamics
-    when "2"
-      if (@incar["ISIF"] == "2")
-        @mode = :geom_opt_atoms
-      elsif (@incar["ISIF"] == "3")
-        @mode = :geom_opt_lattice
-      else
-        @mode = :geom_opt
-      end
-    else
-        @mode = nil
-    end
+  # do nothing.
+  def prepare_next
   end
 
-  # ディレクトリ名を返す。
-  def name
-    @dir
-  end
-
-  # 計算が過去に始まっていれば true を返す。
-  # 終わっているかは判定しない。
-  # 具体的には lock ファイルが存在すれば true を返す。
-  #
-  # MEMO
-  # (mpi 経由で？)vasp を実行すると PI12345 とかいうファイルができるが、
-  # これはたぶん起動してから若干のタイムラグが生じる。
-  # このタイムラグ中に別のプロセスが同時に計算したらマズい。
-  def started?
-    return File.exist? lock_file
-  end
 
   # 正常に終了していれば true を返す。
   # 実行する前や実行中、OUTCAR が完遂していなければ false。
@@ -273,9 +221,33 @@ class VaspDir
 
   private
 
-  # Return lock file name.
-  def lock_file
-    return "#{@dir}/#{LOCK_FILE}"
+  #INCAR 解析とかして、モードを調べる。
+  #- 格子定数の構造最適化モード(ISIF = 3)
+  #- 格子定数を固定した構造最適化モード(ISIF = 2)
+  ##- k 点探索モードは無理だろう。
+  def set_parameters
+    %w(INCAR KPOINTS POSCAR POTCAR).each do |file|
+      infile = "#{@dir}/#{file}"
+      raise InitializeError, infile unless FileTest.exist? infile
+    end
+
+    @incar = Incar.load_file("#{@dir}/INCAR")
+    case @incar["IBRION"]
+    when "-1"
+      @mode = :single_point
+    #when "1"
+    # @mode = :molecular_dynamics
+    when "2"
+      if (@incar["ISIF"] == "2")
+        @mode = :geom_opt_atoms
+      elsif (@incar["ISIF"] == "3")
+        @mode = :geom_opt_lattice
+      else
+        @mode = :geom_opt
+      end
+    else
+        @mode = nil
+    end
   end
 
 end
