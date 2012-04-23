@@ -69,59 +69,58 @@ class VaspDir < Comana
   # そのうち mpiexec from torque に対応するが、
   # まずは mpirun で動くように作る。
   def send_command
-    raise LockedError if started?
+    #File.open(lock_file, "w") do |lock_io|
+    #  lock_io.puts "HOST: #{ENV["HOST"]}"
+    #  lock_io.puts "START: #{Time.now.to_s}"
+    #  lock_io.flush
 
-    File.open(lock_file, "w") do |lock_io|
-      lock_io.puts "HOST: #{ENV["HOST"]}"
-      lock_io.puts "START: #{Time.now.to_s}"
-      lock_io.flush
+    #  num_cores = 4 if /^Se\d\d/ =~ ENV["HOST"]
+    #  num_cores = 4 if /^Ge\d\d/ =~ ENV["HOST"]
+    #  num_cores = 4 if /^Ga\d\d/ =~ ENV["HOST"]
+    #  num_cores = 4 if /^At$/ =~ ENV["HOST"]
+    #  num_cores = 2 if /^yggdrasil$/ =~ ENV["HOST"]
 
-      num_cores = 4 if /^Se\d\d/ =~ ENV["HOST"]
-      num_cores = 4 if /^Ge\d\d/ =~ ENV["HOST"]
-      num_cores = 4 if /^Ga\d\d/ =~ ENV["HOST"]
-      num_cores = 4 if /^At$/ =~ ENV["HOST"]
-      num_cores = 2 if /^yggdrasil$/ =~ ENV["HOST"]
+    #  # machines を生成
+    #  File.open("#{@dir}/machines", "w") do |io|
+    #    io.puts "localhost:#{num_cores}"
+    #  end
+    #end
+    num_cores = 4
+    command = "cd #{@dir};" +
+      "/usr/local/calc/mpich-1.2.7-ifc7/bin/mpirun " +
+      "-np #{num_cores} " +
+      "-machinefile machines " +
+      "/usr/local/calc/vasp/vasp4631mpi" +
+      "> stdout"
 
-      # machines を生成
-      File.open("#{@dir}/machines", "w") do |io|
-        io.puts "localhost:#{num_cores}"
-      end
-
-      command = "cd #{@dir};" +
-        "/usr/local/calc/mpich-1.2.7-ifc7/bin/mpirun " +
-        "-np #{num_cores} " +
-        "-machinefile machines " +
-        "/usr/local/calc/vasp/vasp4631mpi" +
-        "> stdout"
-
-      if $TEST
-        generated_files = [
-          "CHG",
-          "CHGCAR",
-          "CONTCAR",
-          "DOSCAR",
-          "EIGENVAL",
-          "IBZKPT",
-          "OSZICAR",
-          "OUTCAR",
-          "PCDAT",
-          "WAVECAR",
-          "XDATCAR",
-          "machines",
-          "vasprun.xml",
-          "lock",
-        ]
-        generated_files.map!{|i| "#{@dir}/#{i}"}
-        command = "touch #{generated_files.join(" ")}"
-      end
-
-      status = system command
-      if status
-        lock_io.puts "STATUS: normal ended."
-      else
-        lock_io.puts "STATUS: irregular ended, status #{$?}."
-      end
+    if $TEST
+      generated_files = [
+        "CHG",
+        "CHGCAR",
+        "CONTCAR",
+        "DOSCAR",
+        "EIGENVAL",
+        "IBZKPT",
+        "OSZICAR",
+        "OUTCAR",
+        "PCDAT",
+        "WAVECAR",
+        "XDATCAR",
+        "machines",
+        "vasprun.xml",
+        "lock",
+      ]
+      generated_files.map!{|i| "#{@dir}/#{i}"}
+      command = "touch #{generated_files.join(" ")}"
     end
+
+    system command
+    #status = system command
+    #if status
+    #  lock_io.puts "STATUS: normal ended."
+    #else
+    #  lock_io.puts "STATUS: irregular ended, status #{$?}."
+    #end
   end
 
   #INCAR 解析とかして、モードを調べる。
@@ -129,33 +128,33 @@ class VaspDir < Comana
   #- 格子定数を固定した構造最適化モード(ISIF = 2)
   ##- k 点探索モードは無理だろう。
   def set_parameters
+    #pp @dir; exit;
     %w(INCAR KPOINTS POSCAR POTCAR).each do |file|
       infile = "#{@dir}/#{file}"
       raise InitializeError, infile unless FileTest.exist? infile
     end
 
-    @incar = Incar.load_file("#{@dir}/INCAR")
-    case @incar["IBRION"]
-    when "-1"
-      @mode = :single_point
-    #when "1"
-    # @mode = :molecular_dynamics
-    when "2"
-      if (@incar["ISIF"] == "2")
-        @mode = :geom_opt_atoms
-      elsif (@incar["ISIF"] == "3")
-        @mode = :geom_opt_lattice
-      else
-        @mode = :geom_opt
-      end
-    else
-        @mode = nil
-    end
+    #@incar = Incar.load_file("#{@dir}/INCAR")
+    #case @incar["IBRION"]
+    #when "-1"
+    #  @mode = :single_point
+    ##when "1"
+    ## @mode = :molecular_dynamics
+    #when "2"
+    #  if (@incar["ISIF"] == "2")
+    #    @mode = :geom_opt_atoms
+    #  elsif (@incar["ISIF"] == "3")
+    #    @mode = :geom_opt_lattice
+    #  else
+    #    @mode = :geom_opt
+    #  end
+    #else
+    #    @mode = nil
+    #end
 
-    # e.g.,
-    #@logfile    = "comana.log"
-    #@alive_time = 3600
-    #@outfiles   = ["output_a", "ouput_b"] # Files only to output should be indicated.
+    @lockdir    = "lock"
+    @alive_time = 3600
+    @outfiles   = ["OUTCAR"] # Files only to output should be indicated.
   end
 
   # 正常に終了していれば true を返す。

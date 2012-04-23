@@ -7,17 +7,17 @@ require "rubygems"
 gem "comana"
 require "comana.rb"
 
-class VaspDir < Comana
-  attr_reader :mode
-  public :finished?
-end
-
 require "test/unit"
 require "vasputils/vaspdir.rb"
 
 # assert_equal( cor, data)
 # assert_in_delta( cor, data, $tolerance )
 # assert_raise( RuntimeError ){}
+
+class VaspDir < Comana
+  attr_reader :mode
+  public :finished?
+end
 
 
 class TC_VaspDir < Test::Unit::TestCase
@@ -36,7 +36,6 @@ class TC_VaspDir < Test::Unit::TestCase
     "test/vaspdir/not-yet/XDATCAR",
     "test/vaspdir/not-yet/machines",
     "test/vaspdir/not-yet/vasprun.xml",
-    "test/vaspdir/not-yet/lock",
   ]
 
   def setup
@@ -48,6 +47,9 @@ class TC_VaspDir < Test::Unit::TestCase
     GENERATED_FILES_VD00.each do |file|
       FileUtils.rm file if File.exist? file
     end
+
+    #lock_dir = "test/vaspdir/not-yet/lock"
+    #Dir.rmdir(lock_dir) if Dir.exist?(lock_dir)
   end
 
   def test_initialize
@@ -65,7 +67,12 @@ class TC_VaspDir < Test::Unit::TestCase
   end
 
   def test_calculate
+    lock_dir = "test/vaspdir/not-yet/lock"
+    Dir.rmdir(lock_dir) if Dir.exist?(lock_dir)
+    #pp @vd00;exit
+    #@vd00.calculate
     assert_nothing_raised{@vd00.calculate}
+
     GENERATED_FILES_VD00.each do |file|
       assert(FileTest.exist?(file), "#{file} not found.")
     end
@@ -73,15 +80,9 @@ class TC_VaspDir < Test::Unit::TestCase
     assert(FileTest.exist? "test/vaspdir/not-yet/KPOINTS")
     assert(FileTest.exist? "test/vaspdir/not-yet/POSCAR")
     assert(FileTest.exist? "test/vaspdir/not-yet/POTCAR")
-    #
-    io = File.open("test/vaspdir/not-yet-ISIF2/lock", "r")
-    lines = io.readlines
-    assert_equal("HOST: #{ENV["HOST"]}\n", lines[0])
-    assert(/^START: / =~ lines[1])
-    assert_equal("STATUS: normal ended.\n", lines[2])
 
-    io.close
-    # あとかたづけは teardown にまかせる。
+    lock_dir = "test/vaspdir/not-yet/lock"
+    Dir.rmdir(lock_dir) if Dir.exist?(lock_dir)
   end
 
   def test_outcar
@@ -90,9 +91,9 @@ class TC_VaspDir < Test::Unit::TestCase
   end
 
   def test_contcar
-    t = @vd00.contcar
+    t = @vd03.contcar
     assert_equal(Cell, t.class)
-    assert_in_delta(3.8678456093562040, t.axes[2][2])
+    assert_in_delta(3.8879999999999999, t.axes[2][2])
     
     assert_raise(Errno::ENOENT){@vd00.contcar}
   end
@@ -108,6 +109,15 @@ class TC_VaspDir < Test::Unit::TestCase
   end
 
   #undef test_next
+
+  def teardown
+    GENERATED_FILES_VD00.each do |file|
+      FileUtils.rm file if File.exist? file
+    end
+
+    #lock_dir = "test/vaspdir/not-yet/lock"
+    #Dir.rmdir(lock_dir) if Dir.exist?(lock_dir)
+  end
 
 end
 

@@ -2,8 +2,9 @@
 
 SYSTEM = Untitled (VASP)
     PREC = High
-  IBRION = -1     #-1:atoms not moved, 1:quasi-Newton, 2:conjugate-gradient
-     NSW = 0      #maximum number of ionic steps
+  IBRION = 2        #-1:atoms not moved, 1:quasi-Newton, 2:conjugate-gradient
+     NSW = 100      #maximum number of ionic steps
+    ISIF = 2
    ENCUT = 400
     NELM = 60       #maximum number of electronic steps
   NELMIN = 2        #minimum number of electronic steps
