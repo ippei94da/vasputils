@@ -21,7 +21,7 @@ cluster = ARGV[0]
 #それによって、ここがかきかわる。
 
 puts "Options -e and -s cannot be duplicated." if OPTS[:e] && OPTS[:s]
-if [OPTS[:g], OPTS[:n], OPTS[:c]].select_all(true)
+if [OPTS[:g], OPTS[:n], OPTS[:c]].select_all(true).size ==
   puts "Options -g, -n, and -c cannot be duplicated."
   exit
 end
