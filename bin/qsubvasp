@@ -1,0 +1,30 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+require "optparse"
+
+## option analysis
+OPTS = {}
+op = OptionParser.new
+op.on("-e", "--economy"  , "Prior efficiency."){OPTS[:e] = true}
+op.on("-s", "--speed"    , "Prior speed.")     {OPTS[:s] = true}
+
+op.on("-g", "--geom-opt" , "Geometry optimization.")     {OPTS[:g] = true}
+op.on("-n", "--nebm"     , "Nudged Elastic Band method."){OPTS[:n] = true}
+op.on("-c", "--cond-find", "Condition Finding.")         {OPTS[:c] = true}
+
+op.parse!(ARGV)
+
+cluster = ARGV[0]
+#cluster = ARGV
+#qsub で複数のクラスターを候補に入れることができるか？e.g., Ga, Ge
+#それによって、ここがかきかわる。
+
+puts "Options -e and -s cannot be duplicated." if OPTS[:e] && OPTS[:s]
+if [OPTS[:g], OPTS[:n], OPTS[:c]].select_all(true).size ==
+  puts "Options -g, -n, and -c cannot be duplicated."
+  exit
+end
+
+
+
