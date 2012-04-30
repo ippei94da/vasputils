@@ -108,81 +108,13 @@ Gem::Specification.new do |s|
     "test/test_poscar.rb",
     "test/test_potcar.rb",
     "test/test_vaspdir.rb",
-    "test/vaspdir/IBRION-1-NSW000-OUTCAR-Iter1/CONTCAR",
-    "test/vaspdir/IBRION-1-NSW000-OUTCAR-Iter1/INCAR",
-    "test/vaspdir/IBRION-1-NSW000-OUTCAR-Iter1/KPOINTS",
-    "test/vaspdir/IBRION-1-NSW000-OUTCAR-Iter1/OUTCAR",
-    "test/vaspdir/IBRION-1-NSW000-OUTCAR-Iter1/POSCAR",
-    "test/vaspdir/IBRION-1-NSW000-OUTCAR-Iter1/POTCAR",
-    "test/vaspdir/IBRION-1-NSW000-OUTCAR-Iter1/lock",
-    "test/vaspdir/ISIF2-NSW000-OUTCAR-Iter1/CONTCAR",
-    "test/vaspdir/ISIF2-NSW000-OUTCAR-Iter1/INCAR",
-    "test/vaspdir/ISIF2-NSW000-OUTCAR-Iter1/KPOINTS",
-    "test/vaspdir/ISIF2-NSW000-OUTCAR-Iter1/OUTCAR",
-    "test/vaspdir/ISIF2-NSW000-OUTCAR-Iter1/POSCAR",
-    "test/vaspdir/ISIF2-NSW000-OUTCAR-Iter1/POTCAR",
-    "test/vaspdir/ISIF2-NSW000-OUTCAR-Iter1/lock",
-    "test/vaspdir/ISIF2-NSW001-OUTCAR-Iter1/CONTCAR",
-    "test/vaspdir/ISIF2-NSW001-OUTCAR-Iter1/INCAR",
-    "test/vaspdir/ISIF2-NSW001-OUTCAR-Iter1/KPOINTS",
-    "test/vaspdir/ISIF2-NSW001-OUTCAR-Iter1/OUTCAR",
-    "test/vaspdir/ISIF2-NSW001-OUTCAR-Iter1/POSCAR",
-    "test/vaspdir/ISIF2-NSW001-OUTCAR-Iter1/POTCAR",
-    "test/vaspdir/ISIF2-NSW001-OUTCAR-Iter1/lock",
-    "test/vaspdir/ISIF2-NSW100-OUTCAR-Iter1/CONTCAR",
-    "test/vaspdir/ISIF2-NSW100-OUTCAR-Iter1/INCAR",
-    "test/vaspdir/ISIF2-NSW100-OUTCAR-Iter1/KPOINTS",
-    "test/vaspdir/ISIF2-NSW100-OUTCAR-Iter1/OUTCAR",
-    "test/vaspdir/ISIF2-NSW100-OUTCAR-Iter1/POSCAR",
-    "test/vaspdir/ISIF2-NSW100-OUTCAR-Iter1/POTCAR",
-    "test/vaspdir/ISIF2-NSW100-OUTCAR-Iter1/lock",
-    "test/vaspdir/ISIF2-NSW100-OUTCAR-Iter3/CONTCAR",
-    "test/vaspdir/ISIF2-NSW100-OUTCAR-Iter3/INCAR",
-    "test/vaspdir/ISIF2-NSW100-OUTCAR-Iter3/KPOINTS",
-    "test/vaspdir/ISIF2-NSW100-OUTCAR-Iter3/OUTCAR",
-    "test/vaspdir/ISIF2-NSW100-OUTCAR-Iter3/POSCAR",
-    "test/vaspdir/ISIF2-NSW100-OUTCAR-Iter3/POTCAR",
-    "test/vaspdir/ISIF2-NSW100-OUTCAR-Iter3/lock",
-    "test/vaspdir/ISIF3-NSW000-OUTCAR-Iter1/CONTCAR",
-    "test/vaspdir/ISIF3-NSW000-OUTCAR-Iter1/INCAR",
-    "test/vaspdir/ISIF3-NSW000-OUTCAR-Iter1/KPOINTS",
-    "test/vaspdir/ISIF3-NSW000-OUTCAR-Iter1/OUTCAR",
-    "test/vaspdir/ISIF3-NSW000-OUTCAR-Iter1/POSCAR",
-    "test/vaspdir/ISIF3-NSW000-OUTCAR-Iter1/POTCAR",
-    "test/vaspdir/ISIF3-NSW000-OUTCAR-Iter1/lock",
-    "test/vaspdir/ISIF3-NSW001-OUTCAR-Iter1/CONTCAR",
-    "test/vaspdir/ISIF3-NSW001-OUTCAR-Iter1/INCAR",
-    "test/vaspdir/ISIF3-NSW001-OUTCAR-Iter1/KPOINTS",
-    "test/vaspdir/ISIF3-NSW001-OUTCAR-Iter1/OUTCAR",
-    "test/vaspdir/ISIF3-NSW001-OUTCAR-Iter1/POSCAR",
-    "test/vaspdir/ISIF3-NSW001-OUTCAR-Iter1/POTCAR",
-    "test/vaspdir/ISIF3-NSW001-OUTCAR-Iter1/lock",
-    "test/vaspdir/ISIF3-NSW002-OUTCAR-Iter2/CONTCAR",
-    "test/vaspdir/ISIF3-NSW002-OUTCAR-Iter2/INCAR",
-    "test/vaspdir/ISIF3-NSW002-OUTCAR-Iter2/KPOINTS",
-    "test/vaspdir/ISIF3-NSW002-OUTCAR-Iter2/OUTCAR",
-    "test/vaspdir/ISIF3-NSW002-OUTCAR-Iter2/POSCAR",
-    "test/vaspdir/ISIF3-NSW002-OUTCAR-Iter2/POTCAR",
-    "test/vaspdir/ISIF3-NSW002-OUTCAR-Iter2/lock",
-    "test/vaspdir/ISIF3-NSW100-OUTCAR-Iter1-INT/CONTCAR",
-    "test/vaspdir/ISIF3-NSW100-OUTCAR-Iter1-INT/INCAR",
-    "test/vaspdir/ISIF3-NSW100-OUTCAR-Iter1-INT/KPOINTS",
-    "test/vaspdir/ISIF3-NSW100-OUTCAR-Iter1-INT/OUTCAR",
-    "test/vaspdir/ISIF3-NSW100-OUTCAR-Iter1-INT/POSCAR",
-    "test/vaspdir/ISIF3-NSW100-OUTCAR-Iter1-INT/POTCAR",
-    "test/vaspdir/ISIF3-NSW100-OUTCAR-Iter1-INT/lock",
-    "test/vaspdir/ISIF3-NSW100-OUTCAR-Iter3/CONTCAR",
-    "test/vaspdir/ISIF3-NSW100-OUTCAR-Iter3/INCAR",
-    "test/vaspdir/ISIF3-NSW100-OUTCAR-Iter3/KPOINTS",
-    "test/vaspdir/ISIF3-NSW100-OUTCAR-Iter3/OUTCAR",
-    "test/vaspdir/ISIF3-NSW100-OUTCAR-Iter3/POSCAR",
-    "test/vaspdir/ISIF3-NSW100-OUTCAR-Iter3/POTCAR",
-    "test/vaspdir/ISIF3-NSW100-OUTCAR-Iter3/lock",
-    "test/vaspdir/PI/INCAR",
-    "test/vaspdir/PI/KPOINTS",
-    "test/vaspdir/PI/PI12345",
-    "test/vaspdir/PI/POSCAR",
-    "test/vaspdir/PI/POTCAR",
+    "test/vaspdir/finished/CONTCAR",
+    "test/vaspdir/finished/INCAR",
+    "test/vaspdir/finished/KPOINTS",
+    "test/vaspdir/finished/OUTCAR",
+    "test/vaspdir/finished/POSCAR",
+    "test/vaspdir/finished/POTCAR",
+    "test/vaspdir/finished/lock",
     "test/vaspdir/lack-INCAR/KPOINTS",
     "test/vaspdir/lack-INCAR/POSCAR",
     "test/vaspdir/lack-INCAR/POTCAR",
@@ -195,43 +127,28 @@ Gem::Specification.new do |s|
     "test/vaspdir/lack-POTCAR/INCAR",
     "test/vaspdir/lack-POTCAR/KPOINTS",
     "test/vaspdir/lack-POTCAR/POSCAR",
-    "test/vaspdir/lock-PI/INCAR",
-    "test/vaspdir/lock-PI/KPOINTS",
-    "test/vaspdir/lock-PI/PI12345",
-    "test/vaspdir/lock-PI/POSCAR",
-    "test/vaspdir/lock-PI/POTCAR",
-    "test/vaspdir/lock-PI/lock",
-    "test/vaspdir/lock/INCAR",
-    "test/vaspdir/lock/KPOINTS",
-    "test/vaspdir/lock/POSCAR",
-    "test/vaspdir/lock/POTCAR",
-    "test/vaspdir/lock/lock",
-    "test/vaspdir/next-try00/CONTCAR",
-    "test/vaspdir/next-try00/INCAR",
-    "test/vaspdir/next-try00/KPOINTS",
-    "test/vaspdir/next-try00/OUTCAR",
-    "test/vaspdir/next-try00/POSCAR",
-    "test/vaspdir/next-try00/POTCAR",
-    "test/vaspdir/next-try00/lock",
-    "test/vaspdir/not-yet-ISIF2/INCAR",
-    "test/vaspdir/not-yet-ISIF2/KPOINTS",
-    "test/vaspdir/not-yet-ISIF2/PI17489",
-    "test/vaspdir/not-yet-ISIF2/PI17736",
-    "test/vaspdir/not-yet-ISIF2/PI1858",
-    "test/vaspdir/not-yet-ISIF2/PI1866",
-    "test/vaspdir/not-yet-ISIF2/PI2059",
-    "test/vaspdir/not-yet-ISIF2/POSCAR",
-    "test/vaspdir/not-yet-ISIF2/POTCAR",
-    "test/vaspdir/not-yet-ISIF3/INCAR",
-    "test/vaspdir/not-yet-ISIF3/KPOINTS",
-    "test/vaspdir/not-yet-ISIF3/POSCAR",
-    "test/vaspdir/not-yet-ISIF3/POTCAR",
+    "test/vaspdir/locked/INCAR",
+    "test/vaspdir/locked/KPOINTS",
+    "test/vaspdir/locked/POSCAR",
+    "test/vaspdir/locked/POTCAR",
+    "test/vaspdir/locked/lock",
+    "test/vaspdir/not-yet/INCAR",
+    "test/vaspdir/not-yet/KPOINTS",
+    "test/vaspdir/not-yet/POSCAR",
+    "test/vaspdir/not-yet/POTCAR",
+    "test/vaspdir/started/CONTCAR",
+    "test/vaspdir/started/INCAR",
+    "test/vaspdir/started/KPOINTS",
+    "test/vaspdir/started/OUTCAR",
+    "test/vaspdir/started/POSCAR",
+    "test/vaspdir/started/POTCAR",
+    "test/vaspdir/started/lock",
     "vasputils.gemspec"
   ]
   s.homepage = "http://github.com/ippei94da/vasputils"
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.21"
+  s.rubygems_version = "1.8.11"
   s.summary = "Utilities for VASP, first-principles calculation code."
 
   if s.respond_to? :specification_version then
@@ -246,7 +163,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<mageo>, [">= 0.0.0"])
       s.add_development_dependency(%q<malge>, [">= 0.0.1"])
       s.add_development_dependency(%q<maset>, [">= 0.0.0"])
-      s.add_development_dependency(%q<comana>, [">= 0.0.0"])
+      s.add_development_dependency(%q<comana>, [">= 0.0.4"])
       s.add_development_dependency(%q<builtinextension>, [">= 0.0.3"])
     else
       s.add_dependency(%q<rdoc>, ["~> 3.12"])
@@ -257,7 +174,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<mageo>, [">= 0.0.0"])
       s.add_dependency(%q<malge>, [">= 0.0.1"])
       s.add_dependency(%q<maset>, [">= 0.0.0"])
-      s.add_dependency(%q<comana>, [">= 0.0.0"])
+      s.add_dependency(%q<comana>, [">= 0.0.4"])
       s.add_dependency(%q<builtinextension>, [">= 0.0.3"])
     end
   else
@@ -269,7 +186,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<mageo>, [">= 0.0.0"])
     s.add_dependency(%q<malge>, [">= 0.0.1"])
     s.add_dependency(%q<maset>, [">= 0.0.0"])
-    s.add_dependency(%q<comana>, [">= 0.0.0"])
+    s.add_dependency(%q<comana>, [">= 0.0.4"])
     s.add_dependency(%q<builtinextension>, [">= 0.0.3"])
   end
 end
