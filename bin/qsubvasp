@@ -4,14 +4,14 @@
 require "optparse"
 
 ## option analysis
-OPTIONS = {}
+OPTS = {}
 op = OptionParser.new
-op.on("-e"    , "--economy", "Prior efficiency."){ OPTIONS[:economy] = true}
-op.on("-s"    , "--speed"  , "Prior speed.")     { OPTIONS[:speed] = true}
+op.on("-e", "--economy"  , "Prior efficiency."){OPTS[:e] = true}
+op.on("-s", "--speed"    , "Prior speed.")     {OPTS[:s] = true}
 
-op.on("-g"    , "--TODO"  , "Geometry optimization.")     { OPTIONS[:TODO] = true}
-op.on("-n"    , "--TODO"  , "Nudged Elastic Band method."){ OPTIONS[:TODOrue}
-op.on("-c"    , "--TODO"  , "Condition Finding.")         { OPTIONS[:TODOrue}
+op.on("-g", "--geom-opt" , "Geometry optimization.")     {OPTS[:g] = true}
+op.on("-n", "--nebm"     , "Nudged Elastic Band method."){OPTS[:n] = true}
+op.on("-c", "--cond-find", "Condition Finding.")         {OPTS[:c] = true}
 
 op.parse!(ARGV)
 
@@ -20,7 +20,11 @@ cluster = ARGV[0]
 #qsub で複数のクラスターを候補に入れることができるか？e.g., Ga, Ge
 #それによって、ここがかきかわる。
 
-puts "Options -e and -s cannot be duplicated." if OPTIONS[:
+puts "Options -e and -s cannot be duplicated." if OPTS[:e] && OPTS[:s]
+if [OPTS[:g], OPTS[:n], OPTS[:c]].select_all(true)
+  puts "Options -g, -n, and -c cannot be duplicated."
+  exit
+end
 
 
 
