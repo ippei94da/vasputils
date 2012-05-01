@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.date = "2012-04-30"
   s.description = "This gem provides parsers for some of input and output files for VASP.\n    This will provide support command for computations."
   s.email = "ippei94da@gmail.com"
-  s.executables = ["addVolumeToten.rb", "latticeconstants", "lsvaspdir", "lsvaspseries", "qsubvasp", "repeatvasp", "symposcar"]
+  s.executables = ["addVolumeToten.rb", "latticeconstants", "lsvaspdir", "lsvaspseries", "qsubvasp", "symposcar"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.rdoc"
@@ -29,7 +29,6 @@ Gem::Specification.new do |s|
     "bin/lsvaspdir",
     "bin/lsvaspseries",
     "bin/qsubvasp",
-    "bin/repeatvasp",
     "bin/symposcar",
     "lib/vasputils.rb",
     "lib/vasputils/calcinspector.rb",
@@ -94,11 +93,6 @@ Gem::Specification.new do |s|
     "test/potcar/POTCAR",
     "test/potcar/POTCAR.allElement",
     "test/potcar/POTCAR.dummy",
-    "test/repeatVasp/Iter2-Nsw2.00/INCAR",
-    "test/repeatVasp/Iter2-Nsw2.00/KPOINTS",
-    "test/repeatVasp/Iter2-Nsw2.00/POSCAR",
-    "test/repeatVasp/Iter2-Nsw2.00/POTCAR",
-    "test/repeatVasp/test.sh",
     "test/test_calcinspector.rb",
     "test/test_calcrepeater.rb",
     "test/test_calcseries.rb",

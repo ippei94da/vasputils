@@ -4,6 +4,7 @@
 require "fileutils"
 require "pp"
 require "date"
+require "yaml"
 
 require "rubygems"
 gem "comana"
@@ -28,6 +29,18 @@ require "vasputils/kpoints.rb"
 #
 class VaspDir < Comana
   class InitializeError < Exception; end
+
+  #INCAR 解析とかして、モードを調べる。
+  #- 格子定数の構造最適化モード(ISIF = 3)
+  #- 格子定数を固定した構造最適化モード(ISIF = 2)
+  ##- k 点探索モードは無理だろう。
+  def initialize(dir)
+    super(dir)
+    %w(INCAR KPOINTS POSCAR POTCAR).each do |file|
+      infile = "#{@dir}/#{file}"
+      raise InitializeError, infile unless FileTest.exist? infile
+    end
+  end
 
   # 配下の OUTCAR を Outcar インスタンスにして返す。
   # 存在しなければ例外 Errno::ENOENT を返す。
@@ -68,7 +81,7 @@ class VaspDir < Comana
   # machinefile を生成しないとどのホストで計算するか、安定しない。
   # そのうち mpiexec from torque に対応するが、
   # まずは mpirun で動くように作る。
-  def send_command
+  def calculate
     #File.open(lock_file, "w") do |lock_io|
     #  lock_io.puts "HOST: #{ENV["HOST"]}"
     #  lock_io.puts "START: #{Time.now.to_s}"
@@ -85,76 +98,26 @@ class VaspDir < Comana
     #    io.puts "localhost:#{num_cores}"
     #  end
     #end
-    num_cores = 4
-    command = "cd #{@dir};" +
-      "/usr/local/calc/mpich-1.2.7-ifc7/bin/mpirun " +
-      "-np #{num_cores} " +
-      "-machinefile machines " +
-      "/usr/local/calc/vasp/vasp4631mpi" +
-      "> stdout"
+    #num_cores = 4
 
-    if $TEST
-      generated_files = [
-        "CHG",
-        "CHGCAR",
-        "CONTCAR",
-        "DOSCAR",
-        "EIGENVAL",
-        "IBZKPT",
-        "OSZICAR",
-        "OUTCAR",
-        "PCDAT",
-        "WAVECAR",
-        "XDATCAR",
-        "machines",
-        "vasprun.xml",
-        "lock",
-      ]
-      generated_files.map!{|i| "#{@dir}/#{i}"}
-      command = "touch #{generated_files.join(" ")}"
-    end
+    settings = YAML.load_file("#{ENV["HOME"]}/.machineinfo")
+    setting  = settings[ENV["HOST"]]
+    command = "cd #{@dir};"
+    command += setting["vasp"]
+
+    #if ENV["PBS_JOBID"]
+    #  command += "/usr/local/calc/mpiexec/bin/mpiexec /usr/local/calc/bin/vasp5212-mpich2"
+    #else
+    #  /usr/local/calc/bin/vasp5212-mpich2"
+    ##  command = "cd #{@dir};" +
+    ##    "/usr/local/calc/mpich-1.2.7-ifc7/bin/mpirun " +
+    ##    "-np #{num_cores} " +
+    ##    "-machinefile machines " +
+    ##    "/usr/local/calc/vasp/vasp4631mpi" +
+    ##    "> stdout"
+    #end
 
     system command
-    #status = system command
-    #if status
-    #  lock_io.puts "STATUS: normal ended."
-    #else
-    #  lock_io.puts "STATUS: irregular ended, status #{$?}."
-    #end
-  end
-
-  #INCAR 解析とかして、モードを調べる。
-  #- 格子定数の構造最適化モード(ISIF = 3)
-  #- 格子定数を固定した構造最適化モード(ISIF = 2)
-  ##- k 点探索モードは無理だろう。
-  def set_parameters
-    #pp @dir; exit;
-    %w(INCAR KPOINTS POSCAR POTCAR).each do |file|
-      infile = "#{@dir}/#{file}"
-      raise InitializeError, infile unless FileTest.exist? infile
-    end
-
-    #@incar = Incar.load_file("#{@dir}/INCAR")
-    #case @incar["IBRION"]
-    #when "-1"
-    #  @mode = :single_point
-    ##when "1"
-    ## @mode = :molecular_dynamics
-    #when "2"
-    #  if (@incar["ISIF"] == "2")
-    #    @mode = :geom_opt_atoms
-    #  elsif (@incar["ISIF"] == "3")
-    #    @mode = :geom_opt_lattice
-    #  else
-    #    @mode = :geom_opt
-    #  end
-    #else
-    #    @mode = nil
-    #end
-
-    @lockdir    = "lock"
-    @alive_time = 3600
-    @outfiles   = ["OUTCAR"] # Files only to output should be indicated.
   end
 
   # 正常に終了していれば true を返す。

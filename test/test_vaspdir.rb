@@ -17,6 +17,29 @@ require "vasputils/vaspdir.rb"
 class VaspDir < Comana
   attr_reader :mode
   public :finished?
+
+  def calculate
+    generated_files = [
+      "CHG",
+      "CHGCAR",
+      "CONTCAR",
+      "DOSCAR",
+      "EIGENVAL",
+      "IBZKPT",
+      "OSZICAR",
+      "OUTCAR",
+      "PCDAT",
+      "WAVECAR",
+      "XDATCAR",
+      "machines",
+      "vasprun.xml",
+      "lock",
+    ]
+    generated_files.map!{|i| "#{@dir}/#{i}"}
+    command = "touch #{generated_files.join(" ")}"
+
+    system command
+  end
 end
 
 
