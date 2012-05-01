@@ -1,0 +1,15 @@
+#! /usr/local/bin/ruby
+
+require "rubygems"
+gem "vasputils"
+require "vasputils/vaspdir.rb"
+
+#vd = VaspDir.new(ARGV[0])
+dir = ARGV[0] || "."
+vd = VaspDir.new(dir)
+begin
+  vd.start
+rescue Comana::AlreadyStartedError
+  puts "Already started. Exit."
+  exit
+end
