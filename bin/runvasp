@@ -20,7 +20,7 @@ op.parse!(ARGV)
 dir = ARGV[0] || "."
 
 if OPTIONS[:g]
-  calc_dir = VaspDirGeomOpt.new(dir)
+  calc_dir = VaspGeomOpt.new(dir)
 else
   calc_dir = VaspDir.new(dir)
 end

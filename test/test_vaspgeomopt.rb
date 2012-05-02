@@ -34,10 +34,10 @@ class TC_VaspGeomOpt < Test::Unit::TestCase
   end
 
   def test_finished?
-    #assert_equal(false, @vgo00.finished?)
-    #assert_equal(false, @vgo01.finished?)
-    #assert_equal(false, @vgo02.finished?)
-    #assert_equal(true , @vgo03.finished?)
+    assert_equal(false, @vgo00.finished?)
+    assert_equal(false, @vgo01.finished?)
+    assert_equal(false, @vgo02.finished?)
+    assert_equal(true , @vgo03.finished?)
     assert_equal(false, @vgo04.finished?)
   end
 

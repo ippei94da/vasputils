@@ -117,6 +117,7 @@ class VaspDir < Comana
     setting  = settings[ENV["HOST"]]
     command = "cd #{@dir};"
     command += setting["vasp"]
+    command += "> stdout"
 
     #if ENV["PBS_JOBID"]
     #  command += "/usr/local/calc/mpiexec/bin/mpiexec /usr/local/calc/bin/vasp5212-mpich2"
@@ -131,6 +132,10 @@ class VaspDir < Comana
     #end
 
     system command
+  end
+
+  def prepare_next
+    #do_nothing
   end
 
 end

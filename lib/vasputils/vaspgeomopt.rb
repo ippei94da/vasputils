@@ -37,16 +37,24 @@ class VaspGeomOpt < Comana
   # yet 以外なら例外。
   # VaspDir になっているか。
   def calculate
-    dir = latest_dir
-    while (! dir.finished?)
-      raise LatestDirStartedError if dir.state == :started
-      dir.start
-      if dir.finished?
-        break
-      else
-        dir = prepare_next
-      end
-    end
+    #pp latest_dir.dir
+    $stdout.puts "Calculate #{latest_dir.dir}"
+    $stdout.flush
+
+    latest_dir.start
+    #dir = latest_dir
+    #while (! finished?)
+    #  raise LatestDirStartedError if dir.state == :started
+    #  dir.start
+    #  if dir.finished?
+    #    break
+    #  else
+    #    #dir = prepare_next
+    #    puts "Geometry optimization fihished. Exit."
+    #  end
+    #end
+    #puts "Geometry optimization fihished. Exit."
+    sleep 1 # for interrupt
   end
 
   # latest_dir から返って来る最新の VaspDir が finished? で真を返し、
@@ -56,12 +64,13 @@ class VaspGeomOpt < Comana
   def finished?
     return false unless latest_dir.finished?
     return false unless latest_dir.outcar[:ionic_steps] == 1
+    #return true if (latest_dir.finished? && latest_dir.outcar[:ionic_steps] == 1)
     return true
   end
 
   private
 
-  # Generate next directory of latest_dir and return a next VaspDir instance.
+  # Generate next directory of latest_dir.
   def prepare_next
     new_dir = self.class.next_name(latest_dir.dir)
     Dir.mkdir new_dir
