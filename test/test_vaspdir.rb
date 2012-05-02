@@ -16,7 +16,6 @@ require "vasputils/vaspdir.rb"
 
 class VaspDir < Comana
   attr_reader :mode
-  public :finished?
 
   def calculate
     generated_files = [
@@ -33,7 +32,6 @@ class VaspDir < Comana
       "XDATCAR",
       "machines",
       "vasprun.xml",
-      "lock",
     ]
     generated_files.map!{|i| "#{@dir}/#{i}"}
     command = "touch #{generated_files.join(" ")}"
@@ -90,7 +88,7 @@ class TC_VaspDir < Test::Unit::TestCase
   end
 
   def test_calculate
-    lock_dir = "test/vaspdir/not-yet/lock"
+    lock_dir = "test/vaspdir/not-yet/comana_lock"
     Dir.rmdir(lock_dir) if Dir.exist?(lock_dir)
     #pp @vd00;exit
     #@vd00.calculate
@@ -104,7 +102,7 @@ class TC_VaspDir < Test::Unit::TestCase
     assert(FileTest.exist? "test/vaspdir/not-yet/POSCAR")
     assert(FileTest.exist? "test/vaspdir/not-yet/POTCAR")
 
-    lock_dir = "test/vaspdir/not-yet/lock"
+    lock_dir = "test/vaspdir/not-yet/comana_lock"
     Dir.rmdir(lock_dir) if Dir.exist?(lock_dir)
   end
 
@@ -137,9 +135,6 @@ class TC_VaspDir < Test::Unit::TestCase
     GENERATED_FILES_VD00.each do |file|
       FileUtils.rm file if File.exist? file
     end
-
-    #lock_dir = "test/vaspdir/not-yet/lock"
-    #Dir.rmdir(lock_dir) if Dir.exist?(lock_dir)
   end
 
 end

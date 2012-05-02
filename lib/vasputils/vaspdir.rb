@@ -67,6 +67,19 @@ class VaspDir < Comana
     Kpoints.load_file("#{@dir}/KPOINTS")
   end
 
+  # 正常に終了していれば true を返す。
+  # 実行する前や実行中、OUTCAR が完遂していなければ false。
+  #
+  # MEMO
+  # PI12345 ファイルは実行中のみ存在し、終了後 vasp (mpi？) に自動的に削除される。
+  def finished?
+    begin
+      return Outcar.load_file("#{@dir}/OUTCAR")[:normal_ended]
+    rescue Errno::ENOENT
+      return false
+    end
+  end
+
   private
 
   # vasp を投げる。
@@ -118,19 +131,6 @@ class VaspDir < Comana
     #end
 
     system command
-  end
-
-  # 正常に終了していれば true を返す。
-  # 実行する前や実行中、OUTCAR が完遂していなければ false。
-  #
-  # MEMO
-  # PI12345 ファイルは実行中のみ存在し、終了後 vasp (mpi？) に自動的に削除される。
-  def finished?
-    begin
-      return Outcar.load_file("#{@dir}/OUTCAR")[:normal_ended]
-    rescue Errno::ENOENT
-      return false
-    end
   end
 
 end

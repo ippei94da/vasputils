@@ -1,14 +1,32 @@
-#! /usr/local/bin/ruby
+#! /usr/bin/env ruby
+# coding: utf-8
+
 
 require "rubygems"
 gem "vasputils"
 require "vasputils/vaspdir.rb"
+require "vasputils/vaspgeomopt.rb"
 
-#vd = VaspDir.new(ARGV[0])
+require "optparse"
+
+## option analysis
+OPTIONS = {}
+op = OptionParser.new
+op.on("-g"    , "--geom-opt", "Geometry optimization"){OPTIONS[:g] = true}
+#op.on("-b val", "--bak=val", "descriptionB"){|v| OPTIONS[:bak] = v}
+op.parse!(ARGV)
+
+
 dir = ARGV[0] || "."
-vd = VaspDir.new(dir)
+
+if OPTIONS[:g]
+  calc_dir = VaspDirGeomOpt.new(dir)
+else
+  calc_dir = VaspDir.new(dir)
+end
+
 begin
-  vd.start
+  calc_dir.start
 rescue Comana::AlreadyStartedError
   puts "Already started. Exit."
   exit

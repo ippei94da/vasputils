@@ -1,0 +1,16 @@
+----------------------------------------- Iteration    1(   1)  ---------------------------------------
+----------------------------------------- Iteration    1(   2)  ---------------------------------------
+ General timing and accounting informations for this job:
+ ========================================================
+  
+                  Total CPU time used (sec):       61.952
+                            User time (sec):       61.788
+                          System time (sec):        0.164
+                         Elapsed time (sec):       62.091
+  
+                   Maximum memory used (kb):      103600.
+                   Average memory used (kb):           0.
+  
+                          Minor page faults:       108508
+                          Major page faults:            0
+                 Voluntary context switches:            1
