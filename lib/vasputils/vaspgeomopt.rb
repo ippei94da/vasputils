@@ -64,7 +64,6 @@ class VaspGeomOpt < Comana
   def finished?
     return false unless latest_dir.finished?
     return false unless latest_dir.outcar[:ionic_steps] == 1
-    #return true if (latest_dir.finished? && latest_dir.outcar[:ionic_steps] == 1)
     return true
   end
 
