@@ -41,6 +41,8 @@ class VaspGeomOpt < Comana
     $stdout.puts "Calculate #{latest_dir.dir}"
     $stdout.flush
 
+    #pp latest_dir
+
     latest_dir.start
     #dir = latest_dir
     #while (! finished?)

@@ -25,6 +25,8 @@ else
   calc_dir = VaspDir.new(dir)
 end
 
+#pp calc_dir
+
 begin
   calc_dir.start
 rescue Comana::AlreadyStartedError

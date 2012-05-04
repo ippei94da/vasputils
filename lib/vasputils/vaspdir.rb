@@ -119,6 +119,9 @@ class VaspDir < Comana
     command += setting["vasp"]
     command += "> stdout"
 
+    ここで .achineinfo がない場合の例外と
+    その中に自分のホストに対応する情報がない場合の例外。
+
     #if ENV["PBS_JOBID"]
     #  command += "/usr/local/calc/mpiexec/bin/mpiexec /usr/local/calc/bin/vasp5212-mpich2"
     #else
