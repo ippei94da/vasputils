@@ -8,7 +8,8 @@ require "yaml"
 
 require "rubygems"
 gem "comana"
-require "comana.rb"
+require "comana/computationmanager.rb"
+require "comana/machineinfo.rb"
 
 require "vasputils/incar.rb"
 require "vasputils/outcar.rb"
@@ -113,14 +114,17 @@ class VaspDir < Comana
     #end
     #num_cores = 4
 
-    settings = YAML.load_file("#{ENV["HOME"]}/.machineinfo")
-    setting  = settings[ENV["HOST"]]
+    #settings = YAML.load_file("#{ENV["HOME"]}/.machineinfo")
+    #setting  = settings[ENV["HOST"]]
+    begin
+      hi = MachineInfo.load_file("#{ENV["HOME"]}/.machineinfo").get_host(ENV["HOST"])
+      vasp = hi["vasp"]
+    rescue
+      vasp = "vasp"
+    end
     command = "cd #{@dir};"
-    command += setting["vasp"]
+    command += vasp
     command += "> stdout"
-
-    ここで .achineinfo がない場合の例外と
-    その中に自分のホストに対応する情報がない場合の例外。
 
     #if ENV["PBS_JOBID"]
     #  command += "/usr/local/calc/mpiexec/bin/mpiexec /usr/local/calc/bin/vasp5212-mpich2"

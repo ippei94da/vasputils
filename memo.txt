@@ -1,0 +1,7 @@
+0.0.4 release
+  Using Comana library.
+  Add runvasp.
+  Modify VaspDir.
+  Add VaspGeomOpt.
+
+0.0.3 release
