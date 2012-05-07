@@ -28,7 +28,7 @@ require "vasputils/kpoints.rb"
 # try00 形式の postfix がついていることを前提とする。
 # 00 の部分には CONTCAR を POSCAR にする手続きで連続して行う計算の番号を示す。
 #
-class VaspDir < Comana
+class VaspDir < ComputationManager
   class InitializeError < Exception; end
   class NoVaspBinaryError < Exception; end
 
@@ -120,7 +120,7 @@ class VaspDir < Comana
     #setting  = settings[ENV["HOST"]]
     begin
       info =
-        MachineInfo.load_file("#{ENV["HOME"]}/.machineinfo").get_host(ENV["HOST"])
+        MachineInfo.load_file("#{ENV["HOME"]}/.machineinfo").get_info(ENV["HOST"])
       vasp = info["vasp"]
     rescue
       #vasp = "vasp"
@@ -151,7 +151,7 @@ class VaspDir < Comana
 
 end
 
-#class VaspGeometryOptimization < Comana
+#class VaspGeometryOptimization < ComputationManager
 #  # 次の計算ディレクトリを作成し、
 #  # その VaspDir クラスで self を置き換える。
 #  # 計算が正常終了していなければ、例外 VaspDirNotEndedError を生じる。

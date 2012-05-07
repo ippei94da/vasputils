@@ -6,14 +6,15 @@ require "fileutils"
 
 require "rubygems"
 gem "comana"
-require "comana"
+require "comana/computationmanager.rb"
 
-require "vasputils/vaspdir"
+#gem "vasputils"
+require "vasputils/vaspdir.rb"
 
 #
 #
 #
-class VaspGeomOpt < Comana
+class VaspGeomOpt < ComputationManager
   class NoVaspDirError < Exception; end
   class LatestDirStartedError < Exception; end
   class NoIntegerEndedNameError < Exception; end

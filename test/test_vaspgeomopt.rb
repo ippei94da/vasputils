@@ -6,7 +6,7 @@ require "test/unit"
 require "vasputils/vaspgeomopt.rb"
 
 
-class VaspGeomOpt < Comana
+class VaspGeomOpt < ComputationManager
   public :latest_dir, :prepare_next
 end
 

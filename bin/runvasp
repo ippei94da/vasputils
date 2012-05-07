@@ -29,7 +29,7 @@ end
 
 begin
   calc_dir.start
-rescue Comana::AlreadyStartedError
+rescue ComputationManager::AlreadyStartedError
   puts "Already started. Exit."
   exit
 end

@@ -5,7 +5,7 @@ $TEST = true
 
 require "rubygems"
 gem "comana"
-require "comana.rb"
+require "comana/computationmanager.rb"
 
 require "test/unit"
 require "vasputils/vaspdir.rb"
@@ -14,7 +14,7 @@ require "vasputils/vaspdir.rb"
 # assert_in_delta( cor, data, $tolerance )
 # assert_raise( RuntimeError ){}
 
-class VaspDir < Comana
+class VaspDir < ComputationManager
   attr_reader :mode
 
   def calculate
