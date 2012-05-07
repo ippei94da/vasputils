@@ -5,14 +5,14 @@
 
 Gem::Specification.new do |s|
   s.name = "vasputils"
-  s.version = "0.0.3"
+  s.version = "0.0.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["ippei94da"]
-  s.date = "2012-04-30"
+  s.date = "2012-05-07"
   s.description = "This gem provides parsers for some of input and output files for VASP.\n    This will provide support command for computations."
   s.email = "ippei94da@gmail.com"
-  s.executables = ["addVolumeToten.rb", "latticeconstants", "lsvaspdir", "lsvaspseries", "qsubvasp", "symposcar"]
+  s.executables = ["addVolumeToten.rb", "latticeconstants", "lsvasp", "lsvaspdir", "lsvaspseries", "qsubvasp", "runvasp", "symposcar"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.rdoc"
@@ -26,20 +26,22 @@ Gem::Specification.new do |s|
     "VERSION",
     "bin/addVolumeToten.rb",
     "bin/latticeconstants",
+    "bin/lsvasp",
     "bin/lsvaspdir",
     "bin/lsvaspseries",
     "bin/qsubvasp",
+    "bin/runvasp",
     "bin/symposcar",
     "lib/vasputils.rb",
     "lib/vasputils/calcinspector.rb",
-    "lib/vasputils/calcrepeater.rb",
-    "lib/vasputils/calcseries.rb",
     "lib/vasputils/incar.rb",
     "lib/vasputils/kpoints.rb",
     "lib/vasputils/outcar.rb",
     "lib/vasputils/poscar.rb",
     "lib/vasputils/potcar.rb",
     "lib/vasputils/vaspdir.rb",
+    "lib/vasputils/vaspgeomopt.rb",
+    "memo.txt",
     "test/calcseries/dup_finished/try00/CONTCAR",
     "test/calcseries/dup_finished/try00/INCAR",
     "test/calcseries/dup_finished/try00/KPOINTS",
@@ -93,22 +95,25 @@ Gem::Specification.new do |s|
     "test/potcar/POTCAR",
     "test/potcar/POTCAR.allElement",
     "test/potcar/POTCAR.dummy",
+    "test/repeatVasp/Iter2-Nsw2.00/INCAR",
+    "test/repeatVasp/Iter2-Nsw2.00/KPOINTS",
+    "test/repeatVasp/Iter2-Nsw2.00/POSCAR",
+    "test/repeatVasp/Iter2-Nsw2.00/POTCAR",
+    "test/repeatVasp/test.sh",
     "test/test_calcinspector.rb",
-    "test/test_calcrepeater.rb",
-    "test/test_calcseries.rb",
     "test/test_incar.rb",
     "test/test_kpoints.rb",
     "test/test_outcar.rb",
     "test/test_poscar.rb",
     "test/test_potcar.rb",
     "test/test_vaspdir.rb",
+    "test/test_vaspgeomopt.rb",
     "test/vaspdir/finished/CONTCAR",
     "test/vaspdir/finished/INCAR",
     "test/vaspdir/finished/KPOINTS",
     "test/vaspdir/finished/OUTCAR",
     "test/vaspdir/finished/POSCAR",
     "test/vaspdir/finished/POTCAR",
-    "test/vaspdir/finished/lock",
     "test/vaspdir/lack-INCAR/KPOINTS",
     "test/vaspdir/lack-INCAR/POSCAR",
     "test/vaspdir/lack-INCAR/POTCAR",
@@ -125,7 +130,6 @@ Gem::Specification.new do |s|
     "test/vaspdir/locked/KPOINTS",
     "test/vaspdir/locked/POSCAR",
     "test/vaspdir/locked/POTCAR",
-    "test/vaspdir/locked/lock",
     "test/vaspdir/not-yet/INCAR",
     "test/vaspdir/not-yet/KPOINTS",
     "test/vaspdir/not-yet/POSCAR",
@@ -136,7 +140,61 @@ Gem::Specification.new do |s|
     "test/vaspdir/started/OUTCAR",
     "test/vaspdir/started/POSCAR",
     "test/vaspdir/started/POTCAR",
-    "test/vaspdir/started/lock",
+    "test/vaspgeomopt/ended-Iter1/try00/CONTCAR",
+    "test/vaspgeomopt/ended-Iter1/try00/INCAR",
+    "test/vaspgeomopt/ended-Iter1/try00/KPOINTS",
+    "test/vaspgeomopt/ended-Iter1/try00/OUTCAR",
+    "test/vaspgeomopt/ended-Iter1/try00/POSCAR",
+    "test/vaspgeomopt/ended-Iter1/try00/POTCAR",
+    "test/vaspgeomopt/ended-Iter1/try01/INCAR",
+    "test/vaspgeomopt/ended-Iter1/try01/KPOINTS",
+    "test/vaspgeomopt/ended-Iter1/try01/OUTCAR",
+    "test/vaspgeomopt/ended-Iter1/try01/POSCAR",
+    "test/vaspgeomopt/ended-Iter1/try01/POTCAR",
+    "test/vaspgeomopt/ended-Iter2/try00/CONTCAR",
+    "test/vaspgeomopt/ended-Iter2/try00/INCAR",
+    "test/vaspgeomopt/ended-Iter2/try00/KPOINTS",
+    "test/vaspgeomopt/ended-Iter2/try00/OUTCAR",
+    "test/vaspgeomopt/ended-Iter2/try00/POSCAR",
+    "test/vaspgeomopt/ended-Iter2/try00/POTCAR",
+    "test/vaspgeomopt/ended-Iter2/try01/INCAR",
+    "test/vaspgeomopt/ended-Iter2/try01/KPOINTS",
+    "test/vaspgeomopt/ended-Iter2/try01/OUTCAR",
+    "test/vaspgeomopt/ended-Iter2/try01/POSCAR",
+    "test/vaspgeomopt/ended-Iter2/try01/POTCAR",
+    "test/vaspgeomopt/not-yet/try00/INCAR",
+    "test/vaspgeomopt/not-yet/try00/KPOINTS",
+    "test/vaspgeomopt/not-yet/try00/POSCAR",
+    "test/vaspgeomopt/not-yet/try00/POTCAR",
+    "test/vaspgeomopt/prepare_next/try00/CHG",
+    "test/vaspgeomopt/prepare_next/try00/CHGCAR",
+    "test/vaspgeomopt/prepare_next/try00/CONTCAR",
+    "test/vaspgeomopt/prepare_next/try00/DOSCAR",
+    "test/vaspgeomopt/prepare_next/try00/EIGENVAL",
+    "test/vaspgeomopt/prepare_next/try00/INCAR",
+    "test/vaspgeomopt/prepare_next/try00/KPOINTS",
+    "test/vaspgeomopt/prepare_next/try00/OSZICAR",
+    "test/vaspgeomopt/prepare_next/try00/OUTCAR",
+    "test/vaspgeomopt/prepare_next/try00/PCDAT",
+    "test/vaspgeomopt/prepare_next/try00/POSCAR",
+    "test/vaspgeomopt/prepare_next/try00/POTCAR",
+    "test/vaspgeomopt/prepare_next/try00/WAVECAR",
+    "test/vaspgeomopt/prepare_next/try00/XDATCAR",
+    "test/vaspgeomopt/prepare_next/try00/vasprun.xml",
+    "test/vaspgeomopt/started/try00/INCAR",
+    "test/vaspgeomopt/started/try00/KPOINTS",
+    "test/vaspgeomopt/started/try00/POSCAR",
+    "test/vaspgeomopt/started/try00/POTCAR",
+    "test/vaspgeomopt/till01/try00/CONTCAR",
+    "test/vaspgeomopt/till01/try00/INCAR",
+    "test/vaspgeomopt/till01/try00/KPOINTS",
+    "test/vaspgeomopt/till01/try00/OUTCAR",
+    "test/vaspgeomopt/till01/try00/POSCAR",
+    "test/vaspgeomopt/till01/try00/POTCAR",
+    "test/vaspgeomopt/till01/try01/INCAR",
+    "test/vaspgeomopt/till01/try01/KPOINTS",
+    "test/vaspgeomopt/till01/try01/POSCAR",
+    "test/vaspgeomopt/till01/try01/POTCAR",
     "vasputils.gemspec"
   ]
   s.homepage = "http://github.com/ippei94da/vasputils"
@@ -157,7 +215,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<mageo>, [">= 0.0.0"])
       s.add_development_dependency(%q<malge>, [">= 0.0.1"])
       s.add_development_dependency(%q<maset>, [">= 0.0.0"])
-      s.add_development_dependency(%q<comana>, [">= 0.0.4"])
+      s.add_development_dependency(%q<comana>, [">= 0.0.5"])
       s.add_development_dependency(%q<builtinextension>, [">= 0.0.3"])
     else
       s.add_dependency(%q<rdoc>, ["~> 3.12"])
@@ -168,7 +226,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<mageo>, [">= 0.0.0"])
       s.add_dependency(%q<malge>, [">= 0.0.1"])
       s.add_dependency(%q<maset>, [">= 0.0.0"])
-      s.add_dependency(%q<comana>, [">= 0.0.4"])
+      s.add_dependency(%q<comana>, [">= 0.0.5"])
       s.add_dependency(%q<builtinextension>, [">= 0.0.3"])
     end
   else
@@ -180,7 +238,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<mageo>, [">= 0.0.0"])
     s.add_dependency(%q<malge>, [">= 0.0.1"])
     s.add_dependency(%q<maset>, [">= 0.0.0"])
-    s.add_dependency(%q<comana>, [">= 0.0.4"])
+    s.add_dependency(%q<comana>, [">= 0.0.5"])
     s.add_dependency(%q<builtinextension>, [">= 0.0.3"])
   end
 end
