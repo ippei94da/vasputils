@@ -30,6 +30,7 @@ require "vasputils/kpoints.rb"
 #
 class VaspDir < Comana
   class InitializeError < Exception; end
+  class NoVaspBinaryError < Exception; end
 
   #INCAR 解析とかして、モードを調べる。
   #- 格子定数の構造最適化モード(ISIF = 3)
@@ -37,6 +38,7 @@ class VaspDir < Comana
   ##- k 点探索モードは無理だろう。
   def initialize(dir)
     super(dir)
+    @lockdir    = "lock_vaspdir"
     %w(INCAR KPOINTS POSCAR POTCAR).each do |file|
       infile = "#{@dir}/#{file}"
       raise InitializeError, infile unless FileTest.exist? infile
@@ -117,10 +119,12 @@ class VaspDir < Comana
     #settings = YAML.load_file("#{ENV["HOME"]}/.machineinfo")
     #setting  = settings[ENV["HOST"]]
     begin
-      hi = MachineInfo.load_file("#{ENV["HOME"]}/.machineinfo").get_host(ENV["HOST"])
-      vasp = hi["vasp"]
+      info =
+        MachineInfo.load_file("#{ENV["HOME"]}/.machineinfo").get_host(ENV["HOST"])
+      vasp = info["vasp"]
     rescue
-      vasp = "vasp"
+      #vasp = "vasp"
+      raise NoVaspBinaryError, "No vasp path in #{ENV["HOME"]}/.machineinfo"
     end
     command = "cd #{@dir};"
     command += vasp

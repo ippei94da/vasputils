@@ -88,7 +88,7 @@ class TC_VaspDir < Test::Unit::TestCase
   end
 
   def test_calculate
-    lock_dir = "test/vaspdir/not-yet/comana_lock"
+    lock_dir = "test/vaspdir/not-yet/lock_vaspdir"
     Dir.rmdir(lock_dir) if Dir.exist?(lock_dir)
     #pp @vd00;exit
     #@vd00.calculate
@@ -102,7 +102,7 @@ class TC_VaspDir < Test::Unit::TestCase
     assert(FileTest.exist? "test/vaspdir/not-yet/POSCAR")
     assert(FileTest.exist? "test/vaspdir/not-yet/POTCAR")
 
-    lock_dir = "test/vaspdir/not-yet/comana_lock"
+    lock_dir = "test/vaspdir/not-yet/lock_vaspdir"
     Dir.rmdir(lock_dir) if Dir.exist?(lock_dir)
   end
 

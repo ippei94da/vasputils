@@ -45,7 +45,7 @@ File.open(SCRIPT_FILE, "w") do |io|
   io.puts "#PBS -N task"
   io.puts "#PBS -l nodes=4:ppn=1:Ga"
   io.puts "cd $PBS_O_WORKDIR"
-  io.puts "vaspgeomopt"
+  io.puts "runvasp"
   #io.puts "#/usr/local/bin/mpiexec /usr/local/bin/vasp5212mpi-ifc11-fast"
   #io.puts "#/home/ippei/local/mpi/mpiexec-0.84/mpiexec /usr/local/calc/bin/vasp5212-mpich2"
   #io.puts "#/usr/local/calc/mpiexec/bin/mpiexec /usr/local/calc/bin/vasp5212-mpich2"

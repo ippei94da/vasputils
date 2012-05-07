@@ -20,6 +20,7 @@ class VaspGeomOpt < Comana
 
   def initialize(dir)
     super(dir)
+    @lockdir    = "lock_vaspgeomopt"
     latest_dir # to check.
   end
 
