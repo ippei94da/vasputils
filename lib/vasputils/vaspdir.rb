@@ -31,6 +31,7 @@ require "vasputils/kpoints.rb"
 class VaspDir < ComputationManager
   class InitializeError < Exception; end
   class NoVaspBinaryError < Exception; end
+  class PrepareNextError < Exception; end
 
   #INCAR 解析とかして、モードを調べる。
   #- 格子定数の構造最適化モード(ISIF = 3)
@@ -115,6 +116,7 @@ class VaspDir < ComputationManager
 
   def prepare_next
     #do_nothing
+    raise PrepareNextError, "VaspDir doesn't need next."
   end
 
 end

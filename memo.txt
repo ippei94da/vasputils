@@ -1,5 +1,7 @@
 0.0.5
-  Modifiy error process in VaspDir.calculate 
+  Modifiy error process in VaspDir.calculate.
+  Add runvasp.
+  Add qsubvasp.
 
 0.0.4 release
   Using Comana library.
