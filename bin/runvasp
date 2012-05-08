@@ -5,7 +5,7 @@ require "rubygems"
 gem "comana"
 require "comana/computationmanager.rb"
 
-gem "vasputils"
+#gem "vasputils"
 require "vasputils/vaspdir.rb"
 require "vasputils/vaspgeomopt.rb"
 
@@ -15,9 +15,7 @@ require "optparse"
 OPTIONS = {}
 op = OptionParser.new
 op.on("-g"    , "--geom-opt", "Geometry optimization"){OPTIONS[:g] = true}
-#op.on("-b val", "--bak=val", "descriptionB"){|v| OPTIONS[:bak] = v}
 op.parse!(ARGV)
-
 
 dir = ARGV[0] || "."
 
