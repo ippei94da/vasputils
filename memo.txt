@@ -1,4 +1,10 @@
-0.0.5
+#
+0.0.6
+
+  #lib/vasputils/queuesubmitter.rb is added.
+  #bin/submitqueue is added.
+
+0.0.5 release
   Modifiy error process in VaspDir.calculate.
   Add runvasp.
   Add qsubvasp.

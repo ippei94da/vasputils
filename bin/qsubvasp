@@ -1,66 +1,43 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
-
-SCRIPT_FILE = "pbs.sh"
-PBS_LOG = "pbs.log"
-
-
 require "optparse"
 require "yaml"
 require "pp"
 
+require "rubygems"
+gem "comana"
+require "comana/queuesubmitter.rb"
+require "comana/machineinfo.rb"
+
+require "vasputils/vaspdir.rb"
+require "vasputils/vaspgeomopt.rb"
+
 ## option analysis
 OPTS = {}
 op = OptionParser.new
-#op.on("-e", "--economy"  , "Prior efficiency."){OPTS[:e] = true}
-op.on("-s", "--speed"    , "Prior speed.")     {OPTS[:s] = true}
-
-op.on("-g", "--geom-opt" , "Geometry optimization.")     {OPTS[:g] = true}
-#op.on("-n", "--nebm"     , "Nudged Elastic Band method."){OPTS[:n] = true}
-#op.on("-c", "--cond-find", "Condition Finding.")         {OPTS[:c] = true}
-
+#op.on("-e"        , "--economy", "Prior efficiency."         ){OPTS[:e] = true}
+op.on("-s"        , "--speed"  , "Prior speed to efficiency."){OPTS[:s] = true}
+op.on("-n nodes"  , "--nodes"  , "Node series."              ){|v| OPTS[:n] = v}
+op.on("-c command", "--command", "Command to calculate."     ){|v| OPTS[:c] = v}
+op.on("-d dir"    , "--dir"    , "Directory to calculate."   ){|v|
+  #OPTS[:d] = VaspDir.new(v)
+  OPTS[:d] = VaspGeomOpt.new(v)
+}
 op.parse!(ARGV)
 
-cluster = ARGV[0]
-#cluster = ARGV
-#qsub で複数のクラスターを候補に入れることができるか？e.g., Ga, Ge
-#それによって、ここがかきかわる。
+OPTS[:machineinfo] = MachineInfo.load_file
 
-#puts "Options -e and -s cannot be duplicated." if OPTS[:e] && OPTS[:s]
-#if [OPTS[:g], OPTS[:n], OPTS[:c]].select_all(true).size ==
-#  puts "Options -g, -n, and -c cannot be duplicated."
-#  exit
-#end
-
-yaml = YAML.load_file("#{ENV["HOME"]}/.machineinfo")
-pp yaml
-
-if File.exits?(SCRIPT_FILE)
-  puts "#{SCRIPT_FILE} already exist. Exit."
+qs = QueueSubmitter.new(OPTS)
+#pp qs; exit
+begin
+  qs.start
+  puts "Submitted. Exit"
+  exit
+rescue QueueSubmitter::AlreadyStartedError
+  puts "Already started. Exit"
+  exit
+rescue QueueSubmitter::PrepareNextError
+  puts "Must not happen."
   exit
 end
-
-File.open(SCRIPT_FILE, "w") do |io|
-  io.puts "#PBS -N task"
-  io.puts "#PBS -l nodes=4:ppn=1:Ga"
-  io.puts "cd $PBS_O_WORKDIR"
-  io.puts "runvasp"
-  #io.puts "#/usr/local/bin/mpiexec /usr/local/bin/vasp5212mpi-ifc11-fast"
-  #io.puts "#/home/ippei/local/mpi/mpiexec-0.84/mpiexec /usr/local/calc/bin/vasp5212-mpich2"
-  #io.puts "#/usr/local/calc/mpiexec/bin/mpiexec /usr/local/calc/bin/vasp5212-mpich2"
-  #io.puts "#~/tmp.rb #OK"
-
-  #io.puts condition
-  #io.puts rsync
-  #io.puts run
-  #io.puts rsync
-  #io.puts mv to trash？
-end
-
-# Record job_id in pbs. Overwrite if exists.
-job_id = `qsub #{SCRIPT_FILE}`
-File.open(PBS_LOG, "w") do |io|
-  io.puts job_id
-end
-

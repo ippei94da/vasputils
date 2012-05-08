@@ -57,7 +57,7 @@ class VaspGeomOpt < ComputationManager
     #  end
     #end
     #puts "Geometry optimization fihished. Exit."
-    sleep 1 # for interrupt
+    #sleep 1 # for interrupt
   end
 
   # latest_dir から返って来る最新の VaspDir が finished? で真を返し、

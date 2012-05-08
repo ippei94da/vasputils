@@ -14,6 +14,6 @@ group :development do
   gem "mageo", ">= 0.0.0"
   gem "malge", ">= 0.0.1"
   gem "maset", ">= 0.0.0"
-  gem "comana", ">= 0.0.5"
+  gem "comana", ">= 0.0.6"
   gem "builtinextension", ">= 0.0.3"
 end
