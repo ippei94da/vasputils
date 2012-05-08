@@ -1,8 +1,10 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
-
 require "rubygems"
+gem "comana"
+require "comana/computationmanager.rb"
+
 gem "vasputils"
 require "vasputils/vaspdir.rb"
 require "vasputils/vaspgeomopt.rb"
@@ -25,7 +27,7 @@ else
   calc_dir = VaspDir.new(dir)
 end
 
-#pp calc_dir
+#pp calc_dir.class.ancestors
 
 begin
   calc_dir.start

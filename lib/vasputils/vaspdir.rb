@@ -98,26 +98,6 @@ class VaspDir < ComputationManager
   # そのうち mpiexec from torque に対応するが、
   # まずは mpirun で動くように作る。
   def calculate
-    #File.open(lock_file, "w") do |lock_io|
-    #  lock_io.puts "HOST: #{ENV["HOST"]}"
-    #  lock_io.puts "START: #{Time.now.to_s}"
-    #  lock_io.flush
-
-    #  num_cores = 4 if /^Se\d\d/ =~ ENV["HOST"]
-    #  num_cores = 4 if /^Ge\d\d/ =~ ENV["HOST"]
-    #  num_cores = 4 if /^Ga\d\d/ =~ ENV["HOST"]
-    #  num_cores = 4 if /^At$/ =~ ENV["HOST"]
-    #  num_cores = 2 if /^yggdrasil$/ =~ ENV["HOST"]
-
-    #  # machines を生成
-    #  File.open("#{@dir}/machines", "w") do |io|
-    #    io.puts "localhost:#{num_cores}"
-    #  end
-    #end
-    #num_cores = 4
-
-    #settings = YAML.load_file("#{ENV["HOME"]}/.machineinfo")
-    #setting  = settings[ENV["HOST"]]
     begin
       info =
         MachineInfo.load_file("#{ENV["HOME"]}/.machineinfo").get_info(ENV["HOST"])
@@ -129,18 +109,6 @@ class VaspDir < ComputationManager
     command = "cd #{@dir};"
     command += vasp
     command += "> stdout"
-
-    #if ENV["PBS_JOBID"]
-    #  command += "/usr/local/calc/mpiexec/bin/mpiexec /usr/local/calc/bin/vasp5212-mpich2"
-    #else
-    #  /usr/local/calc/bin/vasp5212-mpich2"
-    ##  command = "cd #{@dir};" +
-    ##    "/usr/local/calc/mpich-1.2.7-ifc7/bin/mpirun " +
-    ##    "-np #{num_cores} " +
-    ##    "-machinefile machines " +
-    ##    "/usr/local/calc/vasp/vasp4631mpi" +
-    ##    "> stdout"
-    #end
 
     system command
   end

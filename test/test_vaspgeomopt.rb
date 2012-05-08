@@ -3,6 +3,7 @@
 
 require "fileutils"
 require "test/unit"
+
 require "vasputils/vaspgeomopt.rb"
 
 
