@@ -1,8 +1,8 @@
 #
-0.0.6
 
-  #lib/vasputils/queuesubmitter.rb is added.
-  #bin/submitqueue is added.
+0.0.6
+  bin/qsubvasp is added.
+  lib/vaspdir is modified to raise ExecuteError when vasp failed.
 
 0.0.5 release
   Modifiy error process in VaspDir.calculate.
@@ -10,9 +10,9 @@
   Add qsubvasp.
 
 0.0.4 release
-  Using Comana library.
-  Add runvasp.
-  Modify VaspDir.
-  Add VaspGeomOpt.
+  Modified to use Comana.
+  bin/runvasp is added.
+  VaspDir is modified.
+  VaspGeomOpt is added.
 
 0.0.3 release

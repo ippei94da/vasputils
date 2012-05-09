@@ -23,6 +23,7 @@ class VaspDir < ComputationManager
   class InitializeError < Exception; end
   class NoVaspBinaryError < Exception; end
   class PrepareNextError < Exception; end
+  class ExecuteError < Exception; end
 
   def initialize(dir)
     super(dir)
@@ -87,7 +88,8 @@ class VaspDir < ComputationManager
     command += vasp
     command += "> stdout"
 
-    system command
+    end_status = system command
+    raise ExecuteError, "end_status is #{end_status.inspect}" unless end_status
   end
 
   def prepare_next
