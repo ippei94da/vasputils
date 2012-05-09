@@ -19,23 +19,24 @@ op = OptionParser.new
 #op.on("-e"        , "--economy", "Prior efficiency."         ){OPTS[:e] = true}
 op.on("-s"        , "--speed"  , "Prior speed to efficiency."){OPTS[:s] = true}
 op.on("-n nodes"  , "--nodes"  , "Node series."              ){|v| OPTS[:n] = v}
-op.on("-c command", "--command", "Command to calculate."     ){|v| OPTS[:c] = v}
+#op.on("-c command", "--command", "Command to calculate."     ){|v| OPTS[:c] = v}
 op.on("-d dir"    , "--dir"    , "Directory to calculate."   ){|v|
   #OPTS[:d] = VaspDir.new(v)
-  OPTS[:d] = VaspGeomOpt.new(v)
+  OPTS[:d] = VaspGeomOpt.new(File.expand_path(v))
 }
 op.parse!(ARGV)
 
 OPTS[:machineinfo] = MachineInfo.load_file
+OPTS[:c] = "runvasp -g"
 
 qs = QueueSubmitter.new(OPTS)
 #pp qs; exit
 begin
   qs.start
-  puts "Submitted. Exit"
+  puts "Submitted. Exit."
   exit
 rescue QueueSubmitter::AlreadyStartedError
-  puts "Already started. Exit"
+  puts "Already started. Exit."
   exit
 rescue QueueSubmitter::PrepareNextError
   puts "Must not happen."

@@ -108,7 +108,7 @@ class VaspGeomOpt < ComputationManager
         next
       end
     end
-    raise NoVaspDirError
+    raise NoVaspDirError, @dir
   end
 
 end
