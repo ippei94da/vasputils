@@ -1,5 +1,8 @@
 #
 
+0.0.7
+  Modified bin/qsubvasp
+
 0.0.6 release [2012-05-10]
   bin/qsubvasp is added.
   lib/vaspdir is modified to raise ExecuteError when vasp failed.

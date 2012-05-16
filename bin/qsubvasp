@@ -1,33 +1,25 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
-require "optparse"
+#require "optparse"
 require "yaml"
 require "pp"
 
 require "rubygems"
 gem "comana"
 require "comana/queuesubmitter.rb"
-require "comana/machineinfo.rb"
+#require "comana/machineinfo.rb"
 
 require "vasputils/vaspdir.rb"
 require "vasputils/vaspgeomopt.rb"
 
-## option analysis
-OPTS = {}
-op = OptionParser.new
-#op.on("-e"        , "--economy", "Prior efficiency."         ){OPTS[:e] = true}
-op.on("-s"        , "--speed"  , "Prior speed to efficiency."){OPTS[:s] = true}
-op.on("-n nodes"  , "--nodes"  , "Node series."              ){|v| OPTS[:n] = v}
-#op.on("-c command", "--command", "Command to calculate."     ){|v| OPTS[:c] = v}
-op.on("-d dir"    , "--dir"    , "Directory to calculate."   ){|v|
-  #OPTS[:d] = VaspDir.new(v)
-  OPTS[:d] = VaspGeomOpt.new(File.expand_path(v))
-}
-op.parse!(ARGV)
 
-OPTS[:machineinfo] = MachineInfo.load_file
-OPTS[:c] = "runvasp -g"
+OPTS = QueueSubmitter.parse_options(
+  ARGV, MachineInfo.load_file("#{ENV["HOME"]}/.machineinfo")
+)
+OPTS[:directory] = VaspGeomOpt.new(File.expand_path(ARGV[0]))
+OPTS[:command] = "runvasp -g"
+#pp OPTS; exit
 
 qs = QueueSubmitter.new(OPTS)
 #pp qs; exit
