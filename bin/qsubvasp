@@ -1,5 +1,18 @@
 #! /usr/bin/env ruby
 # coding: utf-8
+#
+# USAGE:
+# qsubvasp [-n num] -c CLUSTER_NAME calc_dir
+#
+#   [-n INDICATOR]
+#     Integer can be uused as INDICATOR.
+#     If INDICATOR cannot be evaluated as positive integer,
+#     try to find tue hostname of localhost and
+#     key of
+#     the INDICATOR in ~/.machineinfo
+#     Default value is 1.
+#
+#   calc_dir must be a vasp geometry optimization directory.
 
 #require "optparse"
 require "yaml"
