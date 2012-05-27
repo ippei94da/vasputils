@@ -35,7 +35,8 @@ OPTS[:command] = "runvasp -g"
 #pp OPTS; exit
 
 qs = QueueSubmitter.new(OPTS)
-#pp qs; exit
+pp qs; exit
+
 begin
   qs.start
   puts "Submitted. Exit."
