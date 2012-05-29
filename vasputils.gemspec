@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "vasputils"
-  s.version = "0.0.7"
+  s.version = "0.0.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["ippei94da"]
-  s.date = "2012-05-18"
+  s.date = "2012-05-29"
   s.description = "This gem provides parsers for some of input and output files for VASP.\n    This will provide support command for computations."
   s.email = "ippei94da@gmail.com"
   s.executables = ["addVolumeToten.rb", "latticeconstants", "lsvasp", "lsvaspdir", "lsvaspseries", "qsubvasp", "runvasp", "symposcar"]
@@ -215,7 +215,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<mageo>, [">= 0.0.0"])
       s.add_development_dependency(%q<malge>, [">= 0.0.1"])
       s.add_development_dependency(%q<maset>, [">= 0.0.0"])
-      s.add_development_dependency(%q<comana>, [">= 0.0.8"])
+      s.add_development_dependency(%q<comana>, [">= 0.0.9"])
       s.add_development_dependency(%q<builtinextension>, [">= 0.0.3"])
     else
       s.add_dependency(%q<rdoc>, [">= 3.12"])
@@ -226,7 +226,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<mageo>, [">= 0.0.0"])
       s.add_dependency(%q<malge>, [">= 0.0.1"])
       s.add_dependency(%q<maset>, [">= 0.0.0"])
-      s.add_dependency(%q<comana>, [">= 0.0.8"])
+      s.add_dependency(%q<comana>, [">= 0.0.9"])
       s.add_dependency(%q<builtinextension>, [">= 0.0.3"])
     end
   else
@@ -238,7 +238,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<mageo>, [">= 0.0.0"])
     s.add_dependency(%q<malge>, [">= 0.0.1"])
     s.add_dependency(%q<maset>, [">= 0.0.0"])
-    s.add_dependency(%q<comana>, [">= 0.0.8"])
+    s.add_dependency(%q<comana>, [">= 0.0.9"])
     s.add_dependency(%q<builtinextension>, [">= 0.0.3"])
   end
 end
