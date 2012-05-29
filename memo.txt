@@ -1,6 +1,7 @@
 #
 
 0.0.8
+  Modified bin/qsubvasp, add -g option.
 
 0.0.7 release
   Modified bin/qsubvasp
