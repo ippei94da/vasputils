@@ -3,6 +3,8 @@
 0.0.9
   Add VaspDir.poscar
 
+  adding vaspconditionfinder
+
 0.0.8 release
   Modified bin/qsubvasp, add -g option.
 
