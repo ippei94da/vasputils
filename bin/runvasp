@@ -12,17 +12,35 @@ require "vasputils/vaspgeomopt.rb"
 require "optparse"
 
 ## option analysis
-OPTIONS = {}
+opts = {}
 op = OptionParser.new
-op.on("-g"    , "--geom-opt", "Geometry optimization"){OPTIONS[:g] = true}
+op.on("-g"    , "--geom-opt",  "Geometry optimization"){opts[:geom] = true}
+op.on("-c"    , "--cond-find", "Condition finding"    ){opts[:cond] = true}
 op.parse!(ARGV)
 
 dir = ARGV[0] || "."
 
-if OPTIONS[:g]
-  calc_dir = VaspGeomOpt.new(dir)
+if opts[:geom] && opts[:cond]
+  puts "-g and -c must not be duplicated."
+  exit
+end
+
+if opts[:geom]
+  begin
+    calc_dir = VaspGeomOpt.new(dir)
+  rescue VaspGeomOpt::NoVaspDirError
+    puts "Not suitable for VaspGeomOpt: #{dir}"
+    exit
+  end
+elsif opts[:cond]
+  TODO
 else
-  calc_dir = VaspDir.new(dir)
+  begin
+    calc_dir = VaspDir.new(dir)
+  rescue VaspDir::InitializeError
+    puts "Not VaspDir: #{dir}"
+    exit
+  end
 end
 
 #pp calc_dir.class.ancestors

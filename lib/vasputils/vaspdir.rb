@@ -40,6 +40,12 @@ class VaspDir < ComputationManager
     Outcar.load_file("#{@dir}/OUTCAR")
   end
 
+  # 配下の POSCAR を Cell2 インスタンスにして返す。
+  # 存在しなければ例外 Errno::ENOENT を返す。
+  def poscar
+    Poscar.load_file("#{@dir}/POSCAR")
+  end
+
   # 配下の CONTCAR を Cell2 インスタンスにして返す。
   # 存在しなければ例外 Errno::ENOENT を返す。
   def contcar
