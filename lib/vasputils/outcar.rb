@@ -17,42 +17,56 @@ module Outcar
   #attr_reader :ionic_steps, :electronic_steps, :totens, :volumes, :elapsed_time
 
   def self.load_file(file)
+    raise Errno::ENOENT unless File.exist?(file)
+
     results = {}
     results[:name] = file
-    results[:irreducible_kpoints] = nil
-    results[:electronic_steps   ] = 0
-    results[:ionic_steps        ] = 0
-    results[:totens             ] = []
-    results[:volumes            ] = []
+    #results[:irreducible_kpoints] = nil
+    #results[:electronic_steps   ] = 0
+    #results[:ionic_steps        ] = 0
+    #results[:totens             ] = []
+    #results[:volumes            ] = []
     results[:elapsed_time       ] = nil
     results[:normal_ended       ] = false
 
-    lines = File.readlines(file)
-    lines.each do |line|
-      if /Found\s+(\d+)\s+irreducible k-points/i =~ line
-        results[:irreducible_kpoints] = $1.to_i
-      end
+    #lines = File.readlines(file)
+    #lines.each do |line|
+    #  #if /Found\s+(\d+)\s+irreducible k-points/i =~ line
+    #  #  results[:irreducible_kpoints] = $1.to_i
+    #  #end
 
-      if /^-* Iteration\s+(\d+)/ =~ line
-        results[:ionic_steps     ] = $1.to_i
-        results[:electronic_steps] += 1
-      end
+    #  #if /^-* Iteration\s+(\d+)/ =~ line
+    #  #  results[:ionic_steps     ] = $1.to_i
+    #  #  results[:electronic_steps] += 1
+    #  #end
 
-      #if /free\s+energy\s+TOTEN\s+=\s(.*)\s+eV/ =~ line
-      if /TOTEN\s+=\s(.*)\s+eV/ =~ line
-        results[:totens] << $1.to_f
-      end
+    #  ##if /free\s+energy\s+TOTEN\s+=\s(.*)\s+eV/ =~ line
+    #  #if /TOTEN\s+=\s(.*)\s+eV/ =~ line
+    #  #  results[:totens] << $1.to_f
+    #  #end
 
-      if /volume of cell :\s+(\d+\.\d+)$/ =~ line
-        results[:volumes] << $1.to_f
-      end
+    #  #if /volume of cell :\s+(\d+\.\d+)$/ =~ line
+    #  #  results[:volumes] << $1.to_f
+    #  #end
+    #end
 
-      if (/Elapsed time \(sec\):\s+(\d+\.\d+)/ =~ line)
-        results[:elapsed_time] = $1.to_f
-      end
+    lines = `grep Iteration #{file}`.split("\n")
+    results[:electronic_steps] = lines.size
+    /^-* Iteration\s+(\d+)/ =~ lines[-1]
+    results[:ionic_steps     ] = $1.to_i
+
+    results[:totens] = `grep TOTEN #{file}`.split("\n").map do |line|
+      /TOTEN\s+=\s(.*)\s+eV/ =~ line
+      $1.to_f
     end
 
-    results[:normal_ended] = true if (/Voluntary context switches:/ =~ lines[-1])
+    line = `tail -q -n 8 #{file}| head -n 1`
+    if (/Elapsed time \(sec\):\s+(\d+\.\d+)/ =~ line)
+      results[:elapsed_time] = $1.to_f
+    end
+
+    line = `tail -q -n 1 #{file}`
+    results[:normal_ended] = true if (/Voluntary context switches:/ =~ line)
 
     results
   end

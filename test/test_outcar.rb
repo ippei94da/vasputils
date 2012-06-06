@@ -133,30 +133,30 @@ class TC_Outcar < Test::Unit::TestCase
     #assert_in_delta( Iter1-Nsw0/OUTCAR:1463:  free  energy   TOTEN  =    -53232.707599
   end
 
-  def test_volume
-    assert_in_delta( 44.88, @o01   [:volumes][0], $tolerance )
-    assert_in_delta( 44.88, @o01   [:volumes][1], $tolerance )
-    assert_in_delta( 44.88, @o01int[:volumes][0], $tolerance )
-    assert_in_delta( 44.88, @o02   [:volumes][0], $tolerance )
-    assert_in_delta( 44.88, @o02   [:volumes][1], $tolerance )
-    assert_in_delta( 44.16, @o02   [:volumes][2], $tolerance )
-    assert_in_delta( 44.88, @o03   [:volumes][0], $tolerance )
-    assert_in_delta( 44.88, @o03   [:volumes][1], $tolerance )
-    assert_in_delta( 44.16, @o03   [:volumes][2], $tolerance )
-    assert_in_delta( 43.84, @o03   [:volumes][3], $tolerance )
+  #def test_volume
+  #  assert_in_delta( 44.88, @o01   [:volumes][0], $tolerance )
+  #  assert_in_delta( 44.88, @o01   [:volumes][1], $tolerance )
+  #  assert_in_delta( 44.88, @o01int[:volumes][0], $tolerance )
+  #  assert_in_delta( 44.88, @o02   [:volumes][0], $tolerance )
+  #  assert_in_delta( 44.88, @o02   [:volumes][1], $tolerance )
+  #  assert_in_delta( 44.16, @o02   [:volumes][2], $tolerance )
+  #  assert_in_delta( 44.88, @o03   [:volumes][0], $tolerance )
+  #  assert_in_delta( 44.88, @o03   [:volumes][1], $tolerance )
+  #  assert_in_delta( 44.16, @o03   [:volumes][2], $tolerance )
+  #  assert_in_delta( 43.84, @o03   [:volumes][3], $tolerance )
 
-    #assert_in_delta( Iter1-Nsw0/OUTCAR:343:  volume of cell :     1258.66
-    #assert_in_delta( Iter1-Nsw0/OUTCAR:1488:  volume of cell :     1258.66
+  #  #assert_in_delta( Iter1-Nsw0/OUTCAR:343:  volume of cell :     1258.66
+  #  #assert_in_delta( Iter1-Nsw0/OUTCAR:1488:  volume of cell :     1258.66
 
-  end
+  #end
 
   def test_elapsed_time
     assert_equal(nil, @o01int[:elapsed_time])
     assert_in_delta(164.134, @o04[:elapsed_time], $tolerance )
   end
 
-  def test_irreducible_kpoints
-    assert_equal(15, @o01[:irreducible_kpoints])
-  end
+  #def test_irreducible_kpoints
+  #  assert_equal(15, @o01[:irreducible_kpoints])
+  #end
 
 end
