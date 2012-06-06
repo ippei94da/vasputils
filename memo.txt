@@ -1,9 +1,9 @@
 #
 
-0.0.9
+0.0.9 release
   Add VaspDir.poscar
-
-  adding vaspconditionfinder
+  Add bin/checkvasp
+  Delete bin/lsvasp, bin/lsvaspdir, bin/lsvaspseries
 
 0.0.8 release
   Modified bin/qsubvasp, add -g option.

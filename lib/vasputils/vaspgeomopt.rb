@@ -70,6 +70,25 @@ class VaspGeomOpt < ComputationManager
     return true
   end
 
+  # Find latest VaspDir.
+  # Return a last VaspDir which has the name by name sort
+  # and which can be made as a VaspDir instance.
+  # Note: in a series of geometry optimization,
+  #   the directory names should have a rule of naming
+  #   which can define a method <=>.
+  #   Usually, it is simple sort of String.
+  def latest_dir
+    Dir.glob("#{@dir}/*").sort.reverse.find do |dir|
+      begin
+        vd = VaspDir.new(dir)
+        return vd
+      rescue VaspDir::InitializeError
+        next
+      end
+    end
+    raise NoVaspDirError, @dir
+  end
+
   private
 
   # Generate next directory of latest_dir.
@@ -90,25 +109,6 @@ class VaspGeomOpt < ComputationManager
     FileUtils.cp("#{latest_dir.dir}/CONTCAR" , "#{new_dir}/POSCAR"  ) # change name
     # without POSCAR, OUTCAR, vasprun.xml
     VaspDir.new(new_dir)
-  end
-
-  # Find latest VaspDir.
-  # Return a last VaspDir which has the name by name sort
-  # and which can be made as a VaspDir instance.
-  # Note: in a series of geometry optimization,
-  #   the directory names should have a rule of naming
-  #   which can define a method <=>.
-  #   Usually, it is simple sort of String.
-  def latest_dir
-    Dir.glob("#{@dir}/*").sort.reverse.find do |dir|
-      begin
-        vd = VaspDir.new(dir)
-        return vd
-      rescue VaspDir::InitializeError
-        next
-      end
-    end
-    raise NoVaspDirError, @dir
   end
 
 end
