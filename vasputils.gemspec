@@ -5,14 +5,14 @@
 
 Gem::Specification.new do |s|
   s.name = "vasputils"
-  s.version = "0.0.8"
+  s.version = "0.0.9"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["ippei94da"]
-  s.date = "2012-05-29"
+  s.date = "2012-06-06"
   s.description = "This gem provides parsers for some of input and output files for VASP.\n    This will provide support command for computations."
   s.email = "ippei94da@gmail.com"
-  s.executables = ["addVolumeToten.rb", "latticeconstants", "lsvasp", "lsvaspdir", "lsvaspseries", "qsubvasp", "runvasp", "symposcar"]
+  s.executables = ["addVolumeToten.rb", "checkvasp", "latticeconstants", "qsubvasp", "runvasp", "symposcar"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.rdoc"
@@ -25,8 +25,8 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "bin/addVolumeToten.rb",
-    "bin/latticeconstants",
     "bin/checkvasp",
+    "bin/latticeconstants",
     "bin/qsubvasp",
     "bin/runvasp",
     "bin/symposcar",
@@ -39,6 +39,7 @@ Gem::Specification.new do |s|
     "lib/vasputils/potcar.rb",
     "lib/vasputils/vaspdir.rb",
     "lib/vasputils/vaspgeomopt.rb",
+    "lib/vasputils/vaspkpointsfinder.rb",
     "memo.txt",
     "test/calcseries/dup_finished/try00/CONTCAR",
     "test/calcseries/dup_finished/try00/INCAR",
@@ -106,6 +107,7 @@ Gem::Specification.new do |s|
     "test/test_potcar.rb",
     "test/test_vaspdir.rb",
     "test/test_vaspgeomopt.rb",
+    "test/test_vaspkpointsfinder.rb",
     "test/vaspdir/finished/CONTCAR",
     "test/vaspdir/finished/INCAR",
     "test/vaspdir/finished/KPOINTS",
@@ -193,6 +195,10 @@ Gem::Specification.new do |s|
     "test/vaspgeomopt/till01/try01/KPOINTS",
     "test/vaspgeomopt/till01/try01/POSCAR",
     "test/vaspgeomopt/till01/try01/POTCAR",
+    "test/vaspkpointsfinder/01-01-01/try00/INCAR",
+    "test/vaspkpointsfinder/01-01-01/try00/KPOINTS",
+    "test/vaspkpointsfinder/01-01-01/try00/POSCAR",
+    "test/vaspkpointsfinder/01-01-01/try00/POTCAR",
     "vasputils.gemspec"
   ]
   s.homepage = "http://github.com/ippei94da/vasputils"
