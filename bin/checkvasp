@@ -1,0 +1,79 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+# Show state of vasp geometry optimization calculations.
+
+#require "vasputils/calcseries.rb"
+require "rubygems"
+gem "vasputils"
+
+require "vasputils/vaspgeomopt.rb"
+require "vasputils/vaspdir.rb"
+require "pp"
+#require "optparse"
+
+LONGEST_STATE = :terminated.size
+KLASSES = [VaspDir, VaspGeomOpt]
+
+dirs = ARGV
+dirs = Dir.glob("*").sort if ARGV.empty?
+
+def guess(dir)
+  KLASSES.each do |klass|
+    begin
+      vd = klass.new(dir)
+      return klass
+    rescue klass::InitializeError
+    end
+  end
+  raise "Cannot identify class for directory #{dir}."
+end
+
+dirs.each do |dir|
+  next unless File.directory? dir
+
+  begin
+    klass = guess(dir)
+    klass_name = klass.to_s
+  rescue 
+    klass_name = "UnknownDir"
+  end
+
+  printf "%-11s ", klass_name
+
+  case klass_name
+  when "VaspDir"
+    calc = klass.new(dir)
+    printf "%-10s ", calc.state
+    #pp calc.outcar
+    printf "%5s ", ""
+    begin
+      outcar = calc.outcar
+      printf "%8.3f %3d (%3d) ",
+        outcar[:totens][-1], outcar[:ionic_steps], outcar[:electronic_steps]
+    rescue
+      printf "%8s %3s (%3s) ", " "*8, " "*3, " "*3
+    end
+
+  when "VaspGeomOpt"
+    calc = klass.new(dir)
+    printf "%-10s ", calc.state
+
+    ld = calc.latest_dir
+    printf "%5s ", ld.dir.sub(/.*try/, "try")
+    begin
+      outcar = ld.outcar
+      printf "%8.3f %3d (%3d) ",
+        outcar[:totens][-1], outcar[:ionic_steps], outcar[:electronic_steps]
+    rescue
+      printf "%8s %3s (%3s) ", " "*8, " "*3, " "*3
+    end
+
+  when "UnknownDir"
+    printf "-" * 35
+    printf " "
+
+  end
+  puts dir
+
+end
