@@ -1,20 +1,9 @@
 #
 
 0.0.10
-  branch
-
   Delete Outcar.volume
   Delete Outcar.irreducible_kpoints
-
-  High speed 
-  Outcar
-    [~/study/LiNiMnO/c-Li-composition-combination/c-EDIFFG-0.02_ISPIN2]
-      ippei@Re % checkvasp */*/*  
-        The name of this job.             :checkvasp */*/*
-        CPU seconds spent in user mode.   :116.58s
-        CPU seconds spent in kernel mode. :0.58s
-        Elapsed time in seconds.          :117.72s
-        The  CPU percentage.              :99%
+  Accelerate Outcar, using UNIX commands: grep, tail and head.
 
 0.0.9 release
   Add VaspDir.poscar
