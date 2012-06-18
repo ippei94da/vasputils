@@ -11,15 +11,12 @@ gem "comana"
 require "comana/computationmanager.rb"
 require "comana/machineinfo.rb"
 
-require "vasputils/incar.rb"
-require "vasputils/outcar.rb"
-require "vasputils/poscar.rb"
-require "vasputils/kpoints.rb"
+require "vasputils.rb"
 
 # Class for VASP executable directory,
 # including input and output files.
 #
-class VaspDir < ComputationManager
+class VaspUtils::VaspDir < ComputationManager
   class InitializeError < Exception; end
   class NoVaspBinaryError < Exception; end
   class PrepareNextError < Exception; end
@@ -37,19 +34,19 @@ class VaspDir < ComputationManager
   # 配下の OUTCAR を Outcar インスタンスにして返す。
   # 存在しなければ例外 Errno::ENOENT を返す。
   def outcar
-    Outcar.load_file("#{@dir}/OUTCAR")
+    VaspUtils::Outcar.load_file("#{@dir}/OUTCAR")
   end
 
   # 配下の POSCAR を Cell2 インスタンスにして返す。
   # 存在しなければ例外 Errno::ENOENT を返す。
   def poscar
-    Poscar.load_file("#{@dir}/POSCAR")
+    VaspUtils::Poscar.load_file("#{@dir}/POSCAR")
   end
 
   # 配下の CONTCAR を Cell2 インスタンスにして返す。
   # 存在しなければ例外 Errno::ENOENT を返す。
   def contcar
-    Poscar.load_file("#{@dir}/CONTCAR")
+    VaspUtils::Poscar.load_file("#{@dir}/CONTCAR")
   end
 
   # 配下の KPOINTS を読み込んだ結果をハッシュにして返す。
@@ -57,12 +54,12 @@ class VaspDir < ComputationManager
   # 存在しなければ例外 Errno::ENOENT を返す筈だが、
   # vasp dir の判定を incar でやっているので置こる筈がない。
   def incar
-    Incar.load_file("#{@dir}/INCAR")
+    VaspUtils::Incar.load_file("#{@dir}/INCAR")
   end
 
   # 配下の KPOINTS を読み込んだ結果をハッシュにして返す。
   def kpoints
-    Kpoints.load_file("#{@dir}/KPOINTS")
+    VaspUtils::Kpoints.load_file("#{@dir}/KPOINTS")
   end
 
   # 正常に終了していれば true を返す。
@@ -72,7 +69,7 @@ class VaspDir < ComputationManager
   # PI12345 ファイルは実行中のみ存在し、終了後 vasp (mpi？) に自動的に削除される。
   def finished?
     begin
-      return Outcar.load_file("#{@dir}/OUTCAR")[:normal_ended]
+      return VaspUtils::Outcar.load_file("#{@dir}/OUTCAR")[:normal_ended]
     rescue Errno::ENOENT
       return false
     end

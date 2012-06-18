@@ -1,3 +1,5 @@
+require "vasputils.rb"
+
 # OUTCAR をパースする。
 # 精確には行わず、必要な情報だけをピックアップする感じ。
 #
@@ -9,8 +11,7 @@
 #
 # 基本的に終了した計算から情報を取り出すには vasprun.xml を読む。
 # OUTCAR は終了する前も含めてなんか簡単に見るために使う、という位置付けで。
-
-module Outcar
+module VaspUtils::Outcar
   #toten は全 electronic and ionic steps のを flat に並べただけのもの。
   #必要なら構造化するが、現状その予定はない。
   #attr_reader :name

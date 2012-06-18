@@ -8,13 +8,13 @@ gem "comana"
 require "comana/computationmanager.rb"
 
 require "test/unit"
-require "vasputils/vaspdir.rb"
+require "vasputils.rb"
 
 # assert_equal( cor, data)
 # assert_in_delta( cor, data, $tolerance )
 # assert_raise( RuntimeError ){}
 
-class VaspDir < ComputationManager
+class VaspUtils::VaspDir < ComputationManager
   attr_reader :mode
 
   def calculate
@@ -60,10 +60,10 @@ class TC_VaspDir < Test::Unit::TestCase
   ]
 
   def setup
-    @vd00 = VaspDir.new("test/vaspdir/not-yet")
-    @vd01 = VaspDir.new("test/vaspdir/locked")
-    @vd02 = VaspDir.new("test/vaspdir/started")
-    @vd03 = VaspDir.new("test/vaspdir/finished")
+    @vd00 = VaspUtils::VaspDir.new("test/vaspdir/not-yet")
+    @vd01 = VaspUtils::VaspDir.new("test/vaspdir/locked")
+    @vd02 = VaspUtils::VaspDir.new("test/vaspdir/started")
+    @vd03 = VaspUtils::VaspDir.new("test/vaspdir/finished")
 
     GENERATED_FILES_VD00.each do |file|
       FileUtils.rm file if File.exist? file
@@ -74,10 +74,10 @@ class TC_VaspDir < Test::Unit::TestCase
   end
 
   def test_initialize
-    assert_raise(VaspDir::InitializeError){VaspDir.new("test/vaspdir/lack-INCAR"  )}
-    assert_raise(VaspDir::InitializeError){VaspDir.new("test/vaspdir/lack-KPOINTS")}
-    assert_raise(VaspDir::InitializeError){VaspDir.new("test/vaspdir/lack-POSCAR" )}
-    assert_raise(VaspDir::InitializeError){VaspDir.new("test/vaspdir/lack-POTCAR" )}
+    assert_raise(VaspUtils::VaspDir::InitializeError){VaspUtils::VaspDir.new("test/vaspdir/lack-INCAR"  )}
+    assert_raise(VaspUtils::VaspDir::InitializeError){VaspUtils::VaspDir.new("test/vaspdir/lack-KPOINTS")}
+    assert_raise(VaspUtils::VaspDir::InitializeError){VaspUtils::VaspDir.new("test/vaspdir/lack-POSCAR" )}
+    assert_raise(VaspUtils::VaspDir::InitializeError){VaspUtils::VaspDir.new("test/vaspdir/lack-POTCAR" )}
   end
 
   def test_finished?

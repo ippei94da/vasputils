@@ -3,6 +3,7 @@
 
 require "test/unit"
 require "stringio"
+require "vasputils.rb"
 require "vasputils/kpoints.rb"
 
 class TC_Kpoints < Test::Unit::TestCase
@@ -17,7 +18,7 @@ class TC_Kpoints < Test::Unit::TestCase
     io.puts "  1  2  3"
     io.puts "  0.4  0.5  0.6"
     io.rewind
-    k00 = Kpoints.parse(io)
+    k00 = VaspUtils::Kpoints.parse(io)
     assert_equal("Automatic mesh", k00[:comment])
     assert_equal(:monkhorst, k00[:type])
     assert_equal([1, 2, 3], k00[:mesh])
@@ -33,7 +34,7 @@ class TC_Kpoints < Test::Unit::TestCase
     io.puts "  1  2  3"
     io.puts "  0.4  0.5  0.6"
     io.rewind
-    k01 = Kpoints.parse(io)
+    k01 = VaspUtils::Kpoints.parse(io)
     assert_equal("Automatic mesh", k01[:comment])
     assert_equal(:gamma_center, k01[:type])
     assert_equal([1, 2, 3], k01[:mesh])
@@ -43,7 +44,7 @@ class TC_Kpoints < Test::Unit::TestCase
   end
 
   def test_self_load_file
-    k00 = Kpoints.load_file("test/kpoints/m123-456")
+    k00 = VaspUtils::Kpoints.load_file("test/kpoints/m123-456")
     assert_equal("Automatic mesh", k00[:comment])
     assert_equal(:monkhorst, k00[:type])
     assert_equal([1, 2, 3], k00[:mesh])
@@ -51,7 +52,7 @@ class TC_Kpoints < Test::Unit::TestCase
     assert_in_delta(0.5, k00[:shift][1])
     assert_in_delta(0.6, k00[:shift][2])
 
-    k01 = Kpoints.load_file("test/kpoints/g123-456")
+    k01 = VaspUtils::Kpoints.load_file("test/kpoints/g123-456")
     assert_equal("Automatic mesh", k01[:comment])
     assert_equal(:gamma_center, k01[:type])
     assert_equal([1, 2, 3], k01[:mesh])
@@ -68,7 +69,7 @@ class TC_Kpoints < Test::Unit::TestCase
       :shift => [0.4, 0.5, 0.6],
     }
     io = StringIO.new
-    Kpoints.dump(hash, io)
+    VaspUtils::Kpoints.dump(hash, io)
     io.rewind
     results = io.readlines
     corrects = [
@@ -90,7 +91,7 @@ class TC_Kpoints < Test::Unit::TestCase
       :shift => [0.4, 0.5, 0.6],
     }
     io = StringIO.new
-    Kpoints.dump(hash, io)
+    VaspUtils::Kpoints.dump(hash, io)
     io.rewind
     results = io.readlines
     corrects = [

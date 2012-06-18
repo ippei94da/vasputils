@@ -1,21 +1,22 @@
 #! /usr/bin/ruby
 
 require 'test/unit'
+require "vasputils.rb"
 require 'vasputils/outcar.rb'
 
 class TC_Outcar < Test::Unit::TestCase
   $tolerance = 10**(-10)
 
   def setup
-    @o01    = Outcar.load_file( "test/outcar/01-13-FIN.OUTCAR" )
-    @o01int = Outcar.load_file( "test/outcar/01-03-INT.OUTCAR" )
-    @o02    = Outcar.load_file( "test/outcar/02-05-FIN.OUTCAR" )
-    @o03    = Outcar.load_file( "test/outcar/03-05-FIN.OUTCAR" )
-    @o04    = Outcar.load_file( "test/outcar/10-01-FIN.OUTCAR" )
+    @o01    = VaspUtils::Outcar.load_file( "test/outcar/01-13-FIN.OUTCAR" )
+    @o01int = VaspUtils::Outcar.load_file( "test/outcar/01-03-INT.OUTCAR" )
+    @o02    = VaspUtils::Outcar.load_file( "test/outcar/02-05-FIN.OUTCAR" )
+    @o03    = VaspUtils::Outcar.load_file( "test/outcar/03-05-FIN.OUTCAR" )
+    @o04    = VaspUtils::Outcar.load_file( "test/outcar/10-01-FIN.OUTCAR" )
   end
 
   def test_self_load_file
-    assert_raise(Errno::ENOENT){Outcar.load_file( "" )}
+    assert_raise(Errno::ENOENT){VaspUtils::Outcar.load_file( "" )}
   end
 
   #def test_nsw

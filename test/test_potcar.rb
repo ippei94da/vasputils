@@ -1,14 +1,15 @@
 #! /usr/bin/ruby
 
 require "test/unit"
+require "vasputils.rb"
 require "vasputils/potcar.rb"
 
 class TC_Potcar < Test::Unit::TestCase
 
   def setup
-    @p0 = Potcar.load_file("test/potcar/POTCAR"           )
-    @p1 = Potcar.load_file("test/potcar/POTCAR.dummy"     )
-    @p2 = Potcar.load_file("test/potcar/POTCAR.allElement")
+    @p0 = VaspUtils::Potcar.load_file("test/potcar/POTCAR"           )
+    @p1 = VaspUtils::Potcar.load_file("test/potcar/POTCAR.dummy"     )
+    @p2 = VaspUtils::Potcar.load_file("test/potcar/POTCAR.allElement")
   end
 
   def test_get_filename
@@ -40,8 +41,8 @@ class TC_Potcar < Test::Unit::TestCase
   end
 
   #def test_self_elements
-  # assert_equal([ "Li", "Ge", "O" ], Potcar.elements( @p0 ))
-  # assert_equal([ "Li", "Ge", "O" ], Potcar.elements( @p1 ))
+  # assert_equal([ "Li", "Ge", "O" ], VaspUtils::Potcar.elements( @p0 ))
+  # assert_equal([ "Li", "Ge", "O" ], VaspUtils::Potcar.elements( @p1 ))
   # correct = [
   #   "Ac", "Ac", "Ag", "Al", "Al", "Ar", "As", "Au", "B", "B", "B", "Ba",
   #   "Be", "Be", "Bi", "Bi", "Br", "C", "C", "C", "Ca", "Ca", "Cd", "Ce",
@@ -58,7 +59,7 @@ class TC_Potcar < Test::Unit::TestCase
   #   "Ta", "Ta", "Tb", "Tc", "Tc", "Te", "Th", "Th", "Ti", "Ti", "Ti",
   #   "Tl", "Tl", "Tm", "Tm", "U", "U", "V", "V", "V", "W", "W", "X", "Y",
   #   "Yb", "Yb", "Zn", "Zr", "Zr"]
-  # assert_equal( correct, Potcar.elements( @p2 ))
+  # assert_equal( correct, VaspUtils::Potcar.elements( @p2 ))
   #end
 
 end

@@ -4,6 +4,8 @@ require "rubygems"
 gem "crystalcell"
 require "crystalcell/cell.rb"
 
+require "vasputils.rb"
+
 # Class to manage POSCAR format of VASP.
 # 
 # parse と dump のどちらかだけでなく、両方を統括して扱うクラス。
@@ -16,7 +18,7 @@ require "crystalcell/cell.rb"
 # こうしておくことで POTCAR がない環境でも POSCAR を扱うことができる。
 #
 # VASP 5 系を使うようになれば事情が変わるだろう。
-class Poscar
+class VaspUtils::Poscar
 
   class ElementMismatchError < Exception; end
   class ParseError < Exception; end

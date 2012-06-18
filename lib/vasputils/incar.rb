@@ -1,6 +1,8 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
+require "vasputils.rb"
+
 # see http://cms.mpi.univie.ac.at/vasp/vasp/INCAR_File.html
 #
 # INCAR のフォーマット
@@ -17,7 +19,7 @@
 # Class to utilize INCAR file of VASP.
 # まず、自分で使う範囲だけ作る。
 # あとで余力があれば精密化する。
-module Incar
+module VaspUtils::Incar
   #
   #def initialize()
   #end

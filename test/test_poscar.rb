@@ -2,6 +2,7 @@
 
 require "test/unit"
 require "stringio"
+require "vasputils.rb"
 require "vasputils/poscar.rb"
 
 require "rubygems"
@@ -28,8 +29,8 @@ class TC_Poscar < Test::Unit::TestCase
     cell = Cell.new(axes, atoms)
     cell.comment = "test"
     io = StringIO.new
-    assert_raises(Poscar::ElementMismatchError){
-      Poscar.dump(cell, [0,1,2], io)}
+    assert_raises(VaspUtils::Poscar::ElementMismatchError){
+      VaspUtils::Poscar.dump(cell, [0,1,2], io)}
 
     # 生成
     axes = LatticeAxes.new( [
@@ -45,7 +46,7 @@ class TC_Poscar < Test::Unit::TestCase
     cell = Cell.new(axes, atoms)
     cell.comment = "test"
     io = StringIO.new
-    Poscar.dump(cell, [0,1], io)
+    VaspUtils::Poscar.dump(cell, [0,1], io)
     io.rewind
     corrects = [
       "test\n",
@@ -73,7 +74,7 @@ class TC_Poscar < Test::Unit::TestCase
     cell = Cell.new(axes, atoms)
     cell.comment = "test"
     io = StringIO.new
-    Poscar.dump(cell, [0,1], io)
+    VaspUtils::Poscar.dump(cell, [0,1], io)
     io.rewind
     corrects = [
       "test\n",
@@ -97,7 +98,7 @@ class TC_Poscar < Test::Unit::TestCase
 
   def test_parse
     io = StringIO.new
-    assert_raises(Poscar::ParseError){ Poscar.parse(io) }
+    assert_raises(VaspUtils::Poscar::ParseError){ VaspUtils::Poscar.parse(io) }
 
     io = StringIO.new
     io.puts "sample0"
@@ -111,7 +112,7 @@ class TC_Poscar < Test::Unit::TestCase
     io.puts "    0.5  0.0  0.0  #Ge-002"
     io.puts "    0.5  0.5  0.0  #O--003"
     io.rewind
-    cell = Poscar.parse(io)
+    cell = VaspUtils::Poscar.parse(io)
     assert_equal("sample0", cell.comment)
     assert_equal(
       LatticeAxes.new( [
@@ -142,7 +143,7 @@ class TC_Poscar < Test::Unit::TestCase
     io.puts "    0.5  0.5  0.0  T T T #O--003"
     io.puts "    0.5  0.5  0.5  T T T #O--004"
     io.rewind
-    cell = Poscar.parse(io)
+    cell = VaspUtils::Poscar.parse(io)
     assert_equal("sample1", cell.comment)
     assert_equal(
       LatticeAxes.new( [
@@ -167,7 +168,7 @@ class TC_Poscar < Test::Unit::TestCase
   end
 
   def test_load_file
-    cell = Poscar.load_file("test/poscar/POSCAR.00")
+    cell = VaspUtils::Poscar.load_file("test/poscar/POSCAR.00")
     assert_equal("sample0", cell.comment)
     assert_equal(
       LatticeAxes.new( [
@@ -184,7 +185,7 @@ class TC_Poscar < Test::Unit::TestCase
     assert_equal(
       Atom.new(2, [0.5, 0.5, 0.0], "#O--003"), cell.atoms[2])
 
-    #cell = Poscar.load_file("test/poscar/POSCAR.02")
+    #cell = VaspUtils::Poscar.load_file("test/poscar/POSCAR.02")
     #assert_equal("sample0", cell.comment)
     #assert_in_delta( 7.1028554188641708, cell.axes[0][0], $tolerance)
     #assert_in_delta(-0.0000000169534433, cell.axes[0][1], $tolerance)
@@ -203,7 +204,7 @@ class TC_Poscar < Test::Unit::TestCase
   end
 
   #def setup
-  # #@pp02 = Poscar.new("test/poscar/POSCAR.shirai")
+  # #@pp02 = VaspUtils::Poscar.new("test/poscar/POSCAR.shirai")
   #end
 
 end

@@ -4,26 +4,27 @@
 require "fileutils"
 require "test/unit"
 
-require "vasputils/vaspgeomopt.rb"
+require "vasputils.rb"
+#require "vasputils/vaspgeometryoptimizer.rb"
 
 
-class VaspGeomOpt < ComputationManager
+class VaspUtils::VaspGeometryOptimizer < ComputationManager
   public :latest_dir, :prepare_next
 end
 
-class TC_VaspGeomOpt < Test::Unit::TestCase
-  TEST_DIR = "test/vaspgeomopt"
+class TC_VaspGeometryOptimizer < Test::Unit::TestCase
+  TEST_DIR = "test/vaspgeometryoptimizer"
   def setup
-    @vgo00 = VaspGeomOpt.new( TEST_DIR + "/not-yet")
-    @vgo01 = VaspGeomOpt.new( TEST_DIR + "/started")
-    @vgo02 = VaspGeomOpt.new( TEST_DIR + "/till01")
-    @vgo03 = VaspGeomOpt.new( TEST_DIR + "/ended-Iter1")
-    @vgo04 = VaspGeomOpt.new( TEST_DIR + "/ended-Iter2")
+    @vgo00 = VaspUtils::VaspGeometryOptimizer.new( TEST_DIR + "/not-yet")
+    @vgo01 = VaspUtils::VaspGeometryOptimizer.new( TEST_DIR + "/started")
+    @vgo02 = VaspUtils::VaspGeometryOptimizer.new( TEST_DIR + "/till01")
+    @vgo03 = VaspUtils::VaspGeometryOptimizer.new( TEST_DIR + "/ended-Iter1")
+    @vgo04 = VaspUtils::VaspGeometryOptimizer.new( TEST_DIR + "/ended-Iter2")
   end
 
   def test_initialize
-    assert_raise(VaspGeomOpt::NoVaspDirError){
-      VaspGeomOpt.new( TEST_DIR + "/not-geomopt")
+    assert_raise(VaspUtils::VaspGeometryOptimizer::NoVaspDirError){
+      VaspUtils::VaspGeometryOptimizer.new( TEST_DIR + "/not-geomopt")
     }
   end
 
@@ -43,14 +44,14 @@ class TC_VaspGeomOpt < Test::Unit::TestCase
   end
 
   def test_next_name
-    assert_equal( "try01" , VaspGeomOpt.next_name("try00"))
-    assert_equal( "try01" , VaspGeomOpt.next_name("try0"))
-    assert_equal( "try10" , VaspGeomOpt.next_name("try09"))
-    assert_equal( "try11" , VaspGeomOpt.next_name("try10"))
-    assert_equal( "try100", VaspGeomOpt.next_name("try99"))
-    assert_equal( "01"    , VaspGeomOpt.next_name("00"))
-    assert_equal( "try01" , VaspGeomOpt.next_name("try"))
-    #assert_raise(VaspGeomOpt::NoIntegerEndedNameError){VaspGeomOpt.next_name("try")}
+    assert_equal( "try01" , VaspUtils::VaspGeometryOptimizer.next_name("try00"))
+    assert_equal( "try01" , VaspUtils::VaspGeometryOptimizer.next_name("try0"))
+    assert_equal( "try10" , VaspUtils::VaspGeometryOptimizer.next_name("try09"))
+    assert_equal( "try11" , VaspUtils::VaspGeometryOptimizer.next_name("try10"))
+    assert_equal( "try100", VaspUtils::VaspGeometryOptimizer.next_name("try99"))
+    assert_equal( "01"    , VaspUtils::VaspGeometryOptimizer.next_name("00"))
+    assert_equal( "try01" , VaspUtils::VaspGeometryOptimizer.next_name("try"))
+    #assert_raise(VaspUtils::VaspGeometryOptimizer::NoIntegerEndedNameError){VaspUtils::VaspGeometryOptimizer.next_name("try")}
   end
 
   def test_prepare_next
@@ -65,7 +66,7 @@ class TC_VaspGeomOpt < Test::Unit::TestCase
       Dir.rmdir new_number_dir
     end
 
-    vgo = VaspGeomOpt.new(dir)
+    vgo = VaspUtils::VaspGeometryOptimizer.new(dir)
     vgo.prepare_next
     assert(Dir.exist?(new_number_dir))
     assert(File.exist?(new_number_dir + "/CHG"     ))

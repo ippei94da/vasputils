@@ -1,8 +1,10 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
+require "vasputils.rb"
+
 # Module dearing with KPOINTS.
-module Kpoints
+module VaspUtils::Kpoints
   def self.parse(io)
     results = {}
     results[:comment] = io.readline.chomp

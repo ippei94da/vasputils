@@ -1,7 +1,9 @@
+require "vasputils.rb"
+
 #
 # Class for dealing with POTCAR.
 #
-module Potcar
+module VaspUtils::Potcar
   def self.load_file(file)
     results = {}
     results[:name] = file

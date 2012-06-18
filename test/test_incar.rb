@@ -2,6 +2,7 @@
 # coding: utf-8
 
 require "test/unit"
+require "vasputils.rb"
 require "vasputils/incar.rb"
 require "stringio"
 
@@ -74,12 +75,12 @@ class TC_Incar < Test::Unit::TestCase
     io.puts "     NGY = 36"
     io.puts "     NGZ = 42"
     io.rewind
-    pairs = Incar.parse(io)
+    pairs = VaspUtils::Incar.parse(io)
     assert_equal(SAMPLE_PAIRS, pairs)
   end
 
   def test_self_load_file
-    pairs = Incar.load_file "test/incar/INCAR.00"
+    pairs = VaspUtils::Incar.load_file "test/incar/INCAR.00"
     assert_equal(SAMPLE_PAIRS, pairs)
 
     corrects = {
@@ -109,11 +110,11 @@ class TC_Incar < Test::Unit::TestCase
       "NGY"     => "36",
       "NGZ"     => "42",
     }
-    pairs = Incar.load_file "test/incar/INCAR.01"
+    pairs = VaspUtils::Incar.load_file "test/incar/INCAR.01"
     assert_equal(corrects, pairs)
 
     # not exist
-    assert_raise(Errno::ENOENT){Incar.load_file("")}
+    assert_raise(Errno::ENOENT){VaspUtils::Incar.load_file("")}
   end
 
   #def test_dump

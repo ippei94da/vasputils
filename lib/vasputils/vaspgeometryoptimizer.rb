@@ -8,12 +8,13 @@ require "rubygems"
 gem "comana"
 require "comana/computationmanager.rb"
 
-require "vasputils/vaspdir.rb"
+require "vasputils.rb"
+#require "vasputils/vaspdir.rb"
 
 #
 #
 #
-class VaspGeomOpt < ComputationManager
+class VaspUtils::VaspGeometryOptimizer < ComputationManager
   class NoVaspDirError < Exception; end
   class LatestDirStartedError < Exception; end
   class NoIntegerEndedNameError < Exception; end
@@ -80,9 +81,9 @@ class VaspGeomOpt < ComputationManager
   def latest_dir
     Dir.glob("#{@dir}/*").sort.reverse.find do |dir|
       begin
-        vd = VaspDir.new(dir)
+        vd = VaspUtils::VaspDir.new(dir)
         return vd
-      rescue VaspDir::InitializeError
+      rescue VaspUtils::VaspDir::InitializeError
         next
       end
     end
@@ -108,7 +109,7 @@ class VaspGeomOpt < ComputationManager
     FileUtils.cp("#{latest_dir.dir}/XDATCAR" , "#{new_dir}/XDATCAR" )
     FileUtils.cp("#{latest_dir.dir}/CONTCAR" , "#{new_dir}/POSCAR"  ) # change name
     # without POSCAR, OUTCAR, vasprun.xml
-    VaspDir.new(new_dir)
+    VaspUtils::VaspDir.new(new_dir)
   end
 
 end
