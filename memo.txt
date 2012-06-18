@@ -5,6 +5,7 @@
   Delete Outcar.irreducible_kpoints
   Accelerate Outcar, using UNIX commands: grep, tail and head.
   Modify bin/symposcar.
+  Add bin/rmvaspout.
 
 0.0.9 release
   Add VaspDir.poscar
