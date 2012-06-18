@@ -4,9 +4,9 @@
 require "optparse"
 
 require "fileutils"
-require "rubygems"
-gem "vasputils"
-require "vasputils/vaspdir"
+#require "rubygems"
+#gem "vasputils"
+require "vasputils"
 
 ## option analysis
 OPTIONS = {}
@@ -17,8 +17,8 @@ op.parse!(ARGV)
 ARGV.each do |tgt|
   # Checking directory for normal VASP.
   begin
-    vd = VaspDir.new(tgt)
-  rescue VaspDir.InitializeError
+    vd = VaspUtils::VaspDir.new(tgt)
+  rescue VaspUtils::VaspDir.InitializeError
     puts "Not VaspDir: #{tgt}"
     next
   end

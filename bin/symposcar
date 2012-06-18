@@ -26,9 +26,10 @@ require 'optparse'
 require 'getspg.so'
 include Getspg
 
-require 'rubygems'
-gem 'vasputils'
-require 'vasputils/poscar'
+#require 'rubygems'
+#gem 'vasputils'
+#require 'vasputils/poscar'
+require 'vasputils.rb'
 
 
 symprec = 1e-5
@@ -59,7 +60,7 @@ if shift_string
   shift_string.split.each {|val| pos_shift << val.to_f }
 end
 
-cell = Poscar.load_file(ARGV.shift)
+cell = VaspUtils::Poscar.load_file(ARGV.shift)
 lattice = cell.axes.to_a.transpose
 
 names = (cell.atoms.collect {|atom| atom.name}).uniq

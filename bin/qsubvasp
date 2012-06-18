@@ -25,8 +25,8 @@ gem "comana"
 require "comana/queuesubmitter.rb"
 require "comana/machineinfo.rb"
 
-require "vasputils/vaspdir.rb"
-require "vasputils/vaspgeomopt.rb"
+gem "vasputils"
+require "vasputils.rb"
 
 opts = {}
 
@@ -61,15 +61,15 @@ def condition_check(opts)
     begin
       conds["target"] = VaspGeomOpt.new(File.expand_path(ARGV[0]))
       conds["command"] = "runvasp -g"
-    rescue VaspGeomOpt::NoVaspDirError
+    rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
       puts "Seem not to be a directory for VaspGeomOpt #{ARGV}"
       exit
     end
   else
     begin
-      conds["target"] = VaspDir.new(File.expand_path(ARGV[0]))
+      conds["target"] = VaspUtils::VaspDir.new(File.expand_path(ARGV[0]))
       conds["command"] = "runvasp"
-    rescue VaspDir::InitializeError
+    rescue VaspUtils::VaspDir::InitializeError
       puts "Seem not to be a directory for VaspDir #{ARGV}"
       exit
     end

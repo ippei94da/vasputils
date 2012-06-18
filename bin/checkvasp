@@ -6,14 +6,15 @@
 #require "vasputils/calcseries.rb"
 require "rubygems"
 gem "vasputils"
+require "vasputils.rb"
 
-require "vasputils/vaspgeomopt.rb"
-require "vasputils/vaspdir.rb"
+#require "vasputils/vaspgeomopt.rb"
+#require "vasputils/vaspdir.rb"
 require "pp"
 #require "optparse"
 
 LONGEST_STATE = :terminated.size
-KLASSES = [VaspDir, VaspGeomOpt]
+KLASSES = [VaspUtils::VaspDir, VaspUtils::VaspGeometryOptimizer]
 
 dirs = ARGV
 dirs = Dir.glob("*").sort if ARGV.empty?
@@ -42,7 +43,7 @@ dirs.each do |dir|
   printf "%-11s ", klass_name
 
   case klass_name
-  when "VaspDir"
+  when "VaspUtils::VaspDir"
     calc = klass.new(dir)
     printf "%-10s ", calc.state
     #pp calc.outcar
@@ -55,7 +56,7 @@ dirs.each do |dir|
       printf "%8s %3s (%3s) ", " "*8, " "*3, " "*3
     end
 
-  when "VaspGeomOpt"
+  when "VaspUtils::VaspGeometryOptimizer"
     calc = klass.new(dir)
     printf "%-10s ", calc.state
 

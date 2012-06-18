@@ -6,8 +6,7 @@ gem "comana"
 require "comana/computationmanager.rb"
 
 #gem "vasputils"
-require "vasputils/vaspdir.rb"
-require "vasputils/vaspgeomopt.rb"
+require "vasputils.rb"
 
 require "optparse"
 
@@ -27,8 +26,8 @@ end
 
 if opts[:geom]
   begin
-    calc_dir = VaspGeomOpt.new(dir)
-  rescue VaspGeomOpt::NoVaspDirError
+    calc_dir = VaspUtils::VaspGeomOpt.new(dir)
+  rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
     puts "Not suitable for VaspGeomOpt: #{dir}"
     exit
   end
@@ -36,8 +35,8 @@ elsif opts[:cond]
   TODO
 else
   begin
-    calc_dir = VaspDir.new(dir)
-  rescue VaspDir::InitializeError
+    calc_dir = VaspUtils::VaspDir.new(dir)
+  rescue VaspUtils::VaspDir::InitializeError
     puts "Not VaspDir: #{dir}"
     exit
   end
