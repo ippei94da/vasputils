@@ -1,0 +1,40 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+require "optparse"
+
+require "fileutils"
+require "rubygems"
+gem "vasputils"
+require "vasputils/vaspdir"
+
+## option analysis
+OPTIONS = {}
+op = OptionParser.new
+op.on("-f"    , "--force"    , "Force to remove finished calc."){ OPTIONS[:force] = true}
+op.parse!(ARGV)
+
+ARGV.each do |tgt|
+  # Checking directory for normal VASP.
+  begin
+    vd = VaspDir.new(tgt)
+  rescue VaspDir.InitializeError
+    puts "Not VaspDir: #{tgt}"
+    next
+  end
+
+  # Delete
+  if OPTIONS[:force] || (! vd.finished?)
+    Dir.glob(tgt + "/*").each do |file|
+      next if file == tgt + "/INCAR"
+      next if file == tgt + "/KPOINTS"
+      next if file == tgt + "/POSCAR"
+      next if file == tgt + "/POTCAR"
+      puts "Deleting #{file}"
+      FileUtils.remove_entry_secure file
+    end
+  else
+    puts "Leave finished calc: #{tgt}"
+    next
+  end
+end
