@@ -1,12 +1,12 @@
 #
 
-0.0.10
+0.0.10 release
   Delete Outcar.volume
   Delete Outcar.irreducible_kpoints
-  Accelerate Outcar, using UNIX commands: grep, tail and head.
-  Modify bin/symposcar.
-  Add bin/rmvaspout.
-  Change name space for classes.
+  Accelerate Outcar, using UNIX commands: grep, tail and head
+  Modify bin/symposcar
+  Add bin/rmvaspout
+  Change name space for classes
 
 0.0.9 release
   Add VaspDir.poscar
@@ -14,7 +14,7 @@
   Delete bin/lsvasp, bin/lsvaspdir, bin/lsvaspseries
 
 0.0.8 release
-  Modified bin/qsubvasp, add -g option.
+  Modified bin/qsubvasp, add -g option
 
 0.0.7 release
   Modified bin/qsubvasp
