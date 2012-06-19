@@ -1,5 +1,7 @@
 #
 
+0.0.11
+
 0.0.10 release
   Delete Outcar.volume
   Delete Outcar.irreducible_kpoints
