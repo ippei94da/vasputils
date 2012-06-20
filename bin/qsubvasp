@@ -13,7 +13,7 @@
 #     Default value is 1.
 #
 #   calc_dir is a vasp directory as usual,
-#   when with -g option, VaspGeomOpt directory.
+#   when with -g option, VaspGeometryOptimizer directory.
 
 #require "optparse"
 require "pp"
@@ -59,10 +59,10 @@ def condition_check(opts)
   end
   if opts["geomopt"]
     begin
-      conds["target"] = VaspGeomOpt.new(File.expand_path(ARGV[0]))
+      conds["target"] = VaspUtils::VaspGeometryOptimizer.new(File.expand_path(ARGV[0]))
       conds["command"] = "runvasp -g"
     rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
-      puts "Seem not to be a directory for VaspGeomOpt #{ARGV}"
+      puts "Seem not to be a directory for VaspGeometryOptimizer #{ARGV}"
       exit
     end
   else

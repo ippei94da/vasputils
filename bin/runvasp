@@ -26,9 +26,9 @@ end
 
 if opts[:geom]
   begin
-    calc_dir = VaspUtils::VaspGeomOpt.new(dir)
+    calc_dir = VaspUtils::VaspGeometryOptimizer.new(dir)
   rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
-    puts "Not suitable for VaspGeomOpt: #{dir}"
+    puts "Not suitable for VaspGeometryOptimizer: #{dir}"
     exit
   end
 elsif opts[:cond]
