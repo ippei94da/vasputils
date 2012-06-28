@@ -7,6 +7,7 @@
   Modify bin/symposcar.
   Add bin/rmvaspout.
   Change name space for classes.
+  Add VaspUtils::generate_kmeshes .
 
 0.0.9 release
   Add VaspDir.poscar
