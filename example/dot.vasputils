@@ -1,0 +1,5 @@
+--- # vim: syntax=yaml
+
+potcar_dir: /home/ippei/local/vasp/potcar
+element_potcar:
+  
