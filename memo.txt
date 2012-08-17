@@ -1,5 +1,7 @@
 #
 
+  example/dot.vasputils
+
 0.0.11
   Modify bin/qsubvasp
   Add VaspUtils::generate_kmeshes
