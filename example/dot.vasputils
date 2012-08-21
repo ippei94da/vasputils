@@ -1,5 +1,5 @@
 --- # vim: syntax=yaml
 
-potcar_dir: /home/ippei/local/vasp/potcar
+potcar_dir: /usr/local/calc/vasp/potcar/potcar-pbe
 element_potcar:
   
