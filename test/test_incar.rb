@@ -117,11 +117,51 @@ class TC_Incar < Test::Unit::TestCase
     assert_raise(Errno::ENOENT){VaspUtils::Incar.load_file("")}
   end
 
-  #def test_dump
-  # 
-  # 
-  # TODO
-  #end
+  def test_dump
+    pairs = {
+      "SYSTEM" => "dummy",
+      "PREC" => "High",
+      "ENCUT" => "400",
+      "EDIFF" => "1.0e-05",
+      "LREAL" => ".TRUE.",
+    }
 
+    assert_equal(
+      [
+        "SYSTEM = dummy",
+        "PREC = High",
+        "ENCUT = 400",
+        "EDIFF = 1.0e-05",
+        "LREAL = .TRUE.",
+      ].join("\n"),
+      VaspUtils::Incar.dump(pairs)
+    )
+
+    assert_equal(
+      [
+        "SYSTEM = dummy",
+        "PREC = High",
+        "ENCUT = 400",
+        "EDIFF = 1.0e-05",
+        "LREAL = .TRUE.",
+      ].join("\n"),
+      VaspUtils::Incar.dump(pairs, nil)
+    )
+
+    outfile = "test/incar/tmp.incar"
+    FileUtils.rm outfile if File.exist? outfile
+    File.open(outfile, "w") { |io| VaspUtils::Incar.dump(pairs, io) }
+    assert_equal(
+      [
+        "SYSTEM = dummy",
+        "PREC = High",
+        "ENCUT = 400",
+        "EDIFF = 1.0e-05",
+        "LREAL = .TRUE.",
+      ].join("\n"),
+      File.open(outfile).read
+    )
+    FileUtils.rm outfile if File.exist? outfile
+  end
 end
 

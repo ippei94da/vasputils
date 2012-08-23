@@ -1,0 +1,45 @@
+#
+
+== Master (for 0.0.11)
+  Modify bin/qsubvasp
+  Add VaspUtils::generate_kmeshes
+  Add example/dot.vasputils
+  Add Setting class
+  Add Potcar::Concatenater
+  Add Incar.dump
+
+== Version 0.0.10
+  Delete Outcar.volume
+  Delete Outcar.irreducible_kpoints
+  Accelerate Outcar, using UNIX commands: grep, tail, and head
+  Modify bin/symposcar
+  Add bin/rmvaspout
+  Change name space for classes
+
+== Version 0.0.9
+  Add VaspDir.poscar
+  Add bin/checkvasp
+  Delete bin/lsvasp, bin/lsvaspdir, bin/lsvaspseries
+
+== Version 0.0.8
+  Modified bin/qsubvasp, add -g option
+
+== Version 0.0.7
+  Modified bin/qsubvasp
+
+== Version 0.0.6
+  bin/qsubvasp is added
+  lib/vaspdir is modified to raise ExecuteError when vasp failed
+
+== Version 0.0.5
+  Modifiy error process in VaspDir.calculate
+  Add runvasp
+  Add qsubvasp
+
+== Version 0.0.4
+  Modified to use Comana
+  bin/runvasp is added
+  VaspDir is modified
+  VaspGeomOpt is added
+
+== Version 0.0.3

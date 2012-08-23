@@ -4,6 +4,8 @@
 require "vasputils.rb"
 
 # Module dearing with KPOINTS.
+# This can deal with only Automatic mesh style of KPOINTS,
+# i.e., this cannot deal with other various styles of KPOINTS.
 module VaspUtils::Kpoints
   def self.parse(io)
     results = {}

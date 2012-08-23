@@ -47,11 +47,19 @@ module VaspUtils::Incar
     return self.parse(io)
   end
 
-  ## 与えられたデータ対(ハッシュ)を io に書き出す。
-  ## io が nil の場合は INCAR 形式文字列を返す。
-  ## (改行文字を埋め込んでおり、配列化していない)
-  #def dump(pairs, io = nil)
-  #end
+  # 与えられたデータ対(ハッシュ)を io に書き出す。
+  # io が nil の場合は INCAR 形式文字列を返す。
+  # (改行文字を埋め込んでおり、配列化していない)
+  def self.dump(pairs, io = nil)
+    result = pairs.map { |key, val|
+      "#{key} = #{val}"
+    }.join("\n")
 
+    if io # is defined
+      io.print result
+    else
+      return result
+    end
+  end
 end
 
