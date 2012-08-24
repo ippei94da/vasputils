@@ -100,6 +100,7 @@ class TC_Poscar < Test::Unit::TestCase
     io = StringIO.new
     assert_raises(VaspUtils::Poscar::ParseError){ VaspUtils::Poscar.parse(io) }
 
+    # vasp 4 style
     io = StringIO.new
     io.puts "sample0"
     io.puts "1.0"
@@ -129,6 +130,7 @@ class TC_Poscar < Test::Unit::TestCase
     assert_equal(
       Atom.new(2, [0.5, 0.5, 0.0], "#O--003"), cell.atoms[2])
 
+    # vasp 4 style and selective dynamics
     io = StringIO.new
     io.puts "sample1"
     io.puts "2.0"
@@ -165,10 +167,41 @@ class TC_Poscar < Test::Unit::TestCase
     assert_equal(
       Atom.new(2, [0.5, 0.5, 0.5], "#O--004", [true, true, true]),
       cell.atoms[3])
+
+    # vasp 5 style
+    io = StringIO.new
+    io.puts "sample0"
+    io.puts "1.0"
+    io.puts "    1.0  0.0  0.0"
+    io.puts "    0.0  1.0  0.0"
+    io.puts "    0.0  0.0  1.0"
+    io.puts " Li Ge O"
+    io.puts " 1  1  1"
+    io.puts "Direct"
+    io.puts "    0.0  0.0  0.0  #Li-001"
+    io.puts "    0.5  0.0  0.0  #Ge-002"
+    io.puts "    0.5  0.5  0.0  #O--003"
+    io.rewind
+    cell = VaspUtils::Poscar.parse(io)
+    assert_equal("sample0", cell.comment)
+    assert_equal(
+      LatticeAxes.new( [
+        [1.0, 0.0, 0.0 ],
+        [0.0, 1.0, 0.0 ],
+        [0.0, 0.0, 1.0 ],
+      ]),
+      cell.axes
+    )
+    assert_equal(
+      Atom.new("Li", [0.0, 0.0, 0.0], "#Li-001"), cell.atoms[0])
+    assert_equal(
+      Atom.new("Ge", [0.5, 0.0, 0.0], "#Ge-002"), cell.atoms[1])
+    assert_equal(
+      Atom.new("O", [0.5, 0.5, 0.0], "#O--003"), cell.atoms[2])
   end
 
   def test_load_file
-    cell = VaspUtils::Poscar.load_file("test/poscar/POSCAR.00")
+    cell = VaspUtils::Poscar.load_file("test/poscar/POSCAR.4-0")
     assert_equal("sample0", cell.comment)
     assert_equal(
       LatticeAxes.new( [
@@ -185,26 +218,5 @@ class TC_Poscar < Test::Unit::TestCase
     assert_equal(
       Atom.new(2, [0.5, 0.5, 0.0], "#O--003"), cell.atoms[2])
 
-    #cell = VaspUtils::Poscar.load_file("test/poscar/POSCAR.02")
-    #assert_equal("sample0", cell.comment)
-    #assert_in_delta( 7.1028554188641708, cell.axes[0][0], $tolerance)
-    #assert_in_delta(-0.0000000169534433, cell.axes[0][1], $tolerance)
-    #assert_in_delta(-0.0000000169534428, cell.axes[0][2], $tolerance)
-    #assert_in_delta( 0.0000001136137521, cell.axes[1][0], $tolerance) 
-    #assert_in_delta( 7.1028554188641725, cell.axes[1][1], $tolerance) 
-    #assert_in_delta(-0.0000000169534433, cell.axes[1][2], $tolerance) 
-    #assert_in_delta( 0.0000001136137521, cell.axes[2][0], $tolerance) 
-    #assert_in_delta( 0.0000001136137521, cell.axes[2][1], $tolerance) 
-    #assert_in_delta( 7.1028554188641725, cell.axes[2][2], $tolerance) 
-    #assert_equal(0, cell.atoms[0].element)
-    #assert_equal(0.0395891220708791, cell.atoms[0].position[0]) 
-    #assert_equal(0.0395891220708791, cell.atoms[0].position[1])
-    #assert_equal(0.0395891220708791, cell.atoms[0].position[2])
-
   end
-
-  #def setup
-  # #@pp02 = VaspUtils::Poscar.new("test/poscar/POSCAR.shirai")
-  #end
-
 end

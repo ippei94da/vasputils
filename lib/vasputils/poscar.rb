@@ -43,37 +43,39 @@ class VaspUtils::Poscar
         axes << vec.collect! { |i| i.to_f * scale } #multiply scaling factor
       end
 
-      #line 6: numbers of elements. e.g.,[1, 1, 2]
-      nums_elements = io.readline.strip.split( /\s+/ ).map{|i| i.to_i}
+      # Element symbol (vasp 5). Nothing in vasp 4.
+      elements = io.readline.strip.split(/\s+/).map{|i| i.to_i}
 
-      #line 7-(8): 'Selective dynamics' or not (bool)
+      # numbers of elements. e.g.,[1, 1, 2]
+      nums_elements = io.readline.strip.split(/\s+/).map{|i| i.to_i}
+
+      # 'Selective dynamics' or not (bool)
       line = io.readline
       if line =~ /^\s*s/i
         selective_dynamics = true
         line = io.readline    # when this situation, reading one more line is nessesarry
       end
 
-      if (line =~ /^\s*d/i ) # allow only 'Direct' now
+      if (line =~ /^\s*d/i) # allow only 'Direct' now
         direct = true
       else
         raise "Not 'direct' indication."
       end
 
-      #line 9(8): position
-      #e.g., positions_of_elements
-      #e.g., movable_flags_of_elements
+      # atom positions
+      # e.g., positions_of_elements
+      # e.g., movable_flags_of_elements
 
       atoms = []
       nums_elements.size.times do |elem_index|
         nums_elements[elem_index].times do |index|
-        items = io.readline.strip.split( /\s+/ )
+        items = io.readline.strip.split(/\s+/)
         pos = items[0..2].map {|coord| coord.to_f}
-        #pp pos
 
         mov_flags = []
         if items.size >= 6 then
           items[3..5].each do |i|
-            ( i =~ /^t/i ) ? mov_flags << true : mov_flags << false
+            (i =~ /^t/i) ? mov_flags << true : mov_flags << false
           end
           atoms << Atom.new(elem_index, pos, mov_flags)
         else
@@ -85,7 +87,7 @@ class VaspUtils::Poscar
       raise ParseError, "end of file reached"
     end
 
-    cell = Cell.new(axes, atoms )
+    cell = Cell.new(axes, atoms)
     cell.comment = comment
     cell
   end
@@ -112,7 +114,7 @@ class VaspUtils::Poscar
     io.puts cell.comment
     io.puts "1.0" #scale
     3.times do |i|
-      io.printf( "  % 18.15f  % 18.15f  % 18.15f\n", cell.axes[i][0], cell.axes[i][1], cell.axes[i][2]
+      io.printf("  % 18.15f  % 18.15f  % 18.15f\n", cell.axes[i][0], cell.axes[i][1], cell.axes[i][2]
       )
     end
 
@@ -151,13 +153,13 @@ class VaspUtils::Poscar
       elem_list[ elem ].each do |atom|
         tmp =  sprintf(
           "  % 18.15f  % 18.15f  % 18.15f",
-          * atom.position )
+          * atom.position)
         if selective_dynamics
           if atom.movable_flags == nil
             tmp += " T T T"
           else
             atom.movable_flags.each do |mov|
-              ( mov == true ) ?  tmp += " T" : tmp += " F"
+              (mov == true) ?  tmp += " T" : tmp += " F"
             end
           end
         end

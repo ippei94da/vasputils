@@ -1,0 +1,20 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+require "optparse"
+gem "vasputils"
+require "vasputils.rb"
+#require "potcar/concatenater.rb"
+
+
+## option analysis
+#OPTIONS = {}
+#op = OptionParser.new
+#op.on("-a"    , "--aho"    , "descriptionA"){    OPTIONS[:aho] = true}
+#op.on("-b val", "--bak=val", "descriptionB"){|v| OPTIONS[:bak] = v}
+#op.parse!(ARGV)
+
+cell = VaspUtils::Poscar.load_file ARGV[0]
+elements = cell.elements.uniq
+
+puts VaspUtils::Potcar::Concatenater.dump(elements)
