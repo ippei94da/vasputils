@@ -23,9 +23,6 @@ incar_default:
   SIGMA:   "0.1"
   IALGO:   "38"
   LREAL:   "Auto"
-  NGX:     "36"
-  NGY:     "36"
-  NGZ:     "42"
 
 potcar_dir: /usr/local/calc/potcar/potpaw_PBE.52
 element_potcar:

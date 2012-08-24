@@ -3,8 +3,8 @@
 
 require "test/unit"
 require "vasputils.rb"
-require "vasputils/setting.rb"
-require "vasputils/potcar/concatenater.rb"
+#require "vasputils/setting.rb"
+#require "vasputils/potcar/concatenater.rb"
 
 class VaspUtils::Potcar::Concatenater
   public :dump
@@ -13,8 +13,8 @@ end
 class TC_Concatenater < Test::Unit::TestCase
   def setup
     settings = VaspUtils::Setting.new("test/potcar/test.vasputils")
-    potcar_path = settings.get "potcar_path"
-    elem_potcar = settings.get "element_potcar"
+    potcar_path = settings["potcar_path"]
+    elem_potcar = settings["element_potcar"]
 
     @c = VaspUtils::Potcar::Concatenater.new(potcar_path, elem_potcar)
   end

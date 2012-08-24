@@ -14,8 +14,10 @@ class TC_Setting < Test::Unit::TestCase
   end
 
   def test_get
-    assert_raise(VaspUtils::Setting::NoEntryError){@s.get("no_entory_key")}
-    assert_equal("/usr/local/calc/potcar/potpaw_PBE.52", @s.get("potcar_dir"))
+    #assert_raise(VaspUtils::Setting::NoEntryError){@s.get("no_entory_key")}
+    #assert_equal("/usr/local/calc/potcar/potpaw_PBE.52", @s.get("potcar_dir"))
+    assert_raise(VaspUtils::Setting::NoEntryError){@s["no_entory_key"]}
+    assert_equal("/usr/local/calc/potcar/potpaw_PBE.52", @s["potcar_dir"])
   end
 end
 

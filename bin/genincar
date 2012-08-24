@@ -1,0 +1,39 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+require "optparse"
+require "rubygems"
+gem "vasputils"
+require "vasputils.rb"
+
+
+# option analysis
+OPTIONS = {}
+op = OptionParser.new
+#op.on("-p POTCAR", "--potcar=POTCAR", "Element data from POTCAR. (vasp 5 sytle POTCAR only.)"){|v| OPTIONS[:potcar] = v}
+#op.on("-o", "--output-file", "Output to POTCAR file."){|v| OPTIONS[:potcar] = v}
+op.parse!(ARGV)
+
+#cell = VaspUtils::Potcar.load_file ARGV[0]
+#elements = cell.elements.uniq
+
+#elements = ARGV
+
+encut = ARGV[0].to_i
+if encut == 0
+  puts "ENCUT is indicated as an argument."
+  exit
+end
+
+setting = VaspUtils::Setting.new
+items = setting["incar_default"]
+#potcar = VaspUtils::Potcar.parse["ENMAX"] * 1.3
+#items["ENCUT"] = VaspUtils::Potcar.parse["ENMAX"] * 1.3
+items["ENCUT"] = encut
+
+VaspUtils::Incar.dump(items, STDOUT)
+#  setting['potcar_dir'],
+#  setting['element_potcar']
+#)
+#vpc.dump(elements, STDOUT)
+

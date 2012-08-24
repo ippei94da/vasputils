@@ -15,11 +15,20 @@ class VaspUtils::Setting
     @data = YAML.load_file(file)
   end
 
-  def get(key)
+  # Return value corresponding to a key.
+  # Raise VaspUtils::Setting::NoEntryError if the key is not exist.
+  def [](key)
     unless @data.include? key 
       raise NoEntryError, key
     end
     @data[key]
   end
+
+  #def get(key)
+  #  unless @data.include? key 
+  #    raise NoEntryError, key
+  #  end
+  #  @data[key]
+  #end
 end
 

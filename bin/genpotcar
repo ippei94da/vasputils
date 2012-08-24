@@ -2,10 +2,9 @@
 # coding: utf-8
 
 require "optparse"
+require "rubygems"
 gem "vasputils"
 require "vasputils.rb"
-#require "potcar/concatenater.rb"
-
 
 # option analysis
 OPTIONS = {}
@@ -19,4 +18,10 @@ op.parse!(ARGV)
 
 elements = ARGV
 
-puts VaspUtils::Potcar::Concatenater.dump(elements)
+setting = VaspUtils::Setting.new
+
+vpc = VaspUtils::Potcar::Concatenater.new(
+  setting['potcar_dir'],
+  setting['element_potcar']
+)
+vpc.dump(elements, STDOUT)

@@ -23,7 +23,7 @@ class VaspUtils::Potcar::Concatenater
   def dump(elements, io = nil)
     result = elements.map { |elem|
       raise NoPotcarError unless @elem_potcar.include? elem
-      filename = @potcar_path + "/" + @elem_potcar[elem]
+      filename = @potcar_path + "/" + @elem_potcar[elem] + "/POTCAR"
       File.read filename
     }.join("")
 

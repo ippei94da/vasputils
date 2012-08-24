@@ -125,7 +125,12 @@ class VaspUtils::Poscar
       )
     end
 
-    # collect information
+    # Element symbols for vasp 5.
+    if version >= 5
+      io.puts cell.atoms.map {|atom| atom.element}.uniq.join(" ")
+    end
+
+    # Atom numbers.
     elem_list = Hash.new
     elems.each do |elem|
       elem_list[ elem ] = cell.atoms.select{ |atom| atom.element == elem }
