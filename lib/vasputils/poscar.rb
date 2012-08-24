@@ -44,10 +44,16 @@ class VaspUtils::Poscar
       end
 
       # Element symbol (vasp 5). Nothing in vasp 4.
-      elements = io.readline.strip.split(/\s+/).map{|i| i.to_i}
-
-      # numbers of elements. e.g.,[1, 1, 2]
-      nums_elements = io.readline.strip.split(/\s+/).map{|i| i.to_i}
+      #elements = io.readline.strip.split(/\s+/).map{|i| i.to_i}
+      vals = io.readline.strip.split(/\s+/)
+      if vals[0].to_i == 0
+        elements = vals
+        nums_elements = io.readline.strip.split(/\s+/).map{|i| i.to_i}
+      else
+        elements = []
+        vals.size.times { |i| elements << i }
+        nums_elements = vals.map{|i| i.to_i}
+      end
 
       # 'Selective dynamics' or not (bool)
       line = io.readline
@@ -77,9 +83,9 @@ class VaspUtils::Poscar
           items[3..5].each do |i|
             (i =~ /^t/i) ? mov_flags << true : mov_flags << false
           end
-          atoms << Atom.new(elem_index, pos, mov_flags)
+          atoms << Atom.new(elements[elem_index], pos, mov_flags)
         else
-          atoms << Atom.new(elem_index, pos)
+          atoms << Atom.new(elements[elem_index], pos)
         end
         end
       end
@@ -105,7 +111,8 @@ class VaspUtils::Poscar
   #   elems が cell の持つ元素リストとマッチしなければ
   #   例外 Poscar::ElementMismatchError を投げる。
   # io は書き出すファイルハンドル。
-  def self.dump(cell, elems, io)
+  # 'version' indicates a poscar style for vasp 4 or 5.
+  def self.dump(cell, elems, io, version = 5)
     unless (Mapping::map?(cell.elements.uniq, elems){ |i, j| i == j })
       raise ElementMismatchError,
       "elems [#{elems.join(",")}] mismatches to cell.elements [#{cell.elements.join(",")}."

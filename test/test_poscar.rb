@@ -66,6 +66,66 @@ class TC_Poscar < Test::Unit::TestCase
     end
     assert_equal(corrects.size, lines.size)
 
+    # vasp 4
+    atoms = [
+      Atom.new(0, [0.1, 0.2, 0.3], "atom0", [false, true , true ]),
+      Atom.new(1, [0.2, 0.3, 0.4], "atom1", [false, false, true ]),
+      Atom.new(0, [0.3, 0.4, 0.5], "atom2", [false, false, false]),
+    ]
+    cell = Cell.new(axes, atoms)
+    cell.comment = "test"
+    io = StringIO.new
+    VaspUtils::Poscar.dump(cell, [0,1], io)
+    io.rewind
+    corrects = [
+      "test\n",
+      "1.0\n",
+      "   1.000000000000000   0.000000000000000   0.000000000000000\n",
+      "   0.000000000000000   1.000000000000000   0.000000000000000\n",
+      "   0.000000000000000   0.000000000000000   1.000000000000000\n",
+      "2 1\n",
+      "Selective dynamics\n",
+      "Direct\n",
+      "   0.100000000000000   0.200000000000000   0.300000000000000 F T T\n",
+      "   0.300000000000000   0.400000000000000   0.500000000000000 F F F\n",
+      "   0.200000000000000   0.300000000000000   0.400000000000000 F F T\n",
+    ]
+    lines = io.readlines
+    corrects.each_with_index do |cor, index|
+      assert_equal(cor, lines[index], "line: #{index}")
+    end
+    assert_equal(corrects.size, lines.size)
+
+    # vasp 5
+    atoms = [
+      Atom.new("Li", [0.1, 0.2, 0.3], "atom0", [false, true , true ]),
+      Atom.new("O" , [0.2, 0.3, 0.4], "atom1", [false, false, true ]),
+      Atom.new("Li", [0.3, 0.4, 0.5], "atom2", [false, false, false]),
+    ]
+    cell = Cell.new(axes, atoms)
+    cell.comment = "test"
+    io = StringIO.new
+    VaspUtils::Poscar.dump(cell, ["Li", "O"], io)
+    io.rewind
+    corrects = [
+      "test\n",
+      "1.0\n",
+      "   1.000000000000000   0.000000000000000   0.000000000000000\n",
+      "   0.000000000000000   1.000000000000000   0.000000000000000\n",
+      "   0.000000000000000   0.000000000000000   1.000000000000000\n",
+      "Li O",
+      "2 1\n",
+      "Selective dynamics\n",
+      "Direct\n",
+      "   0.100000000000000   0.200000000000000   0.300000000000000 F T T\n",
+      "   0.300000000000000   0.400000000000000   0.500000000000000 F F F\n",
+      "   0.200000000000000   0.300000000000000   0.400000000000000 F F T\n",
+    ]
+    lines = io.readlines
+    corrects.each_with_index do |cor, index|
+      assert_equal(cor, lines[index], "line: #{index}")
+    end
+    assert_equal(corrects.size, lines.size)
     atoms = [
       Atom.new(0, [0.1, 0.2, 0.3], "atom0", [false, true , true ]),
       Atom.new(1, [0.2, 0.3, 0.4], "atom1", [false, false, true ]),

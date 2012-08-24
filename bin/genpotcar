@@ -7,14 +7,16 @@ require "vasputils.rb"
 #require "potcar/concatenater.rb"
 
 
-## option analysis
-#OPTIONS = {}
-#op = OptionParser.new
-#op.on("-a"    , "--aho"    , "descriptionA"){    OPTIONS[:aho] = true}
-#op.on("-b val", "--bak=val", "descriptionB"){|v| OPTIONS[:bak] = v}
-#op.parse!(ARGV)
+# option analysis
+OPTIONS = {}
+op = OptionParser.new
+#op.on("-p POSCAR", "--poscar=POSCAR", "Element data from POSCAR. (vasp 5 sytle POSCAR only.)"){|v| OPTIONS[:poscar] = v}
+#op.on("-o", "--output-file", "Output to POTCAR file."){|v| OPTIONS[:poscar] = v}
+op.parse!(ARGV)
 
-cell = VaspUtils::Poscar.load_file ARGV[0]
-elements = cell.elements.uniq
+#cell = VaspUtils::Poscar.load_file ARGV[0]
+#elements = cell.elements.uniq
+
+elements = ARGV
 
 puts VaspUtils::Potcar::Concatenater.dump(elements)
