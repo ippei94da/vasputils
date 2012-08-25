@@ -1,0 +1,45 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+require "optparse"
+require "rubygems"
+gem "vasputils"
+require "vasputils.rb"
+
+
+## option analysis
+#OPTIONS = {}
+#op = OptionParser.new
+##op.on("-p POTCAR", "--potcar=POTCAR", "Element data from POTCAR. (vasp 5 sytle POTCAR only.)"){|v| OPTIONS[:potcar] = v}
+##op.on("-o", "--output-file", "Output to POTCAR file."){|v| OPTIONS[:potcar] = v}
+#op.parse!(ARGV)
+
+unless ARGV.size == 4
+  puts "USAGE: genkpoints style kx ky kz"
+  puts "  where style is m or g, indicating Monkhorst or GammaCenter, respectively."
+  puts "  kx, ky, kz indicate mesh points for each direction."
+  exit
+end
+
+data = {}
+if ARGV[0] =~ /^m/i
+  data[:type] = :monkhorst
+elsif ARGV[0] =~ /^g/i
+  data[:type] = :gamma_center
+else
+  puts "Unknown type. Exit."
+  exit
+end
+
+data[:mesh] = ARGV[1..3].map do |i|
+  unless i.to_i 
+    puts "Mesh divisions must be larger than 0. Exit"
+    exit
+  end
+  i.to_i
+end
+
+data[:shift] = [0.0, 0.0, 0.0]
+
+VaspUtils::Kpoints.dump(data, STDOUT)
+
