@@ -1,0 +1,17 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+require "optparse"
+
+## option analysis
+OPTIONS = {}
+op = OptionParser.new
+op.on("-w length", "--wavelength=value", "Indicate wavelength considered."){|v| OPTIONS[:wavelength] = v}
+op.parse!(ARGV)
+
+#wavelength をもってくる。
+
+格子定数の一番短いのを基準にする。
+
+
+
