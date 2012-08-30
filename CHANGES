@@ -1,4 +1,4 @@
-#
+= vasputils changelog
 
 == Master (for 0.0.11)
   Modify bin/qsubvasp
