@@ -1,0 +1,41 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+require "vasputils"
+require "fileutils"
+
+vgo = VaspUtils::VaspGeometryOptimizer.new(ENV['PWD'])
+
+def puts_and_delete(file)
+  puts "Deleting: #{file}"
+  FileUtils.remove_entry_secure file
+end
+
+# Delete
+if (! vgo.finished?)
+  latest_dir = vgo.latest_dir.dir
+  /try(\d+)$/ =~ latest_dir
+  number = $1.to_i
+  new_dir = latest_dir.sub( /try(\d+)$/, sprintf("try%02d", $1.to_i + 1))
+
+  #pp latest_dir, new_dir
+  #exit
+
+  if File.exist? new_dir
+    puts "Already exist: #{new_dir}"
+    exit
+  end
+  Dir.mkdir new_dir
+  FileUtils.cp("#{latest_dir}/INCAR", "#{new_dir}/INCAR")
+  FileUtils.cp("#{latest_dir}/KPOINTS", "#{new_dir}/KPOINTS")
+  FileUtils.cp("#{latest_dir}/POTCAR", "#{new_dir}/POTCAR")
+  FileUtils.cp("#{latest_dir}/CONTCAR", "#{new_dir}/POSCAR")
+
+  Dir.glob( ["*.o*", "*.sh", "*.log", "lock_*" ] ) .each do |file|
+    puts_and_delete file
+  end
+
+else
+  puts "Finished calc."
+  exit
+end

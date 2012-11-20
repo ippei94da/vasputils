@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.date = "2012-06-19"
   s.description = "This gem provides parsers for some of input and output files for VASP.\n    This will provide support command for computations."
   s.email = "ippei94da@gmail.com"
-  s.executables = ["checkvasp", "latticeconstants", "qsubvasp", "rmvaspout", "runvasp", "symposcar"]
+  s.executables = ["checkvasp", "latticeconstants", "qsubvasp", "rmvaspout", "runvasp", "symposcar", "redovasp", "nextvasp"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.rdoc"
