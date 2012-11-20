@@ -14,7 +14,7 @@ op.on("-f"    , "--force"    , "Force to remove finished calc."){ OPTIONS[:force
 op.on("-g"    , "--geomopt"  , "Indicate VaspGeometryOptimizer, not VaspDir."){ OPTIONS[:geomopt] = true}
 op.parse!(ARGV)
 
-USAGE = "Execute 'resetvasp', and clean output files of current directory."
+USAGE = "Execute 'redovasp', and clean output files from vasp in the current directory."
 unless ARGV.size == 0
   puts USAGE
   exit
@@ -22,7 +22,7 @@ end
 
 tgt = ENV['PWD']
 
-def reset_vasp_dir(tgt)
+def redo_vasp_dir(tgt)
   # check directory
   begin
     vd = VaspUtils::VaspDir.new(tgt)
@@ -48,7 +48,7 @@ def reset_vasp_dir(tgt)
   end
 end
 
-def reset_vasp_geom_opt(tgt)
+def redo_vasp_geom_opt(tgt)
   vgo = VaspUtils::VaspGeometryOptimizer.new(tgt)
 
   # Delete
@@ -57,7 +57,7 @@ def reset_vasp_geom_opt(tgt)
     Dir.glob( ["*.o*", "*.sh", "*.log", "lock_*" ] ) .each do |file|
       puts_and_delete file
     end
-    reset_vasp_dir vgo.latest_dir.dir
+    redo_vasp_dir vgo.latest_dir.dir
   else
     puts "Finished calc. " #{tgt}"
     exit
@@ -70,7 +70,7 @@ def puts_and_delete(file)
 end
 
 if OPTIONS[:geomopt]
-  reset_vasp_geom_opt(tgt)
+  redo_vasp_geom_opt(tgt)
 else
-  reset_vasp_dir(tgt)
+  redo_vasp_dir(tgt)
 end

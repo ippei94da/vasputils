@@ -4,6 +4,11 @@
 require "vasputils"
 require "fileutils"
 
+USAGE = "Execute 'nextvasp', and increase tryal and copy input files to new tryal of geometry optimization."
+unless ARGV.size == 0
+  puts USAGE
+  exit
+end
 vgo = VaspUtils::VaspGeometryOptimizer.new(ENV['PWD'])
 
 def puts_and_delete(file)
@@ -18,17 +23,22 @@ if (! vgo.finished?)
   number = $1.to_i
   new_dir = latest_dir.sub( /try(\d+)$/, sprintf("try%02d", $1.to_i + 1))
 
-  #pp latest_dir, new_dir
-  #exit
+  contcar = latest_dir + "/CONTCAR"
+  unless File.exist? contcar
+    puts "Not exist #{contcar}. Exit."
+    exit
+  end
 
   if File.exist? new_dir
     puts "Already exist: #{new_dir}"
     exit
   end
+
+  puts "Generating #{new_dir}"
   Dir.mkdir new_dir
-  FileUtils.cp("#{latest_dir}/INCAR", "#{new_dir}/INCAR")
+  FileUtils.cp("#{latest_dir}/INCAR",   "#{new_dir}/INCAR")
   FileUtils.cp("#{latest_dir}/KPOINTS", "#{new_dir}/KPOINTS")
-  FileUtils.cp("#{latest_dir}/POTCAR", "#{new_dir}/POTCAR")
+  FileUtils.cp("#{latest_dir}/POTCAR",  "#{new_dir}/POTCAR")
   FileUtils.cp("#{latest_dir}/CONTCAR", "#{new_dir}/POSCAR")
 
   Dir.glob( ["*.o*", "*.sh", "*.log", "lock_*" ] ) .each do |file|
