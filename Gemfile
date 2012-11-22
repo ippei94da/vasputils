@@ -7,7 +7,7 @@ source "http://rubygems.org"
 # Include everything needed to run rake, tests, features, etc.
 group :development do
   gem "rdoc", ">= 3.12"
-  gem "bundler", ">= 1.1.3"
+  gem "bundler", "~> 1.2.2"
   gem "jeweler", ">= 1.8.3"
   gem "simplecov", ">= 0"
   gem "crystalcell", ">= 0.0.0"
@@ -16,4 +16,5 @@ group :development do
   gem "maset", ">= 0.0.0"
   gem "comana", ">= 0.0.9"
   gem "builtinextension", ">= 0.0.3"
+  gem "psych", ">= 0"
 end
