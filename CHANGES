@@ -3,7 +3,6 @@
 == Master (for 0.0.12)
 
 == Version 0.0.11
-<<<<<<< HEAD
   - Modify bin/qsubvasp
   - Add VaspUtils::generate_kmeshes
   - Add example/dot.vasputils
@@ -13,15 +12,6 @@
   - Modify vasputils/poscar.rb to adjust vasp 5.2 style
   - Renamed and modified bin/rmvaspout to bin/redovasp
   - Add bin/nextvasp
-=======
-  Modify bin/qsubvasp
-  Add VaspUtils::generate_kmeshes
-  Add example/dot.vasputils
-  Add Setting class
-  Add Potcar::Concatenater
-  Add Incar.dump
-  Modify vasputils/poscar.rb to adjust vasp 5.2 style.
->>>>>>> b0662c88c0f87678268a0fa0b6a50d21b9d1be34
 
 == Version 0.0.10
   - Delete Outcar.volume
