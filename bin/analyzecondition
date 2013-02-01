@@ -1,0 +1,16 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+#require "rubygems"
+#gem "vasputils"
+#require "vasputils.rb"
+
+#ファイルの中身が try?? の最後が最新の計算結果であることを前提とする。
+#result みたいな名前にしてると動かない。
+#どうしても別の名前にするのなら symlink にしておくことを勧める。
+
+geomopt で finished になっていることを確認
+latest_dir を取得。
+その計算条件の kpoints, encut, toten を取得。
+
+
