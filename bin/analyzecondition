@@ -9,8 +9,13 @@
 #result みたいな名前にしてると動かない。
 #どうしても別の名前にするのなら symlink にしておくことを勧める。
 
-geomopt で finished になっていることを確認
-latest_dir を取得。
-その計算条件の kpoints, encut, toten を取得。
+#geomopt で finished になっていることを確認
+#latest_dir を取得。
+#その計算条件の kpoints, encut, toten を取得。
 
+まとめて表にする？
+
+k_fix_series.each do |k|
+  
+end
 
