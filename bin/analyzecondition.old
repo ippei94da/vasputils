@@ -61,7 +61,7 @@ vaspdirs.each do |vd|
 end
 
 puts
-puts "Fixed ENCUT and varying k-mesh(n_k): (|y - a_0| = a_1 / n_k)"
+puts "Fixed ENCUT and varying k-mesh(n_k): (y = a_1 / n_k + a_0)"
 [400, 500, 600].each do |encut|
   printf( "  ENCUT = %4d:", encut)
   data_pairs = []
@@ -73,13 +73,14 @@ puts "Fixed ENCUT and varying k-mesh(n_k): (|y - a_0| = a_1 / n_k)"
   end
   coefficients = Malge::LeastSquare.least_square_1st_degree(data_pairs)
   #pp coefficients
-  printf("    a_0 = %10.4f, a_1 = %10.4f",
-         coefficients[0], coefficients[1])
+  print "    "
+  printf("a_0 = %10.4f, ", coefficients[0])
+  printf("a_1 = %10.4f", coefficients[1])
   puts
 end
 
 puts
-puts "Fixed k-mesh and varying Encut(E): (|y - a_0| = a_1 / E)"
+puts "Fixed k-mesh and varying Encut(E): (y = a_1 / E + a_0)"
 [1, 8, 64].each do |tgt|
   printf( "  k-mesh = %3d:", tgt)
   data_pairs = []
@@ -102,7 +103,7 @@ puts "Fixed k-mesh and varying Encut(E): (|y - a_0| = a_1 / E)"
 end
 
 puts
-puts "Fixed k-mesh and varying Encut(E): (|y -a_0| = a_1 / E^(3/2))"
+puts "Fixed k-mesh and varying Encut(E): (y = a_1 / E^(3/2) + a_0)"
 [1, 8, 64].each do |tgt|
   printf( "  k-mesh = %3d:", tgt)
   data_pairs = []
@@ -123,6 +124,4 @@ puts "Fixed k-mesh and varying Encut(E): (|y -a_0| = a_1 / E^(3/2))"
   printf("a_1 = %10.4f", coefficients[1])
   puts
 end
-
-puts "This script is not completely made."
 
