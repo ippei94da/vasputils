@@ -1,8 +1,12 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
+#Analyzer of dependence of TOTEN on conditions.
+#Current version can deal with only encut and k-mesh.
+#Only TOTEN is evaluated.
 #
-#
+#NOTE: to deal with k-mesh withmonkhorst or gammacenter and shift.
+# But it needs Kmesh class.
 #
 class ErrorAnalyzer
   #Argument 'dir' indicate directory including vasp calculations.
@@ -28,30 +32,50 @@ class ErrorAnalyzer
     end
   end
 
-  # Return all values of ENCUT as Array.
-  def encuts
+  #Return all values of ENCUT as Array.
+  #Argument 'conditions' is Hash of conditions;
+  #E.g.,
+  # {:kmesh = [1,1,1]}
+  #If conditions is nil, return all ENCUT's in all vaspdirs.
+  def encuts(conditions)
   end
 
   # Return all k-mesh'es as Array.
-  def kmeshes
+  #Argument 'conditions' is Hash of conditions;
+  #E.g.,
+  # {:encut = 400}
+  #If conditions is nil, return all kmesh'es in all vaspdirs.
+  def kmeshes(conditions)
   end
 
-  ## Return all k_a's as Array.
-  #def kas
-  #end
+  #Return [a_0, a_1] in the equation : |y - a_0| = a_1 / n_k;
+  #where n_k indicates total number of kpoints.
+  #Varying k-mesh with fixed other conditions as argument.
+  #E.g.,
+  # {:encut = 400}
+  def fit_inverse_kpoints(conditions)
+  end
 
-  ## Return all k_b's as Array.
-  #def kbs
-  #end
+  #Return [a_0, a_1] in the equation : |y - a_0| = a_1 / E_co^{3/2}
+  #where E_co indicates a cutoff energy, ENCUT.
+  #Varying E_co with fixed other conditions as argument.
+  #E.g.,
+  # {:kmesh = [1,1,1]}
+  def fit_inverse_encut_3_2(conditions)
+  end
 
-  ## Return all k_c's as Array.
-  #def kcs
-  #end
+  それぞれの条件で誤差の期待値がいくらになるか。
+  たとえば 300〜1000 eV に振った条件の中で
+  計算コストと勘案して、最もリーズナブルな計算条件を探したいときに。
+  def expected_errors(coefficients, conditions)
+  end
 
-  # Return [a_0, a_1] in the equation : |y - a_0| = a_1 / n_k .
-  #
-  # Fixed ENCUT and varying k-mesh(n_k)
-  def least_square_encut(encut)
+  #Return a certain vaspdir.
+  #Argument 'conditions' is Hash of conditions;
+  #E.g.,
+  # {:encut = 400}
+  # {:kmesh = [1,1,1]}
+  def vaspdir(conditions)
   end
 
 
