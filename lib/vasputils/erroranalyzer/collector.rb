@@ -51,7 +51,7 @@ class ErrorAnalyzer::Collector
   #Argument 'conditions' is Hash of conditions;
   #E.g.,
   # {:kmesh => [1,1,1]}
-  #If conditions is nil, return all ENCUT's in all vaspdirs.
+  #If 'conditions' is nil, return all ENCUT's in all vaspdirs.
   def encuts(conditions)
   end
 
@@ -59,7 +59,7 @@ class ErrorAnalyzer::Collector
   #Argument 'conditions' is Hash of conditions;
   #E.g.,
   # {:encut => 400}
-  #If conditions is nil, return all kmesh'es in all vaspdirs.
+  #If 'conditions' is nil, return all kmesh'es in all vaspdirs.
   def kmeshes(conditions)
   end
 
