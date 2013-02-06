@@ -10,6 +10,11 @@ require "vasputils/setting.rb"
 require "vasputils/vaspdir.rb"
 require "vasputils/vaspgeometryoptimizer.rb"
 require "vasputils/vaspkpointsfinder.rb"
+require "vasputils/erroranalyzer.rb"
+require "vasputils/erroranalyzer/collector.rb"
+require "vasputils/erroranalyzer/encuttotenfitter1.rb"
+require "vasputils/erroranalyzer/encuttotenfitter32.rb"
+require "vasputils/erroranalyzer/kmeshtotenfitter.rb"
 
 #module VaspUtils
 #  TOLERANCE = 1e-10

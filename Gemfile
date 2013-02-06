@@ -12,7 +12,7 @@ group :development do
   gem "simplecov", ">= 0"
   gem "crystalcell", ">= 0.0.0"
   gem "mageo", ">= 0.0.0"
-  gem "malge", ">= 0.0.1"
+  gem "malge", ">= 0.0.2"
   gem "maset", ">= 0.0.0"
   gem "comana", ">= 0.0.9"
   gem "builtinextension", ">= 0.0.3"

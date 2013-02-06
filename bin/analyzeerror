@@ -3,12 +3,11 @@
 
 require "pp"
 require "find"                  # 再帰的下降モジュール
-require "vasputils.rb"
 require "rubygems"
+require "vasputils"
 #gem "malge"
 #require "malge"
-require "vasputils/erroranalyzer.rb"
-
+#require "vasputils/erroranalyzer.rb"
 
 unless ARGV.size == 0
   puts "USAGE: This script analyze subdirs of current dir; not use argument."
@@ -18,24 +17,24 @@ end
 dir = ENV['PWD']
 
 def show_analysis(fitter)
-  coefficients = ktf.fit
+  coefficients = fitter.fit
   #printf("    a_0 = %10.4f, a_1 = %10.4f\n", coefficients[0], coefficients[1])
   printf("    a_0 = %10.4f, a_1 = %10.4f\n", *coefficients)
 end
 
-eac = ErrorAnalyzer::Collector.new(dir)
+eac = VaspUtils::ErrorAnalyzer::Collector.new(dir)
 eac.encuts.each do |encut|
   data_pairs = eac.kmesh_toten_pairs_of_encut(encut)
-  ktf = ErrorAnalyzer::KmeshTotenFitter.new(data_pairs)
-  printf( "  ENCUT = %4d:", encut)
+  ktf = VaspUtils::ErrorAnalyzer::KmeshTotenFitter.new(data_pairs)
+  printf( "  Fixed ENCUT: %4d", encut)
   show_analysis(ktf)
 end
 
 eac.kmeshes.each do |kmesh|
   data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
-  ktf = ErrorAnalyzer::KmeshTotenFitter.new(data_pairs)
-  printf( "  k-mesh = %3d:", tgt)
-  show_analysis(ktf)
+  etf = VaspUtils::ErrorAnalyzer::EncutTotenFitter.new(data_pairs)
+  printf( "  Fixed k-mesh: %3d", tgt)
+  show_analysis(etf)
 end
 
 
