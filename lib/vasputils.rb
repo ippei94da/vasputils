@@ -14,6 +14,7 @@ require "vasputils/erroranalyzer.rb"
 require "vasputils/erroranalyzer/collector.rb"
 require "vasputils/erroranalyzer/encuttotenfitter1.rb"
 require "vasputils/erroranalyzer/encuttotenfitter32.rb"
+require "vasputils/erroranalyzer/encuttotenfitterexp.rb"
 require "vasputils/erroranalyzer/kmeshtotenfitter.rb"
 
 #module VaspUtils

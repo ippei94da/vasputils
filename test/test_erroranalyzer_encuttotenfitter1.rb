@@ -19,13 +19,6 @@ class TC_EncutTotenFitter1 < Test::Unit::TestCase
       [16, 101.0],
     ]
     @etf01 = VaspUtils::ErrorAnalyzer::EncutTotenFitter1.new(data_pairs)
-
-    data_pairs = [
-      [ 1, 164.0],
-      [ 4, 108.0],
-      [16, 101.0],
-    ]
-    @etf03 = VaspUtils::ErrorAnalyzer::EncutTotenFitter1.new(data_pairs)
   end
 
   def test_fit
