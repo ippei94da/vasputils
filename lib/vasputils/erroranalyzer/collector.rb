@@ -20,9 +20,8 @@ class VaspUtils::ErrorAnalyzer::Collector
       rescue VaspUtils::VaspDir::InitializeError
         next
       end
-      #pp vd.incar["ISIF"]
-      isif = vd.incar["ISIF"].to_i
-      next unless ( isif == 2 || isif == 3 )
+      ibrion = vd.incar["IBRION"].to_i
+      next if ibrion == -1
       next unless vd.finished?
       next unless vd.outcar[:ionic_steps] == 1
 
