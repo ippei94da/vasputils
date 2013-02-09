@@ -9,29 +9,23 @@ require "vasputils"
 #
 #
 class VaspUtils::ErrorAnalyzer::EncutTotenFitterExp
-  #
+  #Argument 'data_pairs' is an array of [x_i, y_i].
   def initialize(data_pairs)
     @data_pairs = data_pairs
   end
 
-  #Fit to the equation belowby least square method.
-  #|E_t - a_0| = a_1 / E_c,
-  #where E_t is TOTEN, E_c is cutoff energy,
-  #and a_0 and a_1 is coefficient to be returned.
+  #Return [a, b] in 'y = a e^{bx}' fitted by least square method.
+  #y is TOTEN, x is cutoff energy,
+  #Assuming y[i_x_max] is true value, an array of [x_i, y_i] is mapped TOTEN
+  #an array of [x_i, (y_i - y[i_x_max])] and delete last values.
+  #Then, fitting to y = a e^{bx} will be done.
   def fit
-    highest_pair = @data_pairs.max_by do |pair|
-      pair[0]
-    end
-    highest_toten = highest_pair[1]
+    y_high = @data_pairs.max_by { |pair| pair[0] }[1]
+    pairs = @data_pairs.map { |pair| [pair[0], Math::log(pair[1] - y_high)] }
+    pairs.delete_at -1
 
-    pairs = @data_pairs.map do |pair|
-      inv_cutoff = 1.0/pair[0].to_f
-      raw_toten = pair[1]
-      toten = (raw_toten - highest_toten).abs
-      [inv_cutoff, toten]
-    end
     coefficients = Malge::LeastSquare.least_square_1st_degree(pairs)
-    coefficients[0] += highest_toten
+    coefficients[0] = Math::exp coefficients[0]
     coefficients
   end
 
@@ -39,7 +33,9 @@ class VaspUtils::ErrorAnalyzer::EncutTotenFitterExp
   def expected_errors
     coefficients = fit
     @data_pairs.map do |pair|
-      [pair[0], coefficients[1] *(1.0/ pair[0].to_f)]
+      [pair[0],
+        coefficients[0] * Math::exp(coefficients[1] *pair[0])
+      ]
     end
   end
 end

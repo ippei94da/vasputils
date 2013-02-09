@@ -60,6 +60,18 @@ eac.kmeshes.each do |kmesh|
   show_analysis(etf)
 end
 
+puts "Fitting to |E_t - E_last| = a e^{bx}"
+eac.kmeshes.each do |kmesh|
+  HERE
+
+  data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
+  etf = VaspUtils::ErrorAnalyzer::EncutTotenFitter32.new(data_pairs)
+  printf( "  Fixed k-mesh of [%2d, %2d, %2d]:\n", *kmesh)
+  show_analysis(etf)
+end
+
+
+
 
 #ファイルの中身が try?? の最後が最新の計算結果であることを前提とする。
 #result みたいな名前にしてると動かない。
