@@ -9,6 +9,15 @@ require "vasputils"
 #require "malge"
 #require "vasputils/erroranalyzer.rb"
 
+
+#require "optparse"
+### option analysis
+#OPTIONS = {}
+#op = OptionParser.new
+#op.on("-b val", "--bak=val", "descriptionB"){|v| OPTIONS[:bak] = v}
+#op.on("-a"    , "--all"    , "All fitting are done."){    OPTIONS[:all] = true}
+#op.parse!(ARGV)
+
 unless ARGV.size == 0
   puts "USAGE: This script analyze subdirs of current dir; not use argument."
   exit

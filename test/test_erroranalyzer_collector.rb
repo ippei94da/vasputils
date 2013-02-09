@@ -12,8 +12,9 @@ class TC_Collector < Test::Unit::TestCase
     @c00 = VaspUtils::ErrorAnalyzer::Collector.new("test/erroranalyzer")
   end
 
-  #def test_initialize
-  #end
+  def test_initialize
+    c00 = VaspUtils::ErrorAnalyzer::Collector.new("test/erroranalyzer")
+  end
 
   #def test_select
   #  assert_equal(4, @c00.select)
