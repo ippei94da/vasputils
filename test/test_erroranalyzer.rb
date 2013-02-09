@@ -2,7 +2,8 @@
 # coding: utf-8
 
 require "test/unit"
-require "vasputils/erroranalyzer.rb"
+#require "vasputils/erroranalyzer.rb"
+require "vasputils.rb"
 
 class TC_ErrorAnalyzer < Test::Unit::TestCase
   def setup

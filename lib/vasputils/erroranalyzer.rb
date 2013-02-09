@@ -5,9 +5,10 @@
 #NOTE: to deal with k-mesh withmonkhorst or gammacenter and shift.
 # But it needs Kmesh class.
 
+require "vasputils.rb"
 module VaspUtils::ErrorAnalyzer; end
 
-require "vasputils/erroranalyzer/collector.rb"
+#require "vasputils/erroranalyzer/collector.rb"
 #
 #
 #TODO
