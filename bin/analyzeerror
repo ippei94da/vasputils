@@ -5,10 +5,6 @@ require "pp"
 require "find"                  # 再帰的下降モジュール
 require "rubygems"
 require "vasputils"
-#gem "malge"
-#require "malge"
-#require "vasputils/erroranalyzer.rb"
-
 
 #require "optparse"
 ### option analysis
@@ -20,12 +16,20 @@ require "vasputils"
 
 unless ARGV.size == 0
   puts "USAGE: This script analyze subdirs of current dir; not use argument."
+  puts "Exit."
   exit
 end
 
 dir = ENV['PWD']
 eac = VaspUtils::ErrorAnalyzer::Collector.new(dir)
 
+dirs = eac.converged_dirs
+if dirs.size == 0
+  puts "No converged directory under current directory."
+  puts "Change the directory which aggregates calculations on the same crystal using various conditions."
+  puts "Exit."
+  exit
+end
 puts "All converged data:"
 eac.converged_dirs.each do |dir|
   printf("  k-mesh = [%2d, %2d, %2d], ENCUT = %7.1f, TOTEN = %10.5f\n",
