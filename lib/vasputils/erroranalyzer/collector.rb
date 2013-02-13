@@ -50,7 +50,9 @@ class VaspUtils::ErrorAnalyzer::Collector
   def encut_toten_pairs_of_kmesh(kmesh)
     @converged_dirs.select{|dir| dir.kpoints[:mesh] == kmesh }.map do |vd|
       [ vd.incar["ENCUT"].to_i, vd.outcar[:totens][-1] ]
-    end
+    end . sort_by do |pair|
+      pair[0]
+    end . uniq
   end
 
   #Return as; e.g.,
@@ -61,7 +63,9 @@ class VaspUtils::ErrorAnalyzer::Collector
   def kmesh_toten_pairs_of_encut(encut)
     @converged_dirs.select{|dir| dir.incar["ENCUT"].to_i == encut }.map do |vd|
       [ vd.kpoints[:mesh], vd.outcar[:totens][-1] ]
-    end
+    end . sort_by do |pair|
+      pair[0][0] * pair[0][1] * pair[0][2]
+    end . uniq
   end
 
   #Return all values of ENCUT as Array; e.g., [400, 500]
