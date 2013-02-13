@@ -51,41 +51,61 @@ end
 
 puts "Fitting to |E_t - a_0| = a_1 / n_k"
 eac.encuts.each do |encut|
+  printf( "  Fixed ENCUT of %4d:", encut)
   data_pairs = eac.kmesh_toten_pairs_of_encut(encut)
+  if data_pairs.size < 2
+    puts " data_pairs is #{data_pairs.size}: cannot fit."
+    next
+  end
   ktf = VaspUtils::ErrorAnalyzer::KmeshTotenFitter.new(data_pairs)
-  printf( "  Fixed ENCUT of %4d:\n", encut)
   show_analysis(ktf)
 end
 
 puts "Fitting to |E_t - a_0| = a_1 / E_c"
 eac.kmeshes.each do |kmesh|
+  printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
   data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
+  if data_pairs.size < 2
+    puts " data_pairs is #{data_pairs.size}: cannot fit."
+    next
+  end
   etf = VaspUtils::ErrorAnalyzer::EncutTotenFitter1.new(data_pairs)
-  printf( "  Fixed k-mesh of [%2d, %2d, %2d]:\n", *kmesh)
   show_analysis(etf)
 end
 
 puts "Fitting to |E_t - a_0| = a_1 / E_c^{3/2}"
 eac.kmeshes.each do |kmesh|
+  printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
   data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
+  if data_pairs.size < 2
+    puts " data_pairs is #{data_pairs.size}: cannot fit."
+    next
+  end
   etf = VaspUtils::ErrorAnalyzer::EncutTotenFitter32.new(data_pairs)
-  printf( "  Fixed k-mesh of [%2d, %2d, %2d]:\n", *kmesh)
   show_analysis(etf)
 end
 
 puts "Fitting to |E_t - E_last| = a e^{bx}"
 eac.kmeshes.each do |kmesh|
+  printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
   data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
+  if data_pairs.size < 2
+    puts " data_pairs is #{data_pairs.size}: cannot fit."
+    next
+  end
   etf = VaspUtils::ErrorAnalyzer::EncutTotenFitterExp.new(data_pairs)
-  printf( "  Fixed k-mesh of [%2d, %2d, %2d]:\n", *kmesh)
   show_analysis(etf)
 end
 
 puts "Fitting to |E_t - E_last| = a e^{bx^(3/2)}"
 eac.kmeshes.each do |kmesh|
+  printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
   data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
+  if data_pairs.size < 2
+    puts " data_pairs is #{data_pairs.size}: cannot fit."
+    next
+  end
   etf = VaspUtils::ErrorAnalyzer::EncutTotenFitterExp32.new(data_pairs)
-  printf( "  Fixed k-mesh of [%2d, %2d, %2d]:\n", *kmesh)
   show_analysis(etf)
 end
 
