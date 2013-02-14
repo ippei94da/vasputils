@@ -8,7 +8,7 @@ require "vasputils"
 #
 #
 #
-class VaspUtils::ErrorAnalyzer::EncutTotenFitterExp
+class VaspUtils::ErrorAnalyzer::EncutTotenFitterExp1
   #Argument 'data_pairs' is an array of [x_i, y_i].
   def initialize(data_pairs)
     @data_pairs = data_pairs
@@ -21,7 +21,7 @@ class VaspUtils::ErrorAnalyzer::EncutTotenFitterExp
   #Then, fitting to y = a e^{bx} will be done.
   def fit
     y_high = @data_pairs.max_by { |pair| pair[0] }[1]
-    pairs = @data_pairs.map { |pair| [pair[0], Math::log(pair[1] - y_high)] }
+    pairs = @data_pairs.map { |pair| [pair[0], Math::log((pair[1] - y_high).abs)] }
     pairs.delete_at -1
 
     coefficients = Malge::LeastSquare.least_square_1st_degree(pairs)

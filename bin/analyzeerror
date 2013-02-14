@@ -6,13 +6,24 @@ require "find"                  # 再帰的下降モジュール
 require "rubygems"
 require "vasputils"
 
-#require "optparse"
-### option analysis
-#OPTIONS = {}
-#op = OptionParser.new
-#op.on("-b val", "--bak=val", "descriptionB"){|v| OPTIONS[:bak] = v}
-#op.on("-a"    , "--all"    , "All fitting are done."){    OPTIONS[:all] = true}
-#op.parse!(ARGV)
+require "optparse"
+## option analysis
+OPTIONS = {}
+op = OptionParser.new
+op.on(""    , "--kpoints"    , "Kpoints fitting to E_tot =  a_0 + a_1 n_k"              ){ OPTIONS[:kpoints]    = true}
+op.on(""    , "--encut-inv1" , "Encut   fitting to |E_tot - a_0| = a_1/E_cut."          ){ OPTIONS[:encutinv1]  = true}
+op.on(""    , "--encut-inv32", "Encut   fitting to |E_tot - a_0| = a_1/E_cut^(3/2)."    ){ OPTIONS[:encutinv32] = true}
+op.on(""    , "--encut-exp1" , "Encut   fitting to |E_tot - a_0| = a_1 exp a_2 x."      ){ OPTIONS[:encutexp1]  = true}
+op.on(""    , "--encut-exp32", "Encut   fitting to |E_tot - a_0| = a_1 exp a_2 x^(3/2)."){ OPTIONS[:encutexp32] = true}
+op.on("-a"  , "--all"        , "All analysis."                                          ){
+  OPTIONS[:kpoints]    = true
+  OPTIONS[:encutinv1]  = true
+  OPTIONS[:encutinv32] = true
+  OPTIONS[:encutexp1]  = true
+  OPTIONS[:encutexp32] = true
+}
+op.parse!(ARGV)
+puts "NOTE: need check coefficients. Option help, calculation, output."
 
 unless ARGV.size == 0
   puts "USAGE: This script analyze subdirs of current dir; not use argument."
@@ -39,83 +50,94 @@ puts
 
 def show_analysis(fitter)
   coefficients = fitter.fit
-  #printf("    a_0 = %10.4f, a_1 = %10.4f\n", coefficients[0], coefficients[1])
   printf("    a_0 = %10.4f, a_1 = %10.4f\n", *coefficients)
   puts "    Expected errors:"
-  #pp fitter.expected_errors
   fitter.expected_errors.each do |pair|
-    print "      #{pair[0].to_s}, #{pair[1].to_s}\n"
+    printf("      %15s, %10.5f\n",  pair[0].to_s, pair[1])
+  end
+end
+
+def analyze_kpoint(eac)
+  puts "Fitting to |E_t - a_0| = a_1 / n_k"
+  eac.encuts.each do |encut|
+    printf( "  Fixed ENCUT of %4d:", encut)
+    data_pairs = eac.kmesh_toten_pairs_of_encut(encut)
+    if data_pairs.size < 2
+      puts " data_pairs is #{data_pairs.size}: cannot fit."
+      next
+    end
+    ktf = VaspUtils::ErrorAnalyzer::KmeshTotenFitter.new(data_pairs)
+    show_analysis(ktf)
   end
   puts
 end
 
-puts "Fitting to |E_t - a_0| = a_1 / n_k"
-eac.encuts.each do |encut|
-  printf( "  Fixed ENCUT of %4d:", encut)
-  data_pairs = eac.kmesh_toten_pairs_of_encut(encut)
-  if data_pairs.size < 2
-    puts " data_pairs is #{data_pairs.size}: cannot fit."
-    next
+def analyze_encutinv1(eac)
+  puts "Fitting to |E_t - a_0| = a_1 / E_c"
+  eac.kmeshes.each do |kmesh|
+    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
+    data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
+    if data_pairs.size < 2
+      puts " data_pairs is #{data_pairs.size}: cannot fit."
+      next
+    end
+    etf = VaspUtils::ErrorAnalyzer::EncutTotenFitter1.new(data_pairs)
+    show_analysis(etf)
   end
-  ktf = VaspUtils::ErrorAnalyzer::KmeshTotenFitter.new(data_pairs)
-  show_analysis(ktf)
+  puts
 end
 
-puts "Fitting to |E_t - a_0| = a_1 / E_c"
-eac.kmeshes.each do |kmesh|
-  printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
-  data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
-  if data_pairs.size < 2
-    puts " data_pairs is #{data_pairs.size}: cannot fit."
-    next
+def analyze_encutinv32(eac)
+  puts "Fitting to |E_t - a_0| = a_1 / E_c^{3/2}"
+  eac.kmeshes.each do |kmesh|
+    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
+    data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
+    if data_pairs.size < 2
+      puts " data_pairs is #{data_pairs.size}: cannot fit."
+      next
+    end
+    etf = VaspUtils::ErrorAnalyzer::EncutTotenFitter32.new(data_pairs)
+    show_analysis(etf)
   end
-  etf = VaspUtils::ErrorAnalyzer::EncutTotenFitter1.new(data_pairs)
-  show_analysis(etf)
+  puts
 end
 
-puts "Fitting to |E_t - a_0| = a_1 / E_c^{3/2}"
-eac.kmeshes.each do |kmesh|
-  printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
-  data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
-  if data_pairs.size < 2
-    puts " data_pairs is #{data_pairs.size}: cannot fit."
-    next
+def analyze_encutexp1(eac)
+  puts "Fitting to |E_t - E_last| = a e^{bx}"
+  eac.kmeshes.each do |kmesh|
+    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
+    data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
+    if data_pairs.size < 2
+      puts " data_pairs is #{data_pairs.size}: cannot fit."
+      next
+    end
+    etf = VaspUtils::ErrorAnalyzer::EncutTotenFitterExp1.new(data_pairs)
+    show_analysis(etf)
   end
-  etf = VaspUtils::ErrorAnalyzer::EncutTotenFitter32.new(data_pairs)
-  show_analysis(etf)
+  puts
 end
 
-puts "Fitting to |E_t - E_last| = a e^{bx}"
-eac.kmeshes.each do |kmesh|
-  printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
-  data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
-  if data_pairs.size < 2
-    puts " data_pairs is #{data_pairs.size}: cannot fit."
-    next
+def analyze_encutexp32(eac)
+  puts "Fitting to |E_t - E_last| = a e^{bx^(3/2)}"
+  eac.kmeshes.each do |kmesh|
+    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
+    data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
+    if data_pairs.size < 2
+      puts " data_pairs is #{data_pairs.size}: cannot fit."
+      next
+    end
+    etf = VaspUtils::ErrorAnalyzer::EncutTotenFitterExp32.new(data_pairs)
+    show_analysis(etf)
   end
-  etf = VaspUtils::ErrorAnalyzer::EncutTotenFitterExp.new(data_pairs)
-  show_analysis(etf)
+  puts
 end
 
-puts "Fitting to |E_t - E_last| = a e^{bx^(3/2)}"
-eac.kmeshes.each do |kmesh|
-  printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
-  data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
-  if data_pairs.size < 2
-    puts " data_pairs is #{data_pairs.size}: cannot fit."
-    next
-  end
-  etf = VaspUtils::ErrorAnalyzer::EncutTotenFitterExp32.new(data_pairs)
-  show_analysis(etf)
-end
+analyze_kpoint(eac)     if OPTIONS[:kpoints]
+analyze_encutinv1(eac)  if OPTIONS[:encutinv1]
+analyze_encutinv32(eac) if OPTIONS[:encutinv32]
+analyze_encutexp1(eac)  if OPTIONS[:encutexp1]
+analyze_encutexp32(eac) if OPTIONS[:encutexp32]
 
-
-
-
-#ファイルの中身が try?? の最後が最新の計算結果であることを前提とする。
-#result みたいな名前にしてると動かない。
-#どうしても別の名前にするのなら symlink にしておくことを勧める。
-#
 #今後としては、サブディレクトリ以下の全ての OUTCAR を含む計算ディレクトリを列挙し、Iter 1 で終わっていたら収束した計算の条件であるとする。
 
 #geomopt で finished になっていることを確認

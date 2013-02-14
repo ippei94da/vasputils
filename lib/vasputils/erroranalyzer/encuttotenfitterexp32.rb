@@ -21,7 +21,9 @@ class VaspUtils::ErrorAnalyzer::EncutTotenFitterExp32
   #Then, fitting to y = a e^{bx} will be done.
   def fit
     y_last = @data_pairs.max_by { |pair| pair[0] }[1]
-    pairs = @data_pairs.map { |pair| [pair[0]**(3.0/2.0), Math::log(pair[1] - y_last)] }
+    pairs = @data_pairs.map { |pair|
+      [pair[0]**(3.0/2.0), Math::log((pair[1] - y_last).abs)]
+    }
     pairs.delete_at -1
 
     coefficients = Malge::LeastSquare.least_square_1st_degree(pairs)
