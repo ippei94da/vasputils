@@ -26,15 +26,17 @@ class TC_EncutTotenFitterExp32 < Test::Unit::TestCase
   end
 
   def test_fit
+    corrects = [3.0, - 2.0*Math::log(2.0)]
     results = @etf00.fit
     assert_equal(   2, results.size)
-    assert_in_delta( 3.0, results[0], TOLERANCE)
-    assert_in_delta( - 2.0*Math::log(2.0), results[1], TOLERANCE)
+    assert_in_delta(corrects[0], results[0], TOLERANCE)
+    assert_in_delta(corrects[1], results[1], TOLERANCE)
 
+    corrects = [3.0, - 2.0*Math::log(2.0)]
     results = @etf01.fit
     assert_equal(   2, results.size)
-    assert_in_delta( 3.0, results[0], TOLERANCE)
-    assert_in_delta( - 2.0*Math::log(2.0), results[1], TOLERANCE)
+    assert_in_delta(corrects[0], results[0], TOLERANCE)
+    assert_in_delta(corrects[1], results[1], TOLERANCE)
 
   end
 
