@@ -2,7 +2,7 @@
 # coding: utf-8
 
 require "pp"
-require "find"                  # 再帰的下降モジュール
+require "find"
 require "rubygems"
 require "vasputils"
 
@@ -23,213 +23,155 @@ op.on("-a"  , "--all"        , "All analysis."                                  
   OPTIONS[:encutexp32] = true
 }
 op.parse!(ARGV)
-puts "NOTE: need check coefficients. Option help, calculation, output."
 
 unless ARGV.size == 0
+  puts "NOTE: need check coefficients. Option help, calculation, output."
   puts "USAGE: This script analyze subdirs of current dir; not use argument."
   puts "Exit."
   exit
 end
 
 dir = ENV['PWD']
-eac = VaspUtils::ErrorAnalyzer::Collector.new(dir)
+analyzer = VaspUtils::ErrorAnalyzer.new(dir)
+#ea.analyze_kpoint(eac)    
+#ea.analyze_encutinv1(eac) 
+#ea.analyze_encutinv32(eac)
+#ea.analyze_encutexp1(eac) 
+#ea.analyze_encutexp32(eac)
 
-dirs = eac.converged_dirs
-if dirs.size == 0
-  puts "No converged directory under current directory."
-  puts "Change the directory which aggregates calculations on the same crystal using various conditions."
-  puts "Exit."
-  exit
-end
-puts "All converged data:"
-eac.converged_dirs.each do |dir|
-  printf("  k-mesh = [%2d, %2d, %2d], ENCUT = %7.1f, TOTEN = %10.5f\n",
-    *dir.kpoints[:mesh], dir.incar["ENCUT"], dir.outcar[:totens][-1])
-end
-puts
 
-def show_analysis(fitter)
-  coefficients = fitter.fit
-  printf("    a_0 = %10.4f, a_1 = %10.4f\n", *coefficients)
-  puts "    Expected errors:"
-  fitter.expected_errors.each do |pair|
-    printf("      %15s, %10.5f\n",  pair[0].to_s, pair[1])
+#dirs = analyzerc.converged_dirs
+#if dirs.size == 0
+#  puts "No converged directory under current directory."
+#  puts "Change the directory which aggregates calculations"
+#  puts "on the same crystal using various conditions."
+#  puts "Exit."
+#  exit
+#end
+
+def show_converged_totens(analyzer)
+  puts "All converged data:"
+  analyzer.converged_calculations.each do |calc|
+    printf("  k-mesh = [%2d, %2d, %2d], ENCUT = %7.1f, TOTEN = %10.5f\n",
+      *calc[:kmesh], calc[:encut], calc[:toten])
   end
+  puts
 end
 
-def analyze_kpoint(eac)
-  puts "Fitting to |E_t - a_0| = a_1 / n_k"
-  eac.encuts.each do |encut|
+#def show_analysis(fitter)
+#  coefficients = fitter.fit
+#  printf("    a_0 = %10.4f, a_1 = %10.4f\n", *coefficients)
+#  puts "    Expected errors:"
+#  fitter.expected_errors.each do |pair|
+#    printf("      %15s, %10.5f\n",  pair[0].to_s, pair[1])
+#  end
+#  #pp fitter
+#end
+
+#Show:
+# - Assumed function; e.g., "Fitting to |E_t - a_0| = a_1 / n_k"
+# - Coefficients; e.g., [1.0, -2.0]
+# - Variance; summed square values of difference between raw_data and expected_error.
+# - Data of [condition, raw_data, absolute_error, expected_error]
+def show_analysis_kpoint(analyzer)
+  puts "Fitting to |E_t - E_last| = a_1 / n_k"
+  analyzer.encuts.each do |encut|
     printf( "  Fixed ENCUT of %4d:", encut)
-    data_pairs = eac.kmesh_toten_pairs_of_encut(encut)
-    if data_pairs.size < 2
-      puts " data_pairs is #{data_pairs.size}: cannot fit."
+    #analyzer.fit_kpoints_totens(encut)
+
+    begin
+      function = analyzer.fit_kpoints_totens(encut)
+    rescue VaspUtils::ErrorAnalyzer::UnsufficientDataError
+      puts " cannot fit."
       next
     end
-    ktf = VaspUtils::ErrorAnalyzer::KmeshTotenFitter.new(data_pairs)
-    show_analysis(ktf)
+    puts "must change to a_0 == 0"
+    TODO 
+    printf("    a_0 = %10.4f, a_1 = %10.4f\n", * function.coefficients)
+    puts "    Variance using expected error: #{function.variance}"
+    puts "    Expected errors:"
+
+    printf("      %15s, %10s, %10s, %10s\n", "n_k", "raw_data", "abs_err", "exp_err")
+    function.raw_pairs.each_with_index do |pair, index|
+      n_k = pair[0]
+      raw = pair[1]
+      if function.diff_abs_pairs[index]
+        abs_err = function.diff_abs_pairs[index][1]
+      else
+        abs_err = 0.0
+      end
+      exp_err = function.expected_error(n_k)
+      printf("      %15s, %10.5f, %10.5f, %10.5f\n", n_k, raw, abs_err, exp_err)
+    end
+    puts
   end
   puts
 end
 
-def analyze_encutinv1(eac)
-  puts "Fitting to |E_t - a_0| = a_1 / E_c"
-  eac.kmeshes.each do |kmesh|
-    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
-    data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
-    if data_pairs.size < 2
-      puts " data_pairs is #{data_pairs.size}: cannot fit."
-      next
-    end
-    etf = VaspUtils::ErrorAnalyzer::EncutTotenFitter1.new(data_pairs)
-    show_analysis(etf)
-  end
-  puts
-end
-
-def analyze_encutinv32(eac)
-  puts "Fitting to |E_t - a_0| = a_1 / E_c^{3/2}"
-  eac.kmeshes.each do |kmesh|
-    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
-    data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
-    if data_pairs.size < 2
-      puts " data_pairs is #{data_pairs.size}: cannot fit."
-      next
-    end
-    etf = VaspUtils::ErrorAnalyzer::EncutTotenFitter32.new(data_pairs)
-    show_analysis(etf)
-  end
-  puts
-end
-
-def analyze_encutexp1(eac)
-  puts "Fitting to |E_t - E_last| = a e^{bx}"
-  eac.kmeshes.each do |kmesh|
-    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
-    data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
-    if data_pairs.size < 2
-      puts " data_pairs is #{data_pairs.size}: cannot fit."
-      next
-    end
-    etf = VaspUtils::ErrorAnalyzer::EncutTotenFitterExp1.new(data_pairs)
-    show_analysis(etf)
-  end
-  puts
-end
-
-def analyze_encutexp32(eac)
-  puts "Fitting to |E_t - E_last| = a e^{bx^(3/2)}"
-  eac.kmeshes.each do |kmesh|
-    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
-    data_pairs = eac.encut_toten_pairs_of_kmesh(kmesh)
-    if data_pairs.size < 2
-      puts " data_pairs is #{data_pairs.size}: cannot fit."
-      next
-    end
-    etf = VaspUtils::ErrorAnalyzer::EncutTotenFitterExp32.new(data_pairs)
-    show_analysis(etf)
-  end
-  puts
-end
-
-analyze_kpoint(eac)     if OPTIONS[:kpoints]
-analyze_encutinv1(eac)  if OPTIONS[:encutinv1]
-analyze_encutinv32(eac) if OPTIONS[:encutinv32]
-analyze_encutexp1(eac)  if OPTIONS[:encutexp1]
-analyze_encutexp32(eac) if OPTIONS[:encutexp32]
-
-#今後としては、サブディレクトリ以下の全ての OUTCAR を含む計算ディレクトリを列挙し、Iter 1 で終わっていたら収束した計算の条件であるとする。
-
-#geomopt で finished になっていることを確認
-#latest_dir を取得。
-#その計算条件の kpoints, encut, toten を取得。
-
-#まとめて表という形にはしない。
-#  結局のところ、どの条件を揃えてどの条件を振るかだから
-#  多次元関数になる。
-#  Array などにまとめなおす意味があまりない。
-#
-#k点、ENCUT 以外は全て一緒であることを仮定する。
-#
-#k 点のリストを取得。
-#  本来なら対称性に合わせて ka, kb, kc を別々に扱える必要がある。
-#
-#[400, 500, 600].each do |encut|
-#  計算全部から encut にマッチするのを抽出し、
-#  [1.0/k 点数, TOTEN] の Array を作成。
-#  これを配列にした二重配列にして least_square_1st_degree にかける。
-#  出力する。
-#end
-#
-#vaspdirs = []
-#Find.find(".") do |path|      # シムリンクには効かないので注意
-#  next unless FileTest.directory? path
-#  begin
-#    vd = VaspUtils::VaspDir.new path
-#  rescue VaspUtils::VaspDir::InitializeError
-#    next
+#def show_analysis_encutinv1(analyzer)
+#  puts "Fitting to |E_t - a_0| = a_1 / E_c"
+#  analyzer.kmeshes.each do |kmesh|
+#    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
+#    data_pairs = analyzer.encut_toten_pairs_of_kmesh(kmesh)
+#    if data_pairs.size < 2
+#      puts " data_pairs is #{data_pairs.size}: cannot fit."
+#      next
+#    end
+#    etf = VaspUtils::ErrorAnalyzer::EncutTotenFitter1.new(data_pairs)
+#    show_analysis(etf)
 #  end
-#
-#  next unless vd.finished?
-#  next unless vd.outcar[:ionic_steps] == 1
-#  vaspdirs << vd
-#end
-#
-##vaspdirs.each do |vd|
-##  puts "Converged calculations:"
-##  encut = vd.incar["ENCUT"].to_i
-##  kmesh = vd.kpoints[:mesh].inject(1){|i, p| i * p}
-##  toten = vd.outcar[:totens][-1]
-##  printf("  %10.4f, %10.4f, %10.4f\n\n", encut, kmesh, toten)
-##end
-#
-#puts "Fixed ENCUT and varying k-mesh(n_k): (|y - a_0| = a_1 / n_k)"
-#[400, 500, 600].each do |encut|
-#  data_pairs = []
-#  vaspdirs.each do |vd|
-#    next unless vd.incar["ENCUT"].to_i == encut
-#    n = vd.kpoints[:mesh].inject(1){|i, p| i * p}
-#    toten = vd.outcar[:totens][-1]
-#    data_pairs << [1.0/n.to_f, toten]
-#  end
-#  coefficients = Malge::LeastSquare.least_square_1st_degree(data_pairs)
-#end
-#
-#puts
-#puts "Fixed k-mesh and varying Encut(E): (|y - a_0| = a_1 / E)"
-#[1, 8, 64].each do |tgt|
-#  data_pairs = []
-#  vaspdirs.each do |vd|
-#    n_k = vd.kpoints[:mesh].inject(1){|i, p| i * p}
-#    next unless n_k == tgt 
-#
-#    toten = vd.outcar[:totens][-1]
-#    encut = vd.incar["ENCUT"].to_f
-#    data_pairs << [1.0/(encut.to_f       ), toten]
-#  end
-#  coefficients = Malge::LeastSquare.least_square_1st_degree(data_pairs)
-#  printf("    a_0 = %10.4f, a_1 = %10.4f\n", coefficients[0], coefficients[1])
-#end
-#
-#puts
-#puts "Fixed k-mesh and varying Encut(E): (|y -a_0| = a_1 / E^(3/2))"
-#[1, 8, 64].each do |tgt|
-#  data_pairs = []
-#  vaspdirs.each do |vd|
-#    n_k = vd.kpoints[:mesh].inject(1){|i, p| i * p}
-#    next unless n_k == tgt 
-#
-#    toten = vd.outcar[:totens][-1]
-#    encut = vd.incar["ENCUT"].to_f
-#    #data_pairs << [1.0/(encut.to_f       ), toten]
-#    data_pairs << [1.0/(encut.to_f ** 1.5), toten]
-#    #data_pairs << [ Math::exp(- encut.to_f/400), toten]
-#  end
-#  #pp data_pairs
-#  coefficients = Malge::LeastSquare.least_square_1st_degree(data_pairs)
-#  printf("    a_0 = %10.4f, a_1 = %10.4f\n", coefficients[0], coefficients[1])
 #  puts
 #end
 #
-#puts "This script is not completely made."
+#def show_analysis_encutinv32(analyzer)
+#  puts "Fitting to |E_t - a_0| = a_1 / E_c^{3/2}"
+#  analyzer.kmeshes.each do |kmesh|
+#    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
+#    data_pairs = analyzer.encut_toten_pairs_of_kmesh(kmesh)
+#    if data_pairs.size < 2
+#      puts " data_pairs is #{data_pairs.size}: cannot fit."
+#      next
+#    end
+#    etf = VaspUtils::ErrorAnalyzer::EncutTotenFitter32.new(data_pairs)
+#    show_analysis(etf)
+#  end
+#  puts
+#end
 #
+#def show_analysis_encutexp1(analyzer)
+#  puts "Fitting to |E_t - E_last| = a e^{bx}"
+#  analyzer.kmeshes.each do |kmesh|
+#    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
+#    data_pairs = analyzer.encut_toten_pairs_of_kmesh(kmesh)
+#    if data_pairs.size < 2
+#      puts " data_pairs is #{data_pairs.size}: cannot fit."
+#      next
+#    end
+#    etf = VaspUtils::ErrorAnalyzer::EncutTotenFitterExp1.new(data_pairs)
+#    show_analysis(etf)
+#  end
+#  puts
+#end
+#
+#def show_analysis_encutexp32(analyzer)
+#  puts "Fitting to |E_t - E_last| = a e^{bx^(3/2)}"
+#  analyzer.kmeshes.each do |kmesh|
+#    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
+#    data_pairs = analyzer.encut_toten_pairs_of_kmesh(kmesh)
+#    if data_pairs.size < 2
+#      puts " data_pairs is #{data_pairs.size}: cannot fit."
+#      next
+#    end
+#    etf = VaspUtils::ErrorAnalyzer::EncutTotenFitterExp32.new(data_pairs)
+#    show_analysis(etf)
+#  end
+#  puts
+#end
+
+show_converged_totens(analyzer)
+show_analysis_kpoint(analyzer)      if OPTIONS[:kpoints]
+show_analysis_encutinv1(analyzer)   if OPTIONS[:encutinv1]
+show_analysis_encutinv32(analyzer)  if OPTIONS[:encutinv32]
+show_analysis_encutexp1(analyzer)   if OPTIONS[:encutexp1]
+show_analysis_encutexp32(analyzer)  if OPTIONS[:encutexp32]
+
