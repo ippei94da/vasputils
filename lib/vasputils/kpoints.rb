@@ -21,9 +21,7 @@ module VaspUtils::Kpoints
       raise "Kpoints module can deal with only monkhorst and gamma-center."
     end
 
-    #pp io.readline.strip.split(/\s+/).map{|i| i.to_i}
     results[:mesh] = io.readline.strip.split(/\s+/).map{|i| i.to_i}
-    #pp io.readline.strip.split(/\s+/).map{|i| i.to_f}
     results[:shift] = io.readline.strip.split(/\s+/).map{|i| i.to_f}
 
     return results

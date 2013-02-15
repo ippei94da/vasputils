@@ -44,7 +44,6 @@ def condition_check(opts)
   conds = {}
   # cluster
   name = opts["cluster"]
-  #pp mi.get_info(name)
   if name
     conds["cluster"] = name
   else
@@ -93,7 +92,6 @@ end
 opts = condition_check(opts)
 
 qs = QueueSubmitter.new(opts)
-#pp qs; exit
 
 begin
   qs.start

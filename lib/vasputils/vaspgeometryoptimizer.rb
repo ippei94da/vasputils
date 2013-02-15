@@ -39,11 +39,8 @@ class VaspUtils::VaspGeometryOptimizer < ComputationManager
   # yet 以外なら例外。
   # VaspDir になっているか。
   def calculate
-    #pp latest_dir.dir
     $stdout.puts "Calculate #{latest_dir.dir}"
     $stdout.flush
-
-    #pp latest_dir
 
     latest_dir.start
     #dir = latest_dir

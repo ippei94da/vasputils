@@ -42,7 +42,6 @@ else
   end
 end
 
-#pp calc_dir.class.ancestors
 
 begin
   calc_dir.start

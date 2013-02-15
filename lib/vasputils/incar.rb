@@ -20,9 +20,6 @@ require "vasputils.rb"
 # まず、自分で使う範囲だけ作る。
 # あとで余力があれば精密化する。
 module VaspUtils::Incar
-  #
-  #def initialize()
-  #end
   
   # 与えられた IO を読み込み、INCAR として解析したハッシュを返す。
   def self.parse(io)
