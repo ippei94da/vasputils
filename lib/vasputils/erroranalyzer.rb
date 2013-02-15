@@ -116,20 +116,44 @@ class VaspUtils::ErrorAnalyzer
     func
   end
 
-  def fit_encutsinv_totens(encut)
-    TODO
+  def fit_encutsinv_totens(kmesh)
+    data_pairs = encut_toten_pairs_of_kmesh(kmesh)
+    if data_pairs.size >= 2
+      func = Malge::ErrorFittedFunction::AXInv.new(data_pairs)
+    else
+      raise UnsufficientDataError, data_pairs.to_s
+    end
+    func
   end
 
-  def fit_encutsinv32_totens(encut)
-    TODO
+  def fit_encutsinv32_totens(kmesh)
+    data_pairs = encut_toten_pairs_of_kmesh(kmesh)
+    if data_pairs.size >= 2
+      func = Malge::ErrorFittedFunction::AXInv32.new(data_pairs)
+    else
+      raise UnsufficientDataError, data_pairs.to_s
+    end
+    func
   end
 
-  def fit_encutsexp_totens(encut)
-    TODO
+  def fit_encutsexp_totens(kmesh)
+    data_pairs = encut_toten_pairs_of_kmesh(kmesh)
+    if data_pairs.size >= 3
+      func = Malge::ErrorFittedFunction::AExpBX.new(data_pairs)
+    else
+      raise UnsufficientDataError, data_pairs.to_s
+    end
+    func
   end
 
-  def fit_encutsexp32_totens(encut)
-    TODO
+  def fit_encutsexp32_totens(kmesh)
+    data_pairs = encut_toten_pairs_of_kmesh(kmesh)
+    if data_pairs.size >= 3
+      func = Malge::ErrorFittedFunction::AExpBX32.new(data_pairs)
+    else
+      raise UnsufficientDataError, data_pairs.to_s
+    end
+    func
   end
 
 
