@@ -60,8 +60,13 @@ if shift_string
   shift_string.split.each {|val| pos_shift << val.to_f }
 end
 
+#cell = VaspUtils::Poscar.load_file(ARGV.shift)
+#lattice = cell.axes.to_a.transpose
+
 cell = VaspUtils::Poscar.load_file(ARGV.shift)
 lattice = cell.axes.to_a.transpose
+#pp cell.axes.to_a.transpose
+exit
 
 names = (cell.atoms.collect {|atom| atom.name}).uniq
 position = []
