@@ -2,6 +2,8 @@
 
 == Master (for 0.0.12)
   - Add analyzeerror
+  - Update bin/symposcar
+  - Adjust to CrystalCell-0.0.1
 
 == Version 0.0.11
   - Modify bin/qsubvasp

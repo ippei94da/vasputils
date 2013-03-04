@@ -2,7 +2,7 @@
 
 require "rubygems"
 gem "crystalcell"
-require "crystalcell/cell.rb"
+require "crystalcell"
 
 require "vasputils.rb"
 
@@ -83,9 +83,9 @@ class VaspUtils::Poscar
           items[3..5].each do |i|
             (i =~ /^t/i) ? mov_flags << true : mov_flags << false
           end
-          atoms << Atom.new(elements[elem_index], pos, mov_flags)
+          atoms << CrystalCell::Atom.new(elements[elem_index], pos, mov_flags)
         else
-          atoms << Atom.new(elements[elem_index], pos)
+          atoms << CrystalCell::Atom.new(elements[elem_index], pos)
         end
         end
       end
@@ -93,12 +93,12 @@ class VaspUtils::Poscar
       raise ParseError, "end of file reached"
     end
 
-    cell = Cell.new(axes, atoms)
+    cell = CrystalCell::Cell.new(axes, atoms)
     cell.comment = comment
     cell
   end
 
-  # file で与えられた名前のファイルを読み込んで Cell クラスインスタンスを返す。
+  # file で与えられた名前のファイルを読み込んで CrystalCell::Cell クラスインスタンスを返す。
   # 構文解析できなければ例外 Poscar::ParseError を投げる。
   def self.load_file(file)
     io = File.open(file, "r")
@@ -106,7 +106,7 @@ class VaspUtils::Poscar
   end
 
   # POSCAR 形式で書き出す。
-  # cell は Cell クラスインスタンスと同等のメソッドを持つもの。
+  # cell は CrystalCell::Cell クラスインスタンスと同等のメソッドを持つもの。
   # elems は書き出す元素の順番。
   #   elems が cell の持つ元素リストとマッチしなければ
   #   例外 Poscar::ElementMismatchError を投げる。

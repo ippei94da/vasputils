@@ -113,17 +113,17 @@ class TC_VaspDir < Test::Unit::TestCase
 
   def test_poscar
     t = @vd03.poscar
-    assert_equal(Cell, t.class)
+    assert_equal(CrystalCell::Cell, t.class)
     assert_in_delta(3.8879999999999999, t.axes[2][2])
     
     t = @vd00.poscar
-    assert_equal(Cell, t.class)
+    assert_equal(CrystalCell::Cell, t.class)
     assert_in_delta(3.8879999999999999, t.axes[2][2])
   end
 
   def test_contcar
     t = @vd03.contcar
-    assert_equal(Cell, t.class)
+    assert_equal(CrystalCell::Cell, t.class)
     assert_in_delta(3.8879999999999999, t.axes[2][2])
     
     assert_raise(Errno::ENOENT){@vd00.contcar}

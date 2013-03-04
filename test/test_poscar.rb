@@ -9,41 +9,41 @@ require "rubygems"
 gem "mageo"
 require "mageo/vector3dinternal.rb"
 gem "crystalcell"
-require "crystalcell/cell.rb"
+require "crystalcell"
 
 class TC_Poscar < Test::Unit::TestCase
   $tolerance = 10 ** (-10)
 
   def test_dump
     # 例外ケース
-    axes = LatticeAxes.new( [
+    axes = CrystalCell::LatticeAxes.new( [
       [1.0, 0.0, 0.0 ],
       [0.0, 1.0, 0.0 ],
       [0.0, 0.0, 1.0 ],
       ])
     atoms = [
-      Atom.new(0, [0.1, 0.2, 0.3]),
-      Atom.new(1, [0.2, 0.3, 0.4]),
-      Atom.new(0, [0.3, 0.4, 0.5]),
+      CrystalCell::Atom.new(0, [0.1, 0.2, 0.3]),
+      CrystalCell::Atom.new(1, [0.2, 0.3, 0.4]),
+      CrystalCell::Atom.new(0, [0.3, 0.4, 0.5]),
     ]
-    cell = Cell.new(axes, atoms)
+    cell = CrystalCell::Cell.new(axes, atoms)
     cell.comment = "test"
     io = StringIO.new
     assert_raises(VaspUtils::Poscar::ElementMismatchError){
       VaspUtils::Poscar.dump(cell, [0,1,2], io)}
 
     # 生成
-    axes = LatticeAxes.new( [
+    axes = CrystalCell::LatticeAxes.new( [
       [1.0, 0.0, 0.0 ],
       [0.0, 1.0, 0.0 ],
       [0.0, 0.0, 1.0 ],
       ])
     atoms = [
-      Atom.new(0, [0.1, 0.2, 0.3]),
-      Atom.new(1, [0.2, 0.3, 0.4]),
-      Atom.new(0, [0.3, 0.4, 0.5]),
+      CrystalCell::Atom.new(0, [0.1, 0.2, 0.3]),
+      CrystalCell::Atom.new(1, [0.2, 0.3, 0.4]),
+      CrystalCell::Atom.new(0, [0.3, 0.4, 0.5]),
     ]
-    cell = Cell.new(axes, atoms)
+    cell = CrystalCell::Cell.new(axes, atoms)
     cell.comment = "test"
     io = StringIO.new
     VaspUtils::Poscar.dump(cell, [0,1], io, 4)
@@ -68,11 +68,11 @@ class TC_Poscar < Test::Unit::TestCase
 
     # vasp 4
     atoms = [
-      Atom.new(0, [0.1, 0.2, 0.3], "atom0", [false, true , true ]),
-      Atom.new(1, [0.2, 0.3, 0.4], "atom1", [false, false, true ]),
-      Atom.new(0, [0.3, 0.4, 0.5], "atom2", [false, false, false]),
+      CrystalCell::Atom.new(0, [0.1, 0.2, 0.3], "atom0", [false, true , true ]),
+      CrystalCell::Atom.new(1, [0.2, 0.3, 0.4], "atom1", [false, false, true ]),
+      CrystalCell::Atom.new(0, [0.3, 0.4, 0.5], "atom2", [false, false, false]),
     ]
-    cell = Cell.new(axes, atoms)
+    cell = CrystalCell::Cell.new(axes, atoms)
     cell.comment = "test"
     io = StringIO.new
     VaspUtils::Poscar.dump(cell, [0,1], io, 4)
@@ -97,11 +97,11 @@ class TC_Poscar < Test::Unit::TestCase
     assert_equal(corrects.size, lines.size)
 
     atoms = [
-      Atom.new(0, [0.1, 0.2, 0.3], "atom0", [false, true , true ]),
-      Atom.new(1, [0.2, 0.3, 0.4], "atom1", [false, false, true ]),
-      Atom.new(0, [0.3, 0.4, 0.5], "atom2", [false, false, false]),
+      CrystalCell::Atom.new(0, [0.1, 0.2, 0.3], "atom0", [false, true , true ]),
+      CrystalCell::Atom.new(1, [0.2, 0.3, 0.4], "atom1", [false, false, true ]),
+      CrystalCell::Atom.new(0, [0.3, 0.4, 0.5], "atom2", [false, false, false]),
     ]
-    cell = Cell.new(axes, atoms)
+    cell = CrystalCell::Cell.new(axes, atoms)
     cell.comment = "test"
     io = StringIO.new
     VaspUtils::Poscar.dump(cell, [0,1], io, 4)
@@ -126,11 +126,11 @@ class TC_Poscar < Test::Unit::TestCase
     assert_equal(corrects.size, lines.size)
     # vasp 5
     atoms = [
-      Atom.new("Li", [0.1, 0.2, 0.3], "atom0", [false, true , true ]),
-      Atom.new("O" , [0.2, 0.3, 0.4], "atom1", [false, false, true ]),
-      Atom.new("Li", [0.3, 0.4, 0.5], "atom2", [false, false, false]),
+      CrystalCell::Atom.new("Li", [0.1, 0.2, 0.3], "atom0", [false, true , true ]),
+      CrystalCell::Atom.new("O" , [0.2, 0.3, 0.4], "atom1", [false, false, true ]),
+      CrystalCell::Atom.new("Li", [0.3, 0.4, 0.5], "atom2", [false, false, false]),
     ]
-    cell = Cell.new(axes, atoms)
+    cell = CrystalCell::Cell.new(axes, atoms)
     cell.comment = "test"
     io = StringIO.new
     VaspUtils::Poscar.dump(cell, ["Li", "O"], io, 5)
@@ -177,7 +177,7 @@ class TC_Poscar < Test::Unit::TestCase
     cell = VaspUtils::Poscar.parse(io)
     assert_equal("sample0", cell.comment)
     assert_equal(
-      LatticeAxes.new( [
+      CrystalCell::LatticeAxes.new( [
         [1.0, 0.0, 0.0 ],
         [0.0, 1.0, 0.0 ],
         [0.0, 0.0, 1.0 ],
@@ -185,11 +185,11 @@ class TC_Poscar < Test::Unit::TestCase
       cell.axes
     )
     assert_equal(
-      Atom.new(0, [0.0, 0.0, 0.0], "#Li-001"), cell.atoms[0])
+      CrystalCell::Atom.new(0, [0.0, 0.0, 0.0], "#Li-001"), cell.atoms[0])
     assert_equal(
-      Atom.new(1, [0.5, 0.0, 0.0], "#Ge-002"), cell.atoms[1])
+      CrystalCell::Atom.new(1, [0.5, 0.0, 0.0], "#Ge-002"), cell.atoms[1])
     assert_equal(
-      Atom.new(2, [0.5, 0.5, 0.0], "#O--003"), cell.atoms[2])
+      CrystalCell::Atom.new(2, [0.5, 0.5, 0.0], "#O--003"), cell.atoms[2])
 
     # vasp 4 style and selective dynamics
     io = StringIO.new
@@ -209,7 +209,7 @@ class TC_Poscar < Test::Unit::TestCase
     cell = VaspUtils::Poscar.parse(io)
     assert_equal("sample1", cell.comment)
     assert_equal(
-      LatticeAxes.new( [
+      CrystalCell::LatticeAxes.new( [
         [2.0, 0.0, 0.0 ],
         [0.0, 2.0, 0.0 ],
         [0.0, 0.0, 2.0 ],
@@ -217,16 +217,16 @@ class TC_Poscar < Test::Unit::TestCase
       cell.axes
     )
     assert_equal(
-      Atom.new(0, [0.0, 0.0, 0.0], "#Li-001", [false, false, false]),
+      CrystalCell::Atom.new(0, [0.0, 0.0, 0.0], "#Li-001", [false, false, false]),
       cell.atoms[0])
     assert_equal(
-      Atom.new(1, [0.5, 0.0, 0.0], "#Ge-002", [false, true , false]),
+      CrystalCell::Atom.new(1, [0.5, 0.0, 0.0], "#Ge-002", [false, true , false]),
       cell.atoms[1])
     assert_equal(
-      Atom.new(2, [0.5, 0.5, 0.0], "#O--003", [true, true, true]),
+      CrystalCell::Atom.new(2, [0.5, 0.5, 0.0], "#O--003", [true, true, true]),
       cell.atoms[2])
     assert_equal(
-      Atom.new(2, [0.5, 0.5, 0.5], "#O--004", [true, true, true]),
+      CrystalCell::Atom.new(2, [0.5, 0.5, 0.5], "#O--004", [true, true, true]),
       cell.atoms[3])
 
     # vasp 5 style
@@ -246,7 +246,7 @@ class TC_Poscar < Test::Unit::TestCase
     cell = VaspUtils::Poscar.parse(io)
     assert_equal("sample0", cell.comment)
     assert_equal(
-      LatticeAxes.new( [
+      CrystalCell::LatticeAxes.new( [
         [1.0, 0.0, 0.0 ],
         [0.0, 1.0, 0.0 ],
         [0.0, 0.0, 1.0 ],
@@ -254,18 +254,18 @@ class TC_Poscar < Test::Unit::TestCase
       cell.axes
     )
     assert_equal(
-      Atom.new("Li", [0.0, 0.0, 0.0], "#Li-001"), cell.atoms[0])
+      CrystalCell::Atom.new("Li", [0.0, 0.0, 0.0], "#Li-001"), cell.atoms[0])
     assert_equal(
-      Atom.new("Ge", [0.5, 0.0, 0.0], "#Ge-002"), cell.atoms[1])
+      CrystalCell::Atom.new("Ge", [0.5, 0.0, 0.0], "#Ge-002"), cell.atoms[1])
     assert_equal(
-      Atom.new("O", [0.5, 0.5, 0.0], "#O--003"), cell.atoms[2])
+      CrystalCell::Atom.new("O", [0.5, 0.5, 0.0], "#O--003"), cell.atoms[2])
   end
 
   def test_load_file
     cell = VaspUtils::Poscar.load_file("test/poscar/POSCAR.4-0")
     assert_equal("sample0", cell.comment)
     assert_equal(
-      LatticeAxes.new( [
+      CrystalCell::LatticeAxes.new( [
         [1.0, 0.0, 0.0 ],
         [0.0, 1.0, 0.0 ],
         [0.0, 0.0, 1.0 ],
@@ -273,11 +273,11 @@ class TC_Poscar < Test::Unit::TestCase
       cell.axes
     )
     assert_equal(
-      Atom.new(0, [0.0, 0.0, 0.0], "#Li-001"), cell.atoms[0])
+      CrystalCell::Atom.new(0, [0.0, 0.0, 0.0], "#Li-001"), cell.atoms[0])
     assert_equal(
-      Atom.new(1, [0.5, 0.0, 0.0], "#Ge-002"), cell.atoms[1])
+      CrystalCell::Atom.new(1, [0.5, 0.0, 0.0], "#Ge-002"), cell.atoms[1])
     assert_equal(
-      Atom.new(2, [0.5, 0.5, 0.0], "#O--003"), cell.atoms[2])
+      CrystalCell::Atom.new(2, [0.5, 0.5, 0.0], "#O--003"), cell.atoms[2])
 
   end
 end

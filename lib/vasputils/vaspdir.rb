@@ -37,13 +37,13 @@ class VaspUtils::VaspDir < ComputationManager
     VaspUtils::Outcar.load_file("#{@dir}/OUTCAR")
   end
 
-  # 配下の POSCAR を Cell2 インスタンスにして返す。
+  # 配下の POSCAR を CrystalCell::Cell インスタンスにして返す。
   # 存在しなければ例外 Errno::ENOENT を返す。
   def poscar
     VaspUtils::Poscar.load_file("#{@dir}/POSCAR")
   end
 
-  # 配下の CONTCAR を Cell2 インスタンスにして返す。
+  # 配下の CONTCAR を CrystalCell::Cell インスタンスにして返す。
   # 存在しなければ例外 Errno::ENOENT を返す。
   def contcar
     VaspUtils::Poscar.load_file("#{@dir}/CONTCAR")
