@@ -4,8 +4,6 @@ require "rubygems"
 gem "crystalcell"
 require "crystalcell"
 
-require "vasputils.rb"
-
 # Class to manage POSCAR format of VASP.
 # 
 # parse と dump のどちらかだけでなく、両方を統括して扱うクラス。

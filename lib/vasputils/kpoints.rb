@@ -1,7 +1,7 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
-require "vasputils.rb"
+#require "vasputils.rb"
 
 # Module dearing with KPOINTS.
 # This can deal with only Automatic mesh style of KPOINTS,

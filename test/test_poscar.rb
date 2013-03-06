@@ -6,8 +6,9 @@ require "vasputils.rb"
 require "vasputils/poscar.rb"
 
 require "rubygems"
-gem "mageo"
-require "mageo/vector3dinternal.rb"
+#gem "mageo"
+#require "mageo/vector3dinternal.rb"
+require "mageo"
 gem "crystalcell"
 require "crystalcell"
 

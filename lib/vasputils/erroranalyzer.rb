@@ -7,7 +7,7 @@
 
 require "pp"
 require "find"
-require "vasputils"
+#require "vasputils"
 require "rubygems"
 require "malge"
 
