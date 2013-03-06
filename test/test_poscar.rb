@@ -2,13 +2,13 @@
 
 require "test/unit"
 require "stringio"
-require "vasputils.rb"
-require "vasputils/poscar.rb"
+#require "vasputils.rb"
+#require "vasputils/poscar.rb"
 
 require "rubygems"
 #gem "mageo"
 #require "mageo/vector3dinternal.rb"
-require "mageo"
+#require "mageo"
 gem "crystalcell"
 require "crystalcell"
 

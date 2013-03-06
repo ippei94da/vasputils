@@ -11,7 +11,7 @@ gem "comana"
 require "comana/computationmanager.rb"
 require "comana/machineinfo.rb"
 
-require "vasputils.rb"
+#require "vasputils.rb"
 
 # Class for VASP executable directory,
 # including input and output files.

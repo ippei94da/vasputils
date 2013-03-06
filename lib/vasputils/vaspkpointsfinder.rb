@@ -1,7 +1,7 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
-require "vasputils/vaspdir.rb"
+#require "vasputils/vaspdir.rb"
 
 # 
 # 

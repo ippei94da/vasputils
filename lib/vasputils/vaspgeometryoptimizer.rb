@@ -8,7 +8,7 @@ require "rubygems"
 gem "comana"
 require "comana/computationmanager.rb"
 
-require "vasputils.rb"
+#require "vasputils.rb"
 #require "vasputils/vaspdir.rb"
 
 #
