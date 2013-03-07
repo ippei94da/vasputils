@@ -1,4 +1,4 @@
-require "vasputils.rb"
+#require "vasputils.rb"
 
 # OUTCAR をパースする。
 # 精確には行わず、必要な情報だけをピックアップする感じ。

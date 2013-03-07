@@ -1,4 +1,4 @@
-require "vasputils.rb"
+#require "vasputils.rb"
 
 #
 # Class for dealing with POTCAR.
