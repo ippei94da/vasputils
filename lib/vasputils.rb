@@ -1,3 +1,7 @@
+require "rubygems"
+#gem     "mageo"
+require "mageo"
+
 module VaspUtils; end
 
 require "vasputils/incar.rb"

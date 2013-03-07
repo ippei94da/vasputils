@@ -1,7 +1,7 @@
 #! /usr/bin/ruby
 
 require "rubygems"
-gem "crystalcell"
+#gem "crystalcell"
 require "crystalcell"
 
 # Class to manage POSCAR format of VASP.

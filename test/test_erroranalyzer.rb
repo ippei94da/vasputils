@@ -2,8 +2,8 @@
 # coding: utf-8
 
 require "test/unit"
-require "vasputils.rb"
-require "vasputils/erroranalyzer.rb"
+require "vasputils"
+#require "vasputils/erroranalyzer.rb"
 
 class TC_ErrorAnalyzer < Test::Unit::TestCase
   TOLERANCE = 1.0e-10
