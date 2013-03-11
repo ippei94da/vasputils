@@ -1,8 +1,9 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
-require "test/unit"
-require "vasputils/setting.rb"
+require 'helper'
+#require "test/unit"
+#require "vasputils/setting.rb"
 
 class TC_Setting < Test::Unit::TestCase
   def setup

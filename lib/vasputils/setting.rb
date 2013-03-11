@@ -2,7 +2,6 @@
 # coding: utf-8
 
 require 'yaml'
-require 'helper'
 #require 'vasputils'
 
 
