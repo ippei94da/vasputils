@@ -6,23 +6,23 @@ require "find"
 require "rubygems"
 require "vasputils"
 
-require "optparse"
-## option analysis
-OPTIONS = {}
-op = OptionParser.new
-op.on(""    , "--kpoints"    , "Kpoints fit to |E_tot - E_last| = a[0]/n_k"             ){ OPTIONS[:kpoints]    = true}
-op.on(""    , "--encut-inv"  , "Encuts  fit to |E_tot - E_last| = a[0]/E_cut."          ){ OPTIONS[:encutinv]  = true}
-op.on(""    , "--encut-inv32", "Encuts  fit to |E_tot - E_last| = a[0]/E_cut^(3/2)."    ){ OPTIONS[:encutinv32] = true}
-op.on(""    , "--encut-exp"  , "Encuts  fit to |E_tot - E_last| = a[0] exp a[1] x."      ){ OPTIONS[:encutexp]  = true}
-op.on(""    , "--encut-exp32", "Encuts  fit to |E_tot - E_last| = a[0] exp a[1] x^(3/2)."){ OPTIONS[:encutexp32] = true}
-op.on("-a"  , "--all"        , "All analysis."                                          ){
-  OPTIONS[:kpoints]    = true
-  OPTIONS[:encutinv]  = true
-  OPTIONS[:encutinv32] = true
-  OPTIONS[:encutexp]  = true
-  OPTIONS[:encutexp32] = true
-}
-op.parse!(ARGV)
+#require "optparse"
+### option analysis
+#OPTIONS = {}
+#op = OptionParser.new
+#op.on(""    , "--kpoints"    , "Kpoints fit to |E_tot - E_last| = a[0]/n_k"             ){ OPTIONS[:kpoints]    = true}
+#op.on(""    , "--encut-inv"  , "Encuts  fit to |E_tot - E_last| = a[0]/E_cut."          ){ OPTIONS[:encutinv]  = true}
+#op.on(""    , "--encut-inv32", "Encuts  fit to |E_tot - E_last| = a[0]/E_cut^(3/2)."    ){ OPTIONS[:encutinv32] = true}
+#op.on(""    , "--encut-exp"  , "Encuts  fit to |E_tot - E_last| = a[0] exp a[1] x."      ){ OPTIONS[:encutexp]  = true}
+#op.on(""    , "--encut-exp32", "Encuts  fit to |E_tot - E_last| = a[0] exp a[1] x^(3/2)."){ OPTIONS[:encutexp32] = true}
+#op.on("-a"  , "--all"        , "All analysis."                                          ){
+#  OPTIONS[:kpoints]    = true
+#  OPTIONS[:encutinv]  = true
+#  OPTIONS[:encutinv32] = true
+#  OPTIONS[:encutexp]  = true
+#  OPTIONS[:encutexp32] = true
+#}
+#op.parse!(ARGV)
 
 unless ARGV.size == 0
   puts "NOTE: need check coefficients. Option help, calculation, output."
@@ -32,126 +32,145 @@ unless ARGV.size == 0
 end
 
 dir = ENV['PWD']
-analyzer = VaspUtils::ErrorAnalyzer.new(dir)
+analyzer = VaspUtils::ConditionAnalyzer::Analyzer.new(dir)
+cross_points = analyzer.cross_points
+finest_point = cross_points.min_by {|point| analyzer.expected_error(point) }
+conditions = finest_point.keys
+conditions.each do |condition|
+  fix_cond = conditions.delete condition
+  analyzer.
 
-def show_converged_totens(analyzer)
-  puts "All converged data:"
-  analyzer.converged_calculations.each do |calc|
-    printf("  k-mesh = [%2d, %2d, %2d], ENCUT = %7.1f, TOTEN = %10.5f\n",
-      *calc[:kmesh], calc[:encut], calc[:toten])
-  end
-  puts
 end
 
-#Example of x label is "n_k" 
-def show_function_data(function, x_label)
-  puts
-  function.coefficients.each_with_index do |a, i|
-    printf("    a[#{i}] = %10.4f\n", a)
-  end
-  #puts "    Variance using expected error: #{function.variance}"
-  printf( "    Variance using expected error: %15.7f\n", function.variance)
-  puts "    Expected errors:"
 
-  printf("      %8s, %10s, %10s, %10s\n", "n_k", "raw_data", "abs_err", "exp_err")
-  function.raw_pairs.each_with_index do |pair, index|
-    n_k = pair[0]
-    raw = pair[1]
-    if function.diff_abs_pairs[index]
-      abs_err = function.diff_abs_pairs[index][1]
-    else
-      abs_err = 0.0
-    end
-    exp_err = function.expected_error(n_k)
-    printf("      %8s, %10.5f, %10.5f, %10.5f\n", n_k, raw, abs_err, exp_err)
-  end
-  puts
-end
 
-#Show:
-# - Assumed function; e.g., "Fitting to |E_t - E_last| = a[0] / n_k"
-# - Coefficients; e.g., [1.0]
-# - Variance; summed square values of difference between raw_data and expected_error.
-# - Data of [condition, raw_data, absolute_error, expected_error]
-def show_analysis_kpoint(analyzer)
-  puts "Fitting to |E_t - E_last| = a[0] / n_k"
-  analyzer.encuts.each do |encut|
-    printf( "  Fixed ENCUT of %4d:", encut)
-    begin
-      function = analyzer.fit_kpoints_totens(encut)
-    rescue VaspUtils::ErrorAnalyzer::UnsufficientDataError
-      puts " cannot fit."
-      next
-    end
-    show_function_data(function, "n_k")
-  end
-  puts
-end
 
-def show_analysis_encutinv(analyzer)
-  puts "Fitting to |E_t - E_last| = a[0] / E_c"
-  analyzer.kmeshes.each do |kmesh|
-    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
-    begin
-      function = analyzer.fit_encutsinv_totens(kmesh)
-    rescue VaspUtils::ErrorAnalyzer::UnsufficientDataError
-      puts " cannot fit."
-      next
-    end
-    show_function_data(function, "ENCUT")
-  end
-  puts
-end
 
-def show_analysis_encutinv32(analyzer)
-  puts "Fitting to |E_t - E_last| = a[0] / E_c^{3/2}"
-  analyzer.kmeshes.each do |kmesh|
-    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
-    begin
-      function = analyzer.fit_encutsinv32_totens(kmesh)
-    rescue VaspUtils::ErrorAnalyzer::UnsufficientDataError
-      puts " cannot fit."
-      next
-    end
-    show_function_data(function, "ENCUT")
-  end
-  puts
-end
 
-def show_analysis_encutexp(analyzer)
-  puts "Fitting to |E_t - E_last| = a[0] e^{a[1] * x}"
-  analyzer.kmeshes.each do |kmesh|
-    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
-    begin
-      function = analyzer.fit_encutsexp_totens(kmesh)
-    rescue VaspUtils::ErrorAnalyzer::UnsufficientDataError
-      puts " cannot fit."
-      next
-    end
-    show_function_data(function, "ENCUT")
-  end
-  puts
-end
 
-def show_analysis_encutexp32(analyzer)
-  puts "Fitting to |E_t - E_last| = a[0] e^{a[1] * x^{3/2}}"
-  analyzer.kmeshes.each do |kmesh|
-    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
-    begin
-      function = analyzer.fit_encutsexp32_totens(kmesh)
-    rescue VaspUtils::ErrorAnalyzer::UnsufficientDataError
-      puts " cannot fit."
-      next
-    end
-    show_function_data(function, "ENCUT")
-  end
-  puts
-end
 
-show_converged_totens(analyzer)
-show_analysis_kpoint(analyzer)      if OPTIONS[:kpoints]
-show_analysis_encutinv(analyzer)   if OPTIONS[:encutinv]
-show_analysis_encutinv32(analyzer)  if OPTIONS[:encutinv32]
-show_analysis_encutexp(analyzer)   if OPTIONS[:encutexp]
-show_analysis_encutexp32(analyzer)  if OPTIONS[:encutexp32]
 
+
+#def show_converged_totens(analyzer)
+#  puts "All converged data:"
+#  analyzer.converged_calculations.each do |calc|
+#    printf("  k-mesh = [%2d, %2d, %2d], ENCUT = %7.1f, TOTEN = %10.5f\n",
+#      *calc[:kmesh], calc[:encut], calc[:toten])
+#  end
+#  puts
+#end
+
+
+
+
+##Example of x label is "n_k" 
+#def show_function_data(function, x_label)
+#  puts
+#  function.coefficients.each_with_index do |a, i|
+#    printf("    a[#{i}] = %10.4f\n", a)
+#  end
+#  #puts "    Variance using expected error: #{function.variance}"
+#  printf( "    Variance using expected error: %15.7f\n", function.variance)
+#  puts "    Expected errors:"
+#
+#  printf("      %8s, %10s, %10s, %10s\n", "n_k", "raw_data", "abs_err", "exp_err")
+#  function.raw_pairs.each_with_index do |pair, index|
+#    n_k = pair[0]
+#    raw = pair[1]
+#    if function.diff_abs_pairs[index]
+#      abs_err = function.diff_abs_pairs[index][1]
+#    else
+#      abs_err = 0.0
+#    end
+#    exp_err = function.expected_error(n_k)
+#    printf("      %8s, %10.5f, %10.5f, %10.5f\n", n_k, raw, abs_err, exp_err)
+#  end
+#  puts
+#end
+#
+##Show:
+## - Assumed function; e.g., "Fitting to |E_t - E_last| = a[0] / n_k"
+## - Coefficients; e.g., [1.0]
+## - Variance; summed square values of difference between raw_data and expected_error.
+## - Data of [condition, raw_data, absolute_error, expected_error]
+#def show_analysis_kpoint(analyzer)
+#  puts "Fitting to |E_t - E_last| = a[0] / n_k"
+#  analyzer.encuts.each do |encut|
+#    printf( "  Fixed ENCUT of %4d:", encut)
+#    begin
+#      function = analyzer.fit_kpoints_totens(encut)
+#    rescue VaspUtils::ErrorAnalyzer::UnsufficientDataError
+#      puts " cannot fit."
+#      next
+#    end
+#    show_function_data(function, "n_k")
+#  end
+#  puts
+#end
+#
+#def show_analysis_encutinv(analyzer)
+#  puts "Fitting to |E_t - E_last| = a[0] / E_c"
+#  analyzer.kmeshes.each do |kmesh|
+#    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
+#    begin
+#      function = analyzer.fit_encutsinv_totens(kmesh)
+#    rescue VaspUtils::ErrorAnalyzer::UnsufficientDataError
+#      puts " cannot fit."
+#      next
+#    end
+#    show_function_data(function, "ENCUT")
+#  end
+#  puts
+#end
+#
+#def show_analysis_encutinv32(analyzer)
+#  puts "Fitting to |E_t - E_last| = a[0] / E_c^{3/2}"
+#  analyzer.kmeshes.each do |kmesh|
+#    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
+#    begin
+#      function = analyzer.fit_encutsinv32_totens(kmesh)
+#    rescue VaspUtils::ErrorAnalyzer::UnsufficientDataError
+#      puts " cannot fit."
+#      next
+#    end
+#    show_function_data(function, "ENCUT")
+#  end
+#  puts
+#end
+#
+#def show_analysis_encutexp(analyzer)
+#  puts "Fitting to |E_t - E_last| = a[0] e^{a[1] * x}"
+#  analyzer.kmeshes.each do |kmesh|
+#    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
+#    begin
+#      function = analyzer.fit_encutsexp_totens(kmesh)
+#    rescue VaspUtils::ErrorAnalyzer::UnsufficientDataError
+#      puts " cannot fit."
+#      next
+#    end
+#    show_function_data(function, "ENCUT")
+#  end
+#  puts
+#end
+#
+#def show_analysis_encutexp32(analyzer)
+#  puts "Fitting to |E_t - E_last| = a[0] e^{a[1] * x^{3/2}}"
+#  analyzer.kmeshes.each do |kmesh|
+#    printf( "  Fixed k-mesh of [%2d, %2d, %2d]:", *kmesh)
+#    begin
+#      function = analyzer.fit_encutsexp32_totens(kmesh)
+#    rescue VaspUtils::ErrorAnalyzer::UnsufficientDataError
+#      puts " cannot fit."
+#      next
+#    end
+#    show_function_data(function, "ENCUT")
+#  end
+#  puts
+#end
+#
+#show_converged_totens(analyzer)
+#show_analysis_kpoint(analyzer)      if OPTIONS[:kpoints]
+#show_analysis_encutinv(analyzer)   if OPTIONS[:encutinv]
+#show_analysis_encutinv32(analyzer)  if OPTIONS[:encutinv32]
+#show_analysis_encutexp(analyzer)   if OPTIONS[:encutexp]
+#show_analysis_encutexp32(analyzer)  if OPTIONS[:encutexp32]
