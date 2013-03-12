@@ -1,0 +1,1 @@
+class ConditionAnalyzer; end
