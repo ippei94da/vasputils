@@ -6,11 +6,14 @@ require "find"
 require "rubygems"
 require "vasputils"
 
-#require "optparse"
-### option analysis
-#OPTIONS = {}
-#op = OptionParser.new
-##op.on(""    , "--kpoints"    , "Kpoints fit to |E_tot - E_last| = a[0]/n_k"             ){ OPTIONS[:kpoints]    = true}
+require "optparse"
+## option analysis
+OPTIONS = {:symprec => 1.0E-10, :angle => -1.0}
+op = OptionParser.new
+op.on("-s val"    , "--symprec=val"    , "Symmetry precision for symmetry finding. Default = 1.0E-10." ){|val| OPTIONS[:symprec] = val}
+op.on("-a val"    , "--angle-tolerance=val"    , "Angle tolerance for symmetry finding. Default = -1.0" ){|val| OPTIONS[:angle] = val}
+op.on(""    , "--ka=val"    , "Mesh number of k_a axis."             ){ |val| OPTIONS[:ka]    = val}
+
 ##op.on(""    , "--encut-inv"  , "Encuts  fit to |E_tot - E_last| = a[0]/E_cut."          ){ OPTIONS[:encutinv]  = true}
 ##op.on(""    , "--encut-inv32", "Encuts  fit to |E_tot - E_last| = a[0]/E_cut^(3/2)."    ){ OPTIONS[:encutinv32] = true}
 ##op.on(""    , "--encut-exp"  , "Encuts  fit to |E_tot - E_last| = a[0] exp a[1] x."      ){ OPTIONS[:encutexp]  = true}
@@ -23,7 +26,7 @@ require "vasputils"
 ##  OPTIONS[:encutexp32] = true
 #}
 #  op.on("-l"  , "--long"        , "Output in long format." ){ OPTIONS[:long] = true }
-#op.parse!(ARGV)
+op.parse!(ARGV)
 
 unless ARGV.size == 0
   puts "NOTE: need check coefficients. Option help, calculation, output."
@@ -33,9 +36,15 @@ unless ARGV.size == 0
 end
 
 dir = ENV['PWD']
-analyzer = VaspUtils::ConditionAnalyzer::Analyzer.new(dir)
+holder = VaspUtils::ConditionAnalyzer::Holder.load_dir(dir, OPTIONS[:symprec], OPTIONS[:angle])
 
-analyzer.show_all_results
+
+puts "All converged data."
+holder.conds_results.each do |tmp|
+  #printf("%6.1f, %2d, %15.6f\n", tmp[:encut], tmp[:kab)
+  puts "  " + tmp.to_s
+end
+
 
 
 
