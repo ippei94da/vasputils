@@ -6,24 +6,24 @@ require "find"
 require "rubygems"
 require "vasputils"
 
-require "optparse"
-## option analysis
-OPTIONS = {}
-op = OptionParser.new
-#op.on(""    , "--kpoints"    , "Kpoints fit to |E_tot - E_last| = a[0]/n_k"             ){ OPTIONS[:kpoints]    = true}
-#op.on(""    , "--encut-inv"  , "Encuts  fit to |E_tot - E_last| = a[0]/E_cut."          ){ OPTIONS[:encutinv]  = true}
-#op.on(""    , "--encut-inv32", "Encuts  fit to |E_tot - E_last| = a[0]/E_cut^(3/2)."    ){ OPTIONS[:encutinv32] = true}
-#op.on(""    , "--encut-exp"  , "Encuts  fit to |E_tot - E_last| = a[0] exp a[1] x."      ){ OPTIONS[:encutexp]  = true}
-#op.on(""    , "--encut-exp32", "Encuts  fit to |E_tot - E_last| = a[0] exp a[1] x^(3/2)."){ OPTIONS[:encutexp32] = true}
-#op.on("-a"  , "--all"        , "All analysis."                                          ){
-#  OPTIONS[:kpoints]    = true
-#  OPTIONS[:encutinv]  = true
-#  OPTIONS[:encutinv32] = true
-#  OPTIONS[:encutexp]  = true
-#  OPTIONS[:encutexp32] = true
-}
-  op.on("-l"  , "--long"        , "Output in long format." ){ OPTIONS[:long] = true }
-op.parse!(ARGV)
+#require "optparse"
+### option analysis
+#OPTIONS = {}
+#op = OptionParser.new
+##op.on(""    , "--kpoints"    , "Kpoints fit to |E_tot - E_last| = a[0]/n_k"             ){ OPTIONS[:kpoints]    = true}
+##op.on(""    , "--encut-inv"  , "Encuts  fit to |E_tot - E_last| = a[0]/E_cut."          ){ OPTIONS[:encutinv]  = true}
+##op.on(""    , "--encut-inv32", "Encuts  fit to |E_tot - E_last| = a[0]/E_cut^(3/2)."    ){ OPTIONS[:encutinv32] = true}
+##op.on(""    , "--encut-exp"  , "Encuts  fit to |E_tot - E_last| = a[0] exp a[1] x."      ){ OPTIONS[:encutexp]  = true}
+##op.on(""    , "--encut-exp32", "Encuts  fit to |E_tot - E_last| = a[0] exp a[1] x^(3/2)."){ OPTIONS[:encutexp32] = true}
+##op.on("-a"  , "--all"        , "All analysis."                                          ){
+##  OPTIONS[:kpoints]    = true
+##  OPTIONS[:encutinv]  = true
+##  OPTIONS[:encutinv32] = true
+##  OPTIONS[:encutexp]  = true
+##  OPTIONS[:encutexp32] = true
+#}
+#  op.on("-l"  , "--long"        , "Output in long format." ){ OPTIONS[:long] = true }
+#op.parse!(ARGV)
 
 unless ARGV.size == 0
   puts "NOTE: need check coefficients. Option help, calculation, output."
@@ -34,21 +34,9 @@ end
 
 dir = ENV['PWD']
 analyzer = VaspUtils::ConditionAnalyzer::Analyzer.new(dir)
-cross_points = analyzer.cross_points
-finest_point = cross_points.min_by {|point| analyzer.expected_error(point) }
 
-puts "Finest error is found at #{point.to_s}"
-analyzer.expected_error(point)
+analyzer.show_all_results
 
-
-if OPTIONS[:long]
-  conditions = finest_point.keys
-  conditions.each do |condition|
-    #fix_cond = conditions.delete condition
-    #analyzer.
-    puts "TODO"
-  end
-end
 
 
 

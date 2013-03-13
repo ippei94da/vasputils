@@ -78,6 +78,9 @@ class TC_VaspDir < Test::Unit::TestCase
     assert_raise(VaspUtils::VaspDir::InitializeError){VaspUtils::VaspDir.new("test/vaspdir/lack-KPOINTS")}
     assert_raise(VaspUtils::VaspDir::InitializeError){VaspUtils::VaspDir.new("test/vaspdir/lack-POSCAR" )}
     assert_raise(VaspUtils::VaspDir::InitializeError){VaspUtils::VaspDir.new("test/vaspdir/lack-POTCAR" )}
+
+    assert_raise(VaspUtils::VaspDir::InitializeError){VaspUtils::VaspDir.new("test/conditionanalyzer/00" )}
+
   end
 
   def test_finished?

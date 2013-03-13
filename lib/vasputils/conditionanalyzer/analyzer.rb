@@ -6,16 +6,18 @@
 #
 class VaspUtils::ConditionAnalyzer::Analyzer
   #
-  def initialize(dir)
-    @holder = VaspUtils::ConditionAnalyzer::Holder.new
-    Find.find(dir) do |path|
-      cond_result = VaspUtils::ConditionAnalyzer::Picker.pick(path)
-      @holder.add { cond_result }
-    end
+  def initialize
   end
 
-  def expected_error(conds)
+  #def load_dir(dir, symprec, angle_tolerance)
+  #  @holder = VaspUtils::ConditionAnalyzer::Holder.load_dir(dir, symprec, angle_tolerance)
+  #end
 
-  end
+  #def keys
+  #  @holder.keys
+  #end
+
+  #def expected_error(conds)
+  #end
 end
 

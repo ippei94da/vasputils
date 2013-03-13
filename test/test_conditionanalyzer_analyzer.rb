@@ -3,7 +3,7 @@
 
 require "helper"
 
-class TC_Klass < Test::Unit::TestCase
+class TC_Analyzer < Test::Unit::TestCase
   def setup
     @a00 = VaspUtils::ConditionAnalyzer::Analyzer.new(dir)
   end
