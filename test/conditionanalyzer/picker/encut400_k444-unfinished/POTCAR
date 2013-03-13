@@ -1,0 +1,16 @@
+ PAW_GGA Li_sv 23Jan2001
+ 3.00000000000000000
+ parameters from PSCTR are:
+   VRHFIN =Li: 1s2s2p
+   LEXCH  = 91
+   EATOM  =   203.0979 eV,   14.9273 Ry
+
+   TITEL  = PAW_GGA Li_sv 23Jan2001
+ PAW_GGA N 31May2000
+ 5.00000000000000000
+ parameters from PSCTR are:
+   VRHFIN =N: s2p3
+   LEXCH  = 91
+   EATOM  =   265.0126 eV,   19.4779 Ry
+
+   TITEL  = PAW_GGA N 31May2000

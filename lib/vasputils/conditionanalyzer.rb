@@ -1,1 +1,1 @@
-class ConditionAnalyzer; end
+module VaspUtils::ConditionAnalyzer; end
