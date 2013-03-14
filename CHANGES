@@ -2,6 +2,7 @@
 
 == Master (for 0.0.12)
   - Add analyzeerror
+  - Add VaspUtils::ConditionAnalyzer etc.
   - Update bin/symposcar
   - Adjust to CrystalCell-0.0.1
 

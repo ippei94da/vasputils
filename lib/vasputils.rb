@@ -14,7 +14,6 @@ require "vasputils/setting.rb"
 require "vasputils/vaspdir.rb"
 require "vasputils/vaspgeometryoptimizer.rb"
 require "vasputils/vaspkpointsfinder.rb"
-require "vasputils/erroranalyzer.rb"
 
 require "vasputils/conditionanalyzer.rb"
 require "vasputils/conditionanalyzer/errorfitter.rb"

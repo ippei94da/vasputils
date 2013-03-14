@@ -1,6 +1,8 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
+require "find"
+
 class Hash
   #Return true if all keys and values are parfectly included in other.
   def partial_of?(other)

@@ -46,33 +46,51 @@ unless ARGV.size == 0
 end
 
 dir = ENV['PWD']
-#pp dir, OPTIONS[:symprec], OPTIONS[:angle]
-#exit
 holder = VaspUtils::ConditionAnalyzer::Holder.load_dir(dir, OPTIONS[:symprec], OPTIONS[:angle])
-#pp holder
-#exit
 
-############################################################
-puts "All converged data."
-holder.conds_results[0].keys.each do |key|
-  printf("  %12s", key.to_s)
-end
-puts
-holder.conds_results.each do |hash|
-  hash.each do |key, val|
-    printf("  %12.6f", val)
+def show(data)
+  #Indices
+  data[0].keys.each do |key|
+    printf("  %12s", key.to_s)
+  end
+  puts
+  data.each do |hash|
+    hash.each do |key, val|
+      printf("  %12.6f", val)
+    end
+    puts
   end
   puts
 end
-puts
 
 ############################################################
-puts "Analysis along conditions."
+puts "All converged data."
+show(holder.conds_results)
+
+############################################################
+hold_conds = holder.conds_results[0].keys - [:toten]
+unless hold_conds == CONDITIONS.keys
+  puts "Conditions mismatch."
+  puts "  Calculations: #{(hold_conds - [:toten]).to_s} + :toten"
+  puts "  Options     : #{CONDITIONS.keys.to_s}"
+  puts "Exit."
+  exit
+end
+
+############################################################
 CONDITIONS.each do |key, val|
   fixed_conds = CONDITIONS - {key => val}
-  puts "  Fixed #{fixed_conds}, along #{key}"
-  #pp fixed_conds
+  puts "Analysis: Fixed #{fixed_conds}, along :#{key}"
   data = holder.project(fixed_conds)
+  show(data)
+  begin
+    function = VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
+  rescue VaspUtils::ConditionAnalyzer::ErrorFitter::UnableCalculationError
+    puts "  Error fitted function cannot be generated."
+    puts "  Maybe less data points or include zero for exponential."
+  end
+  pp function.methods
+  puts
 end
 exit
 

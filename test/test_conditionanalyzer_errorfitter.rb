@@ -97,7 +97,7 @@ class TC_ErrorFitter < Test::Unit::TestCase
       {:ka => 4, :toten => - 9.0},
       {:ka => 8, :toten => -10.0, :kb => 0},
     ]
-    assert_raise(VaspUtils::ConditionAnalyzer::ErrorFitter::TypeError){
+    assert_raise(VaspUtils::ConditionAnalyzer::ErrorFitter::HashKeyError){
       VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
     }
 
@@ -107,7 +107,7 @@ class TC_ErrorFitter < Test::Unit::TestCase
       {:ka => 4, :kb => - 9.0},
       {:ka => 8, :kb => -10.0},
     ]
-    assert_raise(VaspUtils::ConditionAnalyzer::ErrorFitter::TypeError){
+    assert_raise(VaspUtils::ConditionAnalyzer::ErrorFitter::NoTotenError){
       VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
     }
 
@@ -115,9 +115,20 @@ class TC_ErrorFitter < Test::Unit::TestCase
       {:encut => 100, :toten => - 3.0},
       {:encut => 200, :toten => - 7.0},
     ]
-    assert_raise(Malge::ErrorFittedFunction::UnableCalculationError){
+    assert_raise(VaspUtils::ConditionAnalyzer::ErrorFitter::UnableCalculationError){
       VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
     }
+
+    data = [
+      {:encut => 0.0, :toten => 100.0},
+      {:encut => 1.0, :toten => 100.0},
+      {:encut => 2.0, :toten => 100.0},
+      {:encut => 3.0, :toten => 100.0},
+    ]
+    assert_raise(VaspUtils::ConditionAnalyzer::ErrorFitter::UnableCalculationError){
+      VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
+    }
+
 
   end
 
