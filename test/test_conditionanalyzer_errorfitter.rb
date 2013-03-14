@@ -6,6 +6,7 @@ require "helper"
 #require "pkg/klass.rb"
 
 class TC_ErrorFitter < Test::Unit::TestCase
+  $tolerance = 1E-10
 
   def test_self_fit
     data = [
@@ -15,10 +16,8 @@ class TC_ErrorFitter < Test::Unit::TestCase
       {:ka => 8, :toten => -10.0},
     ]
     result = VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
-    correct = Malge::ErrorFittedFunction::AXInv.new(data)
-    assert_equal(correct.coefficients  , results.coefficients  )
-    assert_equal(correct.raw_pairs     , results.raw_pairs     )
-    assert_equal(correct.diff_abs_pairs, results.diff_abs_pairs)
+    assert_equal(Malge::ErrorFittedFunction::AXInv, result.class)
+    assert_equal([4.0], result.coefficients)
 
     data = [
       {:kb => 1, :toten => - 6.0},
@@ -27,10 +26,8 @@ class TC_ErrorFitter < Test::Unit::TestCase
       {:kb => 8, :toten => -10.0},
     ]
     result = VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
-    correct = Malge::ErrorFittedFunction::AXInv.new(data)
-    assert_equal(correct.coefficients  , results.coefficients  )
-    assert_equal(correct.raw_pairs     , results.raw_pairs     )
-    assert_equal(correct.diff_abs_pairs, results.diff_abs_pairs)
+    assert_equal(Malge::ErrorFittedFunction::AXInv, result.class)
+    assert_equal([4.0], result.coefficients)
 
     data = [
       {:kc => 1, :toten => - 6.0},
@@ -39,10 +36,8 @@ class TC_ErrorFitter < Test::Unit::TestCase
       {:kc => 8, :toten => -10.0},
     ]
     result = VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
-    correct = Malge::ErrorFittedFunction::AXInv.new(data)
-    assert_equal(correct.coefficients  , results.coefficients  )
-    assert_equal(correct.raw_pairs     , results.raw_pairs     )
-    assert_equal(correct.diff_abs_pairs, results.diff_abs_pairs)
+    assert_equal(Malge::ErrorFittedFunction::AXInv, result.class)
+    assert_equal([4.0], result.coefficients)
 
     data = [
       {:kab => 1, :toten =>   6.0},
@@ -51,10 +46,8 @@ class TC_ErrorFitter < Test::Unit::TestCase
       {:kab => 8, :toten => -10.0},
     ]
     result = VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
-    correct = Malge::ErrorFittedFunction::AXInv2.new(data)
-    assert_equal(correct.coefficients  , results.coefficients  )
-    assert_equal(correct.raw_pairs     , results.raw_pairs     )
-    assert_equal(correct.diff_abs_pairs, results.diff_abs_pairs)
+    assert_equal(Malge::ErrorFittedFunction::AXInv2, result.class)
+    assert_equal([16.0], result.coefficients)
 
     data = [
       {:kbc => 1, :toten =>   6.0},
@@ -63,10 +56,8 @@ class TC_ErrorFitter < Test::Unit::TestCase
       {:kbc => 8, :toten => -10.0},
     ]
     result = VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
-    correct = Malge::ErrorFittedFunction::AXInv2.new(data)
-    assert_equal(correct.coefficients  , results.coefficients  )
-    assert_equal(correct.raw_pairs     , results.raw_pairs     )
-    assert_equal(correct.diff_abs_pairs, results.diff_abs_pairs)
+    assert_equal(Malge::ErrorFittedFunction::AXInv2, result.class)
+    assert_equal([16.0], result.coefficients)
 
     data = [
       {:kca => 1, :toten =>   6.0},
@@ -75,10 +66,8 @@ class TC_ErrorFitter < Test::Unit::TestCase
       {:kca => 8, :toten => -10.0},
     ]
     result = VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
-    correct = Malge::ErrorFittedFunction::AXInv2.new(data)
-    assert_equal(correct.coefficients  , results.coefficients  )
-    assert_equal(correct.raw_pairs     , results.raw_pairs     )
-    assert_equal(correct.diff_abs_pairs, results.diff_abs_pairs)
+    assert_equal(Malge::ErrorFittedFunction::AXInv2, result.class)
+    assert_equal([16.0], result.coefficients)
 
     data = [
       {:kabc => 1, :toten =>  54.0},
@@ -87,28 +76,46 @@ class TC_ErrorFitter < Test::Unit::TestCase
       {:kabc => 8, :toten => -10.0},
     ]
     result = VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
-    correct = Malge::ErrorFittedFunction::AXInv3.new(data)
-    assert_equal(correct.coefficients  , results.coefficients  )
-    assert_equal(correct.raw_pairs     , results.raw_pairs     )
-    assert_equal(correct.diff_abs_pairs, results.diff_abs_pairs)
+    assert_equal(Malge::ErrorFittedFunction::AXInv3, result.class)
+    assert_equal([64.0], result.coefficients)
 
     data = [
-      {:encut => 100, :toten => - 3.0},
-      {:encut => 200, :toten => - 7.0},
-      {:encut => 300, :toten => - 9.0},
-      {:encut => 400, :toten => -10.0},
+      {:encut => 0.0, :toten => 100.0 + 3.0* 2.0**(-2.0 *  0    )},
+      {:encut => 1.0, :toten => 100.0 + 3.0* 2.0**(-2.0 * 1.0  ) },
+      {:encut => 2.0, :toten => 100.0 + 3.0* 2.0**(-2.0 * (2.0**(3.0/2.0)))},
+      {:encut => 3.0, :toten => 100.0           },
     ]
     result = VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
-    correct = Malge::ErrorFittedFunction::AXInv3.new(data)
-    assert_equal(correct.coefficients  , results.coefficients  )
-    assert_equal(correct.raw_pairs     , results.raw_pairs     )
-    assert_equal(correct.diff_abs_pairs, results.diff_abs_pairs)
+    assert_equal(Malge::ErrorFittedFunction::AExpBX32, result.class)
+    assert_in_delta(3.0, result.coefficients[0], $tolerance)
+    assert_in_delta(- 2.0*Math::log(2.0), result.coefficients[1], $tolerance)
+
+
+    data = [
+      {:ka => 1, :toten => - 6.0},
+      {:ka => 2, :toten => - 8.0},
+      {:ka => 4, :toten => - 9.0},
+      {:ka => 8, :toten => -10.0, :kb => 0},
+    ]
+    assert_raise(VaspUtils::ConditionAnalyzer::ErrorFitter::TypeError){
+      VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
+    }
+
+    data = [
+      {:ka => 1, :kb => - 6.0},
+      {:ka => 2, :kb => - 8.0},
+      {:ka => 4, :kb => - 9.0},
+      {:ka => 8, :kb => -10.0},
+    ]
+    assert_raise(VaspUtils::ConditionAnalyzer::ErrorFitter::TypeError){
+      VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
+    }
 
     data = [
       {:encut => 100, :toten => - 3.0},
       {:encut => 200, :toten => - 7.0},
     ]
-    assert_raise(Malge::ErrorFittedFunction::InitializeError){
+    assert_raise(Malge::ErrorFittedFunction::UnableCalculationError){
       VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
     }
 
