@@ -8,21 +8,21 @@ require "vasputils"
 
 require "optparse"
 ## option analysis
-OPTIONS = {:symprec => 1.0E-10, :angle => -1.0}
-KMESHES = []
+OPTIONS = {:symprec => 1.0E-5, :angle => -1.0}
+CONDITIONS = {}
 op = OptionParser.new
-op.on("-s val"    , "--symprec=val"    , "Symmetry precision for symmetry finding. Default = 1.0E-10." ){|val| OPTIONS[:symprec] = val}
-op.on("-a val"    , "--angle-tolerance=val"    , "Angle tolerance for symmetry finding. Default = -1.0" ){|val| OPTIONS[:angle] = val}
+op.on("-s val"    , "--symprec=val"    , "Precision to find symmetry. Default: 1.0E-5." ){|val| OPTIONS[:symprec] = val.to_f}
+op.on("-a val"    , "--angle-tolerance=val"    , "Angle tolerance to find symmetry. Default: -1.0" ){|val| OPTIONS[:angle] = val.to_f}
 
-op.on(""    , "--ka=val"  , "Mesh number of k_a axis."              ){ |val| KMESHES[:ka]   = val}
-op.on(""    , "--kb=val"  , "Mesh number of k_b axis."              ){ |val| KMESHES[:kb]   = val}
-op.on(""    , "--kc=val"  , "Mesh number of k_c axis."              ){ |val| KMESHES[:kc]   = val}
-op.on(""    , "--kab=val" , "Mesh number of k_a and k_b axis."      ){ |val| KMESHES[:kab]  = val}
-op.on(""    , "--kbc=val" , "Mesh number of k_b and k_c axis."      ){ |val| KMESHES[:kbc]  = val}
-op.on(""    , "--kca=val" , "Mesh number of k_c and k_a axis."      ){ |val| KMESHES[:kca]  = val}
-op.on(""    , "--kabc=val", "Mesh number of k_a, k_b, and k_c axis."){ |val| KMESHES[:kabc] = val}
+op.on(""    , "--ka=val"  , "Mesh number of k_a axis."              ){ |val| CONDITIONS[:ka]   = val.to_i}
+op.on(""    , "--kb=val"  , "Mesh number of k_b axis."              ){ |val| CONDITIONS[:kb]   = val.to_i}
+op.on(""    , "--kc=val"  , "Mesh number of k_c axis."              ){ |val| CONDITIONS[:kc]   = val.to_i}
+op.on(""    , "--kab=val" , "Mesh number of k_a and k_b axis."      ){ |val| CONDITIONS[:kab]  = val.to_i}
+op.on(""    , "--kbc=val" , "Mesh number of k_b and k_c axis."      ){ |val| CONDITIONS[:kbc]  = val.to_i}
+op.on(""    , "--kca=val" , "Mesh number of k_c and k_a axis."      ){ |val| CONDITIONS[:kca]  = val.to_i}
+op.on(""    , "--kabc=val", "Mesh number of k_a, k_b, and k_c axis."){ |val| CONDITIONS[:kabc] = val.to_i}
 
-op.on(""    , "--encut=val", "ENCUT, cutoff energy."                ){ |val| OPTIONS[:encut]= val}
+op.on(""    , "--encut=val", "ENCUT, cutoff energy."                ){ |val| CONDITIONS[:encut]= val.to_i}
 
 ##op.on(""    , "--encut-inv"  , "Encuts  fit to |E_tot - E_last| = a[0]/E_cut."          ){ OPTIONS[:encutinv]  = true}
 ##op.on(""    , "--encut-inv32", "Encuts  fit to |E_tot - E_last| = a[0]/E_cut^(3/2)."    ){ OPTIONS[:encutinv32] = true}
@@ -46,14 +46,36 @@ unless ARGV.size == 0
 end
 
 dir = ENV['PWD']
+#pp dir, OPTIONS[:symprec], OPTIONS[:angle]
+#exit
 holder = VaspUtils::ConditionAnalyzer::Holder.load_dir(dir, OPTIONS[:symprec], OPTIONS[:angle])
+#pp holder
+#exit
 
+############################################################
 puts "All converged data."
-holder.conds_results.each do |tmp|
-  puts "  " + tmp.to_s
+holder.conds_results[0].keys.each do |key|
+  printf("  %12s", key.to_s)
 end
+puts
+holder.conds_results.each do |hash|
+  hash.each do |key, val|
+    printf("  %12.6f", val)
+  end
+  puts
+end
+puts
 
-#holder.project(
+############################################################
+puts "Analysis along conditions."
+CONDITIONS.each do |key, val|
+  fixed_conds = CONDITIONS - {key => val}
+  puts "  Fixed #{fixed_conds}, along #{key}"
+  #pp fixed_conds
+  data = holder.project(fixed_conds)
+end
+exit
+
 
 
 

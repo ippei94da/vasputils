@@ -114,6 +114,25 @@ class TC_Holder < Test::Unit::TestCase
       {:encut => 500, :kabc => 5, :toten => -15.642518},
     ]
     assert_equal(corrects, tmp.conds_results)
+
+    tmp = VaspUtils::ConditionAnalyzer::Holder.load_dir("test/conditionanalyzer/01", $symprec, $angle_tolerance)
+    corrects = [
+      {:encut=>1000.0, :kab=>4, :kc=>4, :toten=>-3.153327},
+      {:encut=>1200.0, :kab=>4, :kc=>4, :toten=>-3.150316},
+      {:encut=>1500.0, :kab=>4, :kc=>4, :toten=>-3.151397},
+      {:encut=>500.0, :kab=>4, :kc=>4, :toten=>-3.11294},
+      {:encut=>600.0, :kab=>4, :kc=>4, :toten=>-3.181593},
+      {:encut=>700.0, :kab=>4, :kc=>4, :toten=>-3.165176},
+      {:encut=>900.0, :kab=>4, :kc=>4, :toten=>-3.152733},
+      {:encut=>500.0, :kab=>16, :kc=>16, :toten=>-2.986564},
+      {:encut=>500.0, :kab=>1, :kc=>1, :toten=>-14.265631},
+      {:encut=>500.0, :kab=>32, :kc=>32, :toten=>-2.990478},
+      {:encut=>500.0, :kab=>32, :kc=>64, :toten=>-2.988209},
+      {:encut=>500.0, :kab=>4, :kc=>4, :toten=>-3.11294},
+      {:encut=>500.0, :kab=>8, :kc=>8, :toten=>-3.014811}
+    ]
+    assert_equal(corrects, tmp.conds_results)
+
   end
 
 end

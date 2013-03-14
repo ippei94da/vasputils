@@ -28,6 +28,15 @@ class TC_Picker < Test::Unit::TestCase
     results = VaspUtils::ConditionAnalyzer::Picker.pick( "test/conditionanalyzer/picker/encut400_k444-tetragonal-b", $symprec, $angle_tolerance)
     assert_equal(corrects, results)
 
+    corrects = {
+      :encut => 500.0,
+      :kab => 4,
+      :kc => 4,
+      :toten => -3.112940
+    }
+    results = VaspUtils::ConditionAnalyzer::Picker.pick( "test/conditionanalyzer/picker/hexiagonal", $symprec, $angle_tolerance)
+    assert_equal(corrects, results)
+
     assert_raise( VaspUtils::ConditionAnalyzer::Picker::InitializeError) {
       VaspUtils::ConditionAnalyzer::Picker.pick( "test/conditionanalyzer/picker/encut400_k444-unfinished", $symprec, $angle_tolerance)
     }
