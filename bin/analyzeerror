@@ -85,12 +85,11 @@ CONDITIONS.each do |key, val|
   show(data)
   begin
     function = VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
+    puts "  #{function.equation}"
   rescue VaspUtils::ConditionAnalyzer::ErrorFitter::UnableCalculationError
     puts "  Error fitted function cannot be generated."
     puts "  Maybe less data points or include zero for exponential."
   end
-  pp function.methods
-  puts
 end
 exit
 
