@@ -51,12 +51,12 @@ holder = VaspUtils::ConditionAnalyzer::Holder.load_dir(dir, OPTIONS[:symprec], O
 def show(data)
   #Indices
   data[0].keys.each do |key|
-    printf("  %12s", key.to_s)
+    printf("  %14s", key.to_s)
   end
   puts
   data.each do |hash|
     hash.each do |key, val|
-      printf("  %12.6f", val)
+      printf("  %14.6f", val)
     end
     puts
   end
@@ -82,13 +82,24 @@ CONDITIONS.each do |key, val|
   fixed_conds = CONDITIONS - {key => val}
   puts "Analysis: Fixed #{fixed_conds}, along :#{key}"
   data = holder.project(fixed_conds)
-  show(data)
   begin
     function = VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
-    puts "  #{function.equation}"
+    puts "  Fitting result: #{function.equation}"
+    data.each do |hash|
+      abs_diff_last = (hash[:toten] - function.finest_y).abs
+
+      key = (hash.keys - [:toten])[0]
+      x = hash[key]
+
+      hash[:abs_diff_last] = abs_diff_last
+      hash[:expected_error]  = function.expected_error(x)
+    end
+    show(data)
   rescue VaspUtils::ConditionAnalyzer::ErrorFitter::UnableCalculationError
+    show(data)
     puts "  Error fitted function cannot be generated."
     puts "  Maybe less data points or include zero for exponential."
+    puts
   end
 end
 exit

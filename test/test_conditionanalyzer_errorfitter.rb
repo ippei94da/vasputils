@@ -129,6 +129,20 @@ class TC_ErrorFitter < Test::Unit::TestCase
       VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
     }
 
+    #data = [
+    #  {:encut => 1000.0, :toten => -3.153327},
+    #  {:encut => 1200.0, :toten => -3.150316},
+    #  {:encut => 1500.0, :toten => -3.151397},
+    #  {:encut =>  500.0, :toten => -3.112940},
+    #  {:encut =>  600.0, :toten => -3.181593},
+    #  {:encut =>  700.0, :toten => -3.165176},
+    #  {:encut =>  900.0, :toten => -3.152733},
+    #  {:encut =>  500.0, :toten => -3.112940},
+    #]
+    #result = VaspUtils::ConditionAnalyzer::ErrorFitter.fit(data)
+    #TODO
+
+
 
   end
 
