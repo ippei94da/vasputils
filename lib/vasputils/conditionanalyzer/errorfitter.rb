@@ -28,6 +28,8 @@ module VaspUtils::ConditionAnalyzer::ErrorFitter
     begin
       case key
       when :ka, :kb, :kc
+        #pp data
+        #pp  Malge::ErrorFittedFunction::AXInv.new(data)
         result =  Malge::ErrorFittedFunction::AXInv.new(data)
       when :kab, :kbc, :kca
         result =  Malge::ErrorFittedFunction::AXInv2.new(data)
