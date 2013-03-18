@@ -1,5 +1,6 @@
 require "rubygems"
 #gem     "mageo"
+require "malge"
 require "mageo"
 
 module VaspUtils; end
