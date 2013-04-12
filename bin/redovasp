@@ -34,9 +34,10 @@ def redo_vasp_dir(tgt)
   # Delete
   if OPTIONS[:force] || (! vd.finished?)
     [
-      "CHG", "CHGCAR", "CONTCAR", "DOSCAR", "EIGENVAL", "ELFCAR", "IBZKPT",
-      "LOCPOT", "OSZICAR", "OUTCAR", "PCDAT", "WAVECAR", "XDATCAR",
-      "lock_vaspdir", "stdout", "vasprun.xml",
+      "CHG", "CHGCAR", "CONTCAR", "DOSCAR", "EIGENVAL", "ELFCAR",
+      "IBZKPT",
+      "LOCPOT", "OSZICAR", "OUTCAR", "PCDAT", "WAVECAR",
+      "XDATCAR", "lock_vaspdir", "stdout", "vasprun.xml",
       #"INCAR", #"KPOINTS", #"POSCAR", #"POTCAR",
     ].each do |file|
       path = tgt + "/" + file
