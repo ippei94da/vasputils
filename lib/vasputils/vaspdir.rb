@@ -7,9 +7,10 @@ require "date"
 require "yaml"
 
 require "rubygems"
-gem "comana"
-require "comana/computationmanager.rb"
-require "comana/machineinfo.rb"
+require "comana"
+#gem "comana"
+#require "comana/computationmanager.rb"
+#require "comana/machineinfo.rb"
 
 #require "vasputils.rb"
 
@@ -81,7 +82,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
   def calculate
     begin
       info =
-        MachineInfo.load_file("#{ENV["HOME"]}/.machineinfo").get_info(ENV["HOST"])
+        MachineInfo.load_file("#{ENV["HOME"]}/.machineinfo").settings_host(ENV["HOST"])
       vasp = info["vasp"]
     rescue
       #vasp = "vasp"
