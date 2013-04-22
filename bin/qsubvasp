@@ -21,9 +21,7 @@ require "yaml"
 require "optparse"
 
 require "rubygems"
-gem "comana"
-require "comana/queuesubmitter.rb"
-require "comana/machineinfo.rb"
+require "comana"
 
 gem "vasputils"
 require "vasputils.rb"
@@ -40,7 +38,7 @@ op.parse!(ARGV)
 
 def condition_check(opts)
   # Condition Check
-  mi = MachineInfo.load_file("#{ENV["HOME"]}/.machineinfo")
+  mi = Comana::MachineInfo.load_file("#{ENV["HOME"]}/.machineinfo")
   conds = {}
   # cluster
   name = opts["cluster"]
@@ -91,16 +89,16 @@ def condition_check(opts)
 end
 opts = condition_check(opts)
 
-qs = QueueSubmitter.new(opts)
+qs = Comana::QueueSubmitter.new(opts)
 
 begin
   qs.start
   puts "Submitted. Exit."
   exit
-rescue QueueSubmitter::AlreadyStartedError
+rescue Comana::QueueSubmitter::AlreadyStartedError
   puts "Already started. Exit."
   exit
-rescue QueueSubmitter::PrepareNextError
+rescue Comana::QueueSubmitter::PrepareNextError
   puts "Must not happen."
   exit
 end

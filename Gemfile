@@ -10,7 +10,7 @@ group :development do
   gem "bundler", "~> 1.3.4"
   gem "jeweler", ">= 1.8.3"
   gem "simplecov", ">= 0"
-  gem "crystalcell", ">= 0.0.1"
+  gem "crystalcell", ">= 0.0.2"
   gem "mageo", ">= 0.0.2"
   gem "malge", ">= 0.0.8"
   gem "maset", ">= 0.0.0"

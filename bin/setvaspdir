@@ -3,6 +3,8 @@
 
 require "optparse"
 require "fileutils"
+require "rubygems"
+require "comana"
 require "vasputils"
 
 ## option analysis

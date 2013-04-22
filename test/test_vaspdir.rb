@@ -14,7 +14,7 @@ require "vasputils.rb"
 # assert_in_delta( cor, data, $tolerance )
 # assert_raise( RuntimeError ){}
 
-class VaspUtils::VaspDir < ComputationManager
+class VaspUtils::VaspDir < Comana::ComputationManager
   attr_reader :mode
 
   def calculate

@@ -2,8 +2,9 @@
 # coding: utf-8
 
 require "rubygems"
-gem "comana"
-require "comana/computationmanager.rb"
+require "comana"
+#gem "comana"
+#require "comana/computationmanager.rb"
 
 #gem "vasputils"
 require "vasputils.rb"
@@ -45,7 +46,7 @@ end
 
 begin
   calc_dir.start
-rescue ComputationManager::AlreadyStartedError
+rescue Comana::ComputationManager::AlreadyStartedError
   puts "Already started. Exit."
   exit
 end

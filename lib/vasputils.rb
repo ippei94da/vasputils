@@ -2,6 +2,7 @@ require "rubygems"
 #gem     "mageo"
 require "malge"
 require "mageo"
+require "comana"
 
 module VaspUtils; end
 

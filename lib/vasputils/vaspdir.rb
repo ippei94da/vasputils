@@ -16,7 +16,7 @@ require "comana/machineinfo.rb"
 # Class for VASP executable directory,
 # including input and output files.
 #
-class VaspUtils::VaspDir < ComputationManager
+class VaspUtils::VaspDir < Comana::ComputationManager
   class InitializeError < Exception; end
   class NoVaspBinaryError < Exception; end
   class PrepareNextError < Exception; end

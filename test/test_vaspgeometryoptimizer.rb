@@ -8,7 +8,7 @@ require "vasputils.rb"
 #require "vasputils/vaspgeometryoptimizer.rb"
 
 
-class VaspUtils::VaspGeometryOptimizer < ComputationManager
+class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
   public :latest_dir, :prepare_next
 end
 

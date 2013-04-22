@@ -14,7 +14,7 @@ require "comana/computationmanager.rb"
 #
 #
 #
-class VaspUtils::VaspGeometryOptimizer < ComputationManager
+class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
   class NoVaspDirError < Exception; end
   class LatestDirStartedError < Exception; end
   class NoIntegerEndedNameError < Exception; end
