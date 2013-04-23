@@ -8,11 +8,6 @@ require "yaml"
 
 require "rubygems"
 require "comana"
-#gem "comana"
-#require "comana/computationmanager.rb"
-#require "comana/machineinfo.rb"
-
-#require "vasputils.rb"
 
 # Class for VASP executable directory,
 # including input and output files.
@@ -82,11 +77,11 @@ class VaspUtils::VaspDir < Comana::ComputationManager
   def calculate
     begin
       info =
-        MachineInfo.load_file("#{ENV["HOME"]}/.machineinfo").settings_host(ENV["HOST"])
+        Comana::ClusterSetting.load_file("#{ENV["HOME"]}/.clustersetting").settings_host(ENV["HOST"])
       vasp = info["vasp"]
     rescue
       #vasp = "vasp"
-      raise NoVaspBinaryError, "No vasp path in #{ENV["HOME"]}/.machineinfo"
+      raise NoVaspBinaryError, "No vasp path in #{ENV["HOME"]}/.clustersetting"
     end
     command = "cd #{@dir};"
     command += vasp
