@@ -11,9 +11,8 @@ require "vasputils"
 OPTIONS = {}
 op = OptionParser.new
 op.on("-r", "--reset", "Reset to initial state, remove except for 4 files."){OPTIONS[:reset] = true}
-#op.on("-n", "--next" , "Next vasp for geometry optimization."){OPTIONS[:next] = true}
-op.on("-y", "--yes"  , "Answer yes to all questions."        ){OPTIONS[:yes] = true}
-op.on("-n", "--no"   , "Answer no  to all questions."        ){OPTIONS[:no ] = true}
+op.on("-y", "--yes"  , "Answer yes to all questions."        ){OPTIONS[:yes]  = true}
+op.on("-n", "--no"   , "Answer no  to all questions."        ){OPTIONS[:no ]  = true}
 op.parse!(ARGV)
 
 tgts = ARGV
