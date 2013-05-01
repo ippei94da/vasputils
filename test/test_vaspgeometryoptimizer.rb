@@ -93,5 +93,25 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
     end
   end
 
+  def test_refresh
+    orig = TEST_DIR + "/refresh/orig"
+    tmp  = TEST_DIR + "/refresh/tmp"
+
+    FileUtils.rm_r tmp if FileTest.exist? tmp
+
+    FileUtils.cp_r(orig, tmp)
+    vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
+    vgo.refresh
+
+    assert_equal(true,  File.exist?("#{tmp}/try00"))
+    assert_equal(false, File.exist?("#{tmp}/try01"))
+    assert_equal(1,     Dir.glob("#{tmp}/*").size)
+    assert_equal(4,     Dir.glob("#{tmp}/try00/*").size)
+    assert_equal("CONTCAR_01\n", File.open("#{tmp}/try00/POSCAR", "r").readline)
+
+    FileUtils.rm_rf tmp if FileTest.exist? tmp
+
+  end
+
 end
 

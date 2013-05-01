@@ -87,6 +87,53 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     raise NoVaspDirError, @dir
   end
 
+  #Generate a new vaspdir as 'try01'.
+  #Other directories are removed.
+  def refresh
+    contcars = Dir.glob("#{@dir}/try*/CONTCAR").sort.reverse
+    contcars += Dir.glob("#{@dir}/try*/POSCAR").sort.reverse
+    #pp contcars
+    poscar = nil
+    path = nil
+    contcars.each do |contcar|
+      begin
+        VaspUtils::Poscar.load_file contcar
+        poscar = contcar
+        path = File.dirname(contcar)
+        break
+      rescue VaspUtils::Poscar::ParseError
+        next
+      end
+    end
+    raise NoVaspDirError unless poscar
+
+    new_dir = "#{@dir}/new_try00"
+    Dir.mkdir new_dir
+    #pp poscar
+    FileUtils.mv("#{path}/KPOINTS", "#{new_dir}/KPOINTS")
+    FileUtils.mv("#{path}/INCAR"  , "#{new_dir}/INCAR"  )
+    FileUtils.mv("#{path}/POTCAR" , "#{new_dir}/POTCAR" )
+    FileUtils.mv(poscar           , "#{new_dir}/POSCAR")
+
+    rm_list =  Dir.glob "#{@dir}/try*"
+    rm_list += Dir.glob "#{@dir}/lock*"
+    rm_list += Dir.glob "#{@dir}/*.sh"
+    rm_list += Dir.glob "#{@dir}/*.log"
+    rm_list += Dir.glob "#{@dir}/*.o*"
+    rm_list.each do |file|
+      FileUtils.rm_rf file
+    end
+
+    FileUtils.mv new_dir, "#{@dir}/try00"
+
+    #CONTCAR を最後から解釈していく。
+    #全てだめだったら POSCAR を解釈する。
+    #全部だめだったら例外を投げる。
+
+    #CONTCAR を解釈できたディレクトリで INCAR, KPOINTS, POTCAR を取得。
+    #try01 という名前でディレクトリを作る。
+  end
+
   private
 
   # Generate next directory of latest_dir.

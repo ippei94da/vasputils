@@ -8,10 +8,25 @@ require "rubygems"
 gem "vasputils"
 require "vasputils.rb"
 
-#require "vasputils/vaspgeomopt.rb"
-#require "vasputils/vaspdir.rb"
 require "pp"
-#require "optparse"
+require "optparse"
+
+## option analysis
+OPTIONS = {}
+op = OptionParser.new
+OPTIONS[:show_state] = []
+op.on("-f", "--finished"  , "Show finished. -a is ignored."){OPTIONS[:show_state] << :finished}
+op.on("-y", "--yet"       , "Show yet."                    ){OPTIONS[:show_state] << :yet}
+op.on("-t", "--terminated", "Show terminated."             ){OPTIONS[:show_state] << :terminated}
+op.on("-s", "--started"   , "Show sarted."                 ){OPTIONS[:show_state] << :started}
+op.on("-l", "--files-with-matches", "Show filename only."  ){OPTIONS[:filename  ] = true}
+op.parse!(ARGV)
+
+## if all select are not set, all are set.
+if OPTIONS[:show_state].size == 0
+  OPTIONS[:all]   = true
+end
+#pp OPTIONS; exit
 
 LONGEST_STATE = :terminated.size
 KLASSES = [VaspUtils::VaspDir, VaspUtils::VaspGeometryOptimizer]
@@ -30,6 +45,19 @@ def guess(dir)
   raise "Cannot identify class for directory #{dir}."
 end
 
+def show(klass_name, state, try, toten, i_step, e_step, dir)
+  if (OPTIONS[:all]) || (OPTIONS[:show_state].include? state)
+    unless OPTIONS[:filename]
+      printf "%-11s ", klass_name
+      printf "%-10s ", state
+      printf "%5s ", try
+      printf "%17s %3s (%3s) ", toten, i_step, e_step
+    end
+    print  dir
+    puts
+  end
+end
+
 dirs.each do |dir|
   next unless File.directory? dir
 
@@ -40,41 +68,41 @@ dirs.each do |dir|
     klass_name = "UnknownDir"
   end
 
-  printf "%-11s ", klass_name
-
   case klass_name
   when "VaspUtils::VaspDir"
+    klass_name = "VaspDir"
     calc = klass.new(dir)
-    printf "%-10s ", calc.state
-    #pp calc.outcar
-    printf "%5s ", ""
+    state = calc.state
+    try = ""
     begin
       outcar = calc.outcar
-      printf "%8.3f %3d (%3d) ",
-        outcar[:totens][-1], outcar[:ionic_steps], outcar[:electronic_steps]
+      toten  = sprintf("%17.6f", outcar[:totens][-1].to_f)
+      i_step = outcar[:ionic_steps]
+      e_step = outcar[:electronic_steps]
     rescue
-      printf "%8s %3s (%3s) ", " "*8, " "*3, " "*3
+      toten  = i_step = e_step = ""
     end
 
   when "VaspUtils::VaspGeometryOptimizer"
+    klass_name = "VaspGeomOpt"
     calc = klass.new(dir)
-    printf "%-10s ", calc.state
+    state = calc.state
 
     ld = calc.latest_dir
-    printf "%5s ", ld.dir.sub(/.*try/, "try")
+    try = sprintf "%5s", ld.dir.sub(/.*try/, "try")
     begin
       outcar = ld.outcar
-      printf "%8.3f %3d (%3d) ",
-        outcar[:totens][-1], outcar[:ionic_steps], outcar[:electronic_steps]
+      toten  = sprintf("%15.6f ", outcar[:totens][-1].to_f)
+      i_step = outcar[:ionic_steps]
+      e_step = outcar[:electronic_steps]
     rescue
-      printf "%8s %3s (%3s) ", " "*8, " "*3, " "*3
+      toten  = i_step = e_step = ""
     end
 
   when "UnknownDir"
-    printf "-" * 35
-    printf " "
-
+    klass_name = "UnknownDir"
+    state = try = toten = i_step = e_step = ""
   end
-  puts dir
+  show(klass_name, state, try, toten, i_step, e_step, dir)
 
 end

@@ -1,15 +1,11 @@
 #! /usr/bin/ruby -W
 
+require "helper"
 require "test/unit"
 require "stringio"
-#require "vasputils.rb"
-#require "vasputils/poscar.rb"
 
 require "rubygems"
-#gem "mageo"
-#require "mageo/vector3dinternal.rb"
-#require "mageo"
-gem "crystalcell"
+#gem "crystalcell"
 require "crystalcell"
 
 class TC_Poscar < Test::Unit::TestCase
@@ -280,5 +276,9 @@ class TC_Poscar < Test::Unit::TestCase
     assert_equal(
       CrystalCell::Atom.new(2, [0.5, 0.5, 0.0], "#O--003"), cell.atoms[2])
 
+
+    assert_raise(VaspUtils::Poscar::ParseError) {
+      VaspUtils::Poscar.load_file("test/poscar/NOT_POSCAR")
+    }
   end
 end

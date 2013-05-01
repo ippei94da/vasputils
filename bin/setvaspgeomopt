@@ -10,11 +10,9 @@ require "vasputils"
 ## option analysis
 OPTIONS = {}
 op = OptionParser.new
-op.on("-r", "--reset", "Remain 'try01' dir and 4 initial files."){OPTIONS[:reset] = true}
+op.on("-r", "--reset", "Remain 'try00' dir and 4 initial files."){OPTIONS[:reset] = true}
 op.on("-n", "--next" , "Next vasp for geometry optimization."){OPTIONS[:next] = true}
-op.on("-R", "--refresh", "Like recet, but generate 'try01' using final CONTCAR."){OPTIONS[:refresh] = true}
-op.on("-y", "--yes"  , "Answer yes to all questions."        ){OPTIONS[:yes]  = true}
-op.on("-n", "--no"   , "Answer no  to all questions."        ){OPTIONS[:no ]  = true}
+op.on("-R", "--refresh", "Like recet, but generate 'try00' using final CONTCAR."){OPTIONS[:refresh] = true}
 op.parse!(ARGV)
 
 tgts = ARGV
@@ -48,38 +46,8 @@ tgts.each do |tgt_dir|
     next
   end
 
-
-  TODO
-  tgt.latest_vasp_dir
-  tgt.initial_vasp_dir
-
-
-  #fullpath = File.expand_path tgt_dir
-
-  #keep_files   = ["INCAR", "KPOINTS", "POSCAR", "POTCAR"]
-  #remove_files = []
-  #Dir.entries( fullpath ).sort.each do |file|
-  #  next if file == "."
-  #  next if file == ".."
-  #  remove_files << file unless keep_files.include? file
-  #end
-
-  #puts "  No remove files. Next"
-  #next if remove_files.size == 0
-
-  ##pp fullpath; exit
-  #puts "  Remove files:"
-  #remove_files.each { |file| puts "    #{file}" }
-
-  #puts "  Keep files:"
-  #keep_files.each { |file| puts "    #{file}" }
-
-  #if ask
-  #  remove_files.each do |file|
-  #    puts "    Removing: #{file}"
-  #    FileUtils.rm_rf "#{tgt_dir}/#{file}"
-  #  end
-  #else
-  #  puts "  Nothing to do. Next."
-  #end
+  puts "  Refresh VaspGeometryOptimizer: #{tgt_dir}"
+  if OPTIONS[:refresh]
+    tgt.refresh
+  end
 end
