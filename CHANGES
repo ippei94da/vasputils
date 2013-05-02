@@ -5,7 +5,7 @@
   - Add VaspUtils::ConditionAnalyzer etc.
   - Update bin/symposcar .
   - Adjust to CrystalCell-0.0.1 .
-  - Add options to bin/checkvasp .
+  - Add options to bin/checkvasp and modified output format.
 
 == Version 0.0.11
   - Modify bin/qsubvasp
