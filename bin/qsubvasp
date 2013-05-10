@@ -89,6 +89,7 @@ def condition_check(opts)
 end
 opts = condition_check(opts)
 
+print ARGV[0] + ", "
 qs = Comana::QueueSubmitter.new(opts)
 
 begin
@@ -98,7 +99,7 @@ begin
 rescue Comana::QueueSubmitter::AlreadyStartedError
   puts "Already started. Exit."
   exit
-rescue Comana::QueueSubmitter::PrepareNextError
-  puts "Must not happen."
-  exit
+#rescue Comana::QueueSubmitter::PrepareNextError
+#  puts "Must not happen."
+#  exit
 end
