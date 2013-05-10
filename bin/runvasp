@@ -2,12 +2,12 @@
 # coding: utf-8
 
 require "rubygems"
-require "comana"
+#require "comana"
 #gem "comana"
 #require "comana/computationmanager.rb"
 
 #gem "vasputils"
-require "vasputils.rb"
+require "vasputils"
 
 require "optparse"
 
