@@ -34,7 +34,7 @@ op.on("-c cluster", "--cluster=name" , "Cluster name."){|v| OPTIONS[:cluster] = 
 op.on("-n number", "--nodes=num", "Indicate node number, or key in ~/.clustersetting."){|v|
   OPTIONS[:nodes] = v
 }
-op.on("-g", "--geom-opt", "Geometry optimization."){ OPTIONS["geomopt"] = true}
+op.on("-g", "--geom-opt", "Geometry optimization."){ OPTIONS[:geomopt] = true}
 op.parse!(ARGV)
 
 def condition_check(opts)
@@ -42,61 +42,32 @@ def condition_check(opts)
   mi = Comana::ClusterSetting.load_file("#{ENV["HOME"]}/.clustersetting")
   conds = {}
 
-  # cluster
-  #name = opts[:cluster]
-  #if name
-  #  conds[:cluster] = name
-  #else
-  #  puts "-c CLUSTER_NAME is necessary."
-  #  exit
-  #end
   conds[:cluster] = opts[:cluster]
+  conds[:nodes]   = opts[:nodes].to_i if opts[:nodes]
 
   # target and command
   unless ARGV.size == 1
     puts "Indicate only one directory for vasp. Argument: #{ARGV}"
     exit
   end
-  if opts["geomopt"]
+  if opts[:geomopt]
     begin
-      conds["target"] = VaspUtils::VaspGeometryOptimizer.new(File.expand_path(ARGV[0]))
-      conds["command"] = "runvasp -g"
+      conds[:target] = VaspUtils::VaspGeometryOptimizer.new(File.expand_path(ARGV[0]))
+      conds[:command] = "runvasp -g"
     rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
       puts "Seem not to be a directory for VaspGeometryOptimizer #{ARGV}"
       exit
     end
   else
     begin
-      conds["target"] = VaspUtils::VaspDir.new(File.expand_path(ARGV[0]))
-      conds["command"] = "runvasp"
+      conds[:target] = VaspUtils::VaspDir.new(File.expand_path(ARGV[0]))
+      conds[:command] = "runvasp"
     rescue VaspUtils::VaspDir::InitializeError
       puts "Seem not to be a directory for VaspDir #{ARGV}"
       exit
     end
   end
 
-  # nodes
-  #str = opts[:nodes]
-  #num = str.to_i
-  #if num > 0
-  #  conds[:nodes] = num
-  #else
-  #  if mi.get_info(name).has_key?(str)
-  #    conds[:nodes] = mi.get_info(name)[str]
-  #  else
-  #    puts "-n argument must be a positive integer or key in ~/.clustersetting."
-  #    exit
-  #  end
-  #end
-  if opts[:nodes]
-    if opts[:cluster]
-      conds[:nodes] = opts[:nodes].to_i
-    else
-      puts "-n argument can be set only with -c option."
-      puts USAGE
-      exit
-    end
-  end
   conds
 end
 opts = condition_check(OPTIONS)
