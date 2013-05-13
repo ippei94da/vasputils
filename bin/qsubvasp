@@ -100,7 +100,7 @@ def condition_check(opts)
   conds
 end
 opts = condition_check(OPTIONS)
-pp opts; exit
+#pp opts; exit
 
 print ARGV[0] + ", "
 qs = Comana::QueueSubmitter.new(opts)
