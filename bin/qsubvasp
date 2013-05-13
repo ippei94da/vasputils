@@ -2,7 +2,7 @@
 # coding: utf-8
 
 USAGE = <<HERE
-  USAGE: qsubvasp [-c CLUSTER_NAME [-n num]] calc_dir
+  USAGE: qsubvasp [-c CLUSTER_NAME] [-n num] calc_dir
 
    [-n INDICATOR]
      Integer can be uused as INDICATOR.
@@ -30,9 +30,9 @@ require "vasputils.rb"
 OPTIONS = {}
 
 op = OptionParser.new
-op.on("-c cluster", "--cluster" , "Cluster name."){|v| OPTIONS[:cluster] = v }
-op.on("-n number", "--number", "Indicate node number, or key in ~/.clustersetting."){|v|
-  OPTIONS[:number] = v
+op.on("-c cluster", "--cluster=name" , "Cluster name."){|v| OPTIONS[:cluster] = v }
+op.on("-n number", "--nodes=num", "Indicate node number, or key in ~/.clustersetting."){|v|
+  OPTIONS[:nodes] = v
 }
 op.on("-g", "--geom-opt", "Geometry optimization."){ OPTIONS["geomopt"] = true}
 op.parse!(ARGV)
@@ -75,22 +75,22 @@ def condition_check(opts)
     end
   end
 
-  # number
-  #str = opts[:number]
+  # nodes
+  #str = opts[:nodes]
   #num = str.to_i
   #if num > 0
-  #  conds[:number] = num
+  #  conds[:nodes] = num
   #else
   #  if mi.get_info(name).has_key?(str)
-  #    conds[:number] = mi.get_info(name)[str]
+  #    conds[:nodes] = mi.get_info(name)[str]
   #  else
   #    puts "-n argument must be a positive integer or key in ~/.clustersetting."
   #    exit
   #  end
   #end
-  if opts[:number]
+  if opts[:nodes]
     if opts[:cluster]
-      conds[:number] = opts[:number].to_i
+      conds[:nodes] = opts[:nodes].to_i
     else
       puts "-n argument can be set only with -c option."
       puts USAGE
