@@ -1,19 +1,20 @@
 #! /usr/bin/env ruby
 # coding: utf-8
-#
-# USAGE:
-# qsubvasp [-n num] -c CLUSTER_NAME calc_dir
-#
-#   [-n INDICATOR]
-#     Integer can be uused as INDICATOR.
-#     If INDICATOR cannot be evaluated as positive integer,
-#     try to find tue hostname of localhost and
-#     key of
-#     the INDICATOR in ~/.clustersetting
-#     Default value is 1.
-#
-#   calc_dir is a vasp directory as usual,
-#   when with -g option, VaspGeometryOptimizer directory.
+
+USAGE = <<HERE
+  USAGE: qsubvasp [-c CLUSTER_NAME [-n num]] calc_dir
+
+   [-n INDICATOR]
+     Integer can be uused as INDICATOR.
+     If INDICATOR cannot be evaluated as positive integer,
+     try to find tue hostname of localhost and
+     key of
+     the INDICATOR in ~/.clustersetting
+     Default value is 1.
+
+   calc_dir is a vasp directory as usual,
+   when with -g option, VaspGeometryOptimizer directory.
+HERE
 
 #require "optparse"
 require "pp"
@@ -26,28 +27,30 @@ require "comana"
 gem "vasputils"
 require "vasputils.rb"
 
-opts = {}
+OPTIONS = {}
 
 op = OptionParser.new
-op.on("-c cluster", "--cluster" , "Cluster name."){|v| opts["cluster"] = v }
+op.on("-c cluster", "--cluster" , "Cluster name."){|v| OPTIONS[:cluster] = v }
 op.on("-n number", "--number", "Indicate node number, or key in ~/.clustersetting."){|v|
-  opts["number"] = v
+  OPTIONS[:number] = v
 }
-op.on("-g", "--geom-opt", "Geometry optimization."){ opts["geomopt"] = true}
+op.on("-g", "--geom-opt", "Geometry optimization."){ OPTIONS["geomopt"] = true}
 op.parse!(ARGV)
 
 def condition_check(opts)
   # Condition Check
   mi = Comana::ClusterSetting.load_file("#{ENV["HOME"]}/.clustersetting")
   conds = {}
+
   # cluster
-  name = opts["cluster"]
-  if name
-    conds["cluster"] = name
-  else
-    puts "-c CLUSTER_NAME is necessary."
-    exit
-  end
+  #name = opts[:cluster]
+  #if name
+  #  conds[:cluster] = name
+  #else
+  #  puts "-c CLUSTER_NAME is necessary."
+  #  exit
+  #end
+  conds[:cluster] = opts[:cluster]
 
   # target and command
   unless ARGV.size == 1
@@ -73,21 +76,31 @@ def condition_check(opts)
   end
 
   # number
-  str = opts["number"]
-  num = str.to_i
-  if num > 0
-    conds["number"] = num
-  else
-    if mi.get_info(name).has_key?(str)
-      conds["number"] = mi.get_info(name)[str]
+  #str = opts[:number]
+  #num = str.to_i
+  #if num > 0
+  #  conds[:number] = num
+  #else
+  #  if mi.get_info(name).has_key?(str)
+  #    conds[:number] = mi.get_info(name)[str]
+  #  else
+  #    puts "-n argument must be a positive integer or key in ~/.clustersetting."
+  #    exit
+  #  end
+  #end
+  if opts[:number]
+    if opts[:cluster]
+      conds[:number] = opts[:number].to_i
     else
-      puts "-n argument must be a positive integer or key in ~/.clustersetting."
+      puts "-n argument can be set only with -c option."
+      puts USAGE
       exit
     end
   end
   conds
 end
-opts = condition_check(opts)
+opts = condition_check(OPTIONS)
+pp opts; exit
 
 print ARGV[0] + ", "
 qs = Comana::QueueSubmitter.new(opts)
