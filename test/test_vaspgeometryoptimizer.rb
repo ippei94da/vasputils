@@ -111,7 +111,14 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
     assert_equal("CONTCAR_01\n", File.open("#{tmp}/try00/POSCAR", "r").readline)
 
     FileUtils.rm_rf tmp if FileTest.exist? tmp
+  end
 
+  def test_next
+    TODO
+  end
+
+  def test_init
+    TODO
   end
 
 end
