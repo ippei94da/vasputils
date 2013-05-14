@@ -12,7 +12,7 @@ OPTIONS = {}
 op = OptionParser.new
 op.on("-r", "--reset", "Remain 'try00' dir and 4 initial files."){OPTIONS[:reset] = true}
 op.on("-n", "--next" , "Next vasp for geometry optimization."){OPTIONS[:next] = true}
-op.on("-R", "--refresh", "Like recet, but generate 'try00' using final CONTCAR."){OPTIONS[:refresh] = true}
+op.on("-R", "--reincarnate", "Like recet, but generate 'try00' using final CONTCAR."){OPTIONS[:reincarnate] = true}
 op.parse!(ARGV)
 
 tgts = ARGV
@@ -47,7 +47,7 @@ tgts.each do |tgt_dir|
   end
 
   puts "  Refresh VaspGeometryOptimizer: #{tgt_dir}"
-  if OPTIONS[:refresh]
-    tgt.refresh
+  if OPTIONS[:reincarnate]
+    tgt.reincarnate
   end
 end

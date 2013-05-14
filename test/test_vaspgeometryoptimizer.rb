@@ -93,15 +93,15 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
     end
   end
 
-  def test_refresh
-    orig = TEST_DIR + "/refresh/orig"
-    tmp  = TEST_DIR + "/refresh/tmp"
+  def test_reincarnate
+    orig = TEST_DIR + "/reincarnate/orig"
+    tmp  = TEST_DIR + "/reincarnate/tmp"
 
     FileUtils.rm_r tmp if FileTest.exist? tmp
 
     FileUtils.cp_r(orig, tmp)
     vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
-    vgo.refresh
+    vgo.reincarnate
 
     assert_equal(true,  File.exist?("#{tmp}/try00"))
     assert_equal(false, File.exist?("#{tmp}/try01"))

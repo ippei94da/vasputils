@@ -89,7 +89,7 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
 
   #Generate a new vaspdir as 'try01'.
   #Other directories are removed.
-  def refresh
+  def reincarnate
     contcars = Dir.glob("#{@dir}/try*/CONTCAR").sort.reverse
     contcars += Dir.glob("#{@dir}/try*/POSCAR").sort.reverse
     #pp contcars
