@@ -35,6 +35,7 @@ op.on("-n number", "--nodes=num", "Indicate node number, or key in ~/.clusterset
   OPTIONS[:nodes] = v
 }
 op.on("-g", "--geom-opt", "Geometry optimization."){ OPTIONS[:geomopt] = true}
+op.on("-p num", "--priority=num", "Set priority of job."){|v| OPTIONS[:priority] = v }
 op.parse!(ARGV)
 
 def condition_check(opts)
@@ -68,6 +69,7 @@ def condition_check(opts)
     end
   end
 
+  conds[:priority] = opts[:priority].to_i
   conds
 end
 opts = condition_check(OPTIONS)

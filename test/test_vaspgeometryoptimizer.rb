@@ -24,7 +24,11 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
 
   def test_initialize
     assert_raise(VaspUtils::VaspGeometryOptimizer::NoVaspDirError){
-      VaspUtils::VaspGeometryOptimizer.new( TEST_DIR + "/not-geomopt")
+      VaspUtils::VaspGeometryOptimizer.new( TEST_DIR + "/not-geomopt/nothing")
+    }
+
+    assert_raise(VaspUtils::VaspGeometryOptimizer::NoVaspDirError){
+      VaspUtils::VaspGeometryOptimizer.new( TEST_DIR + "/not-geomopt/not-try-subdir")
     }
   end
 
@@ -55,7 +59,7 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
   end
 
   def test_prepare_next
-    dir = TEST_DIR + "/prepare_next"
+    dir = TEST_DIR + "/prepare_next/normal"
     old_number_dir = dir + "/try00"
     new_number_dir = dir + "/try01"
 
@@ -68,22 +72,22 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
 
     vgo = VaspUtils::VaspGeometryOptimizer.new(dir)
     vgo.prepare_next
-    assert(Dir.exist?(new_number_dir))
-    assert(File.exist?(new_number_dir + "/CHG"     ))
-    assert(File.exist?(new_number_dir + "/CHGCAR"  ))
-    assert(File.exist?(new_number_dir + "/DOSCAR"  ))
-    assert(File.exist?(new_number_dir + "/EIGENVAL"))
-    assert(File.exist?(new_number_dir + "/INCAR"   ))
-    assert(File.exist?(new_number_dir + "/KPOINTS" ))
-    assert(File.exist?(new_number_dir + "/OSZICAR" ))
-    assert(File.exist?(new_number_dir + "/PCDAT"   ))
-    assert(File.exist?(new_number_dir + "/POTCAR"  ))
-    assert(File.exist?(new_number_dir + "/WAVECAR" ))
-    assert(File.exist?(new_number_dir + "/XDATCAR" ))
-    assert(File.exist?(new_number_dir + "/POSCAR"  ))
-    assert(! File.exist?(new_number_dir + "/CONTCAR" ))
-    assert(! File.exist?(new_number_dir + "/OUTCAR" ))
-    assert(! File.exist?(new_number_dir + "/vasprun.xml" ))
+    assert_equal(true ,Dir.exist?(new_number_dir))
+    assert_equal(true , File.exist?(new_number_dir + "/CHG"     ))
+    assert_equal(true , File.exist?(new_number_dir + "/CHGCAR"  ))
+    assert_equal(true , File.exist?(new_number_dir + "/DOSCAR"  ))
+    assert_equal(true , File.exist?(new_number_dir + "/EIGENVAL"))
+    assert_equal(true , File.exist?(new_number_dir + "/INCAR"   ))
+    assert_equal(true , File.exist?(new_number_dir + "/KPOINTS" ))
+    assert_equal(true , File.exist?(new_number_dir + "/OSZICAR" ))
+    assert_equal(true , File.exist?(new_number_dir + "/PCDAT"   ))
+    assert_equal(true , File.exist?(new_number_dir + "/POTCAR"  ))
+    assert_equal(true , File.exist?(new_number_dir + "/WAVECAR" ))
+    assert_equal(true , File.exist?(new_number_dir + "/XDATCAR" ))
+    assert_equal(true , File.exist?(new_number_dir + "/POSCAR"  ))
+    assert_equal(false, File.exist?(new_number_dir + "/CONTCAR" ))
+    assert_equal(false, File.exist?(new_number_dir + "/OUTCAR" ))
+    assert_equal(false, File.exist?(new_number_dir + "/vasprun.xml" ))
 
     if Dir.exist?(new_number_dir)
       Dir.glob(new_number_dir + "/*").each do |file|
@@ -91,17 +95,66 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
       end
       Dir.rmdir new_number_dir
     end
+
+    dir = TEST_DIR + "/prepare_next/no-contcar"
+    vgo = VaspUtils::VaspGeometryOptimizer.new(dir)
+    assert_raise(VaspUtils::VaspGeometryOptimizer::NoContcarError){
+      vgo.prepare_next
+    }
   end
 
-  def test_reincarnate
-    orig = TEST_DIR + "/reincarnate/orig"
-    tmp  = TEST_DIR + "/reincarnate/tmp"
+
+  def test_reset_init
+    orig = TEST_DIR + "/reset_init/orig"
+    tmp  = TEST_DIR + "/reset_init/tmp"
 
     FileUtils.rm_r tmp if FileTest.exist? tmp
 
     FileUtils.cp_r(orig, tmp)
     vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
-    vgo.reincarnate
+    vgo.reset_init
+
+    assert_equal(true,  File.exist?("#{tmp}/try00"))
+    assert_equal(false, File.exist?("#{tmp}/try01"))
+    #assert_equal(1,     Dir.glob("#{tmp}/*").size)
+      #This test may rail in NFS environment due to nfs lock; try02/.nfs*.
+    assert_equal(4,     Dir.glob("#{tmp}/try00/*").size)
+    assert_equal("POSCAR_00\n", File.open("#{tmp}/try00/POSCAR", "r").readline)
+
+    FileUtils.rm_rf tmp if FileTest.exist? tmp
+  end
+
+  def test_reset_next
+    orig = TEST_DIR + "/reset_next/orig"
+    tmp  = TEST_DIR + "/reset_next/tmp"
+
+    FileUtils.rm_r tmp if FileTest.exist? tmp
+
+    FileUtils.cp_r(orig, tmp)
+    vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
+    vgo.reset_next
+
+    assert_equal(true,  File.exist?("#{tmp}/try00"))
+    assert_equal(true,  File.exist?("#{tmp}/try01"))
+    assert_equal(true,  File.exist?("#{tmp}/try02"))
+    assert_equal(true,  File.exist?("#{tmp}/try03"))
+    #assert_equal(1,     Dir.glob("#{tmp}/*").size)
+      #This test may rail in NFS environment due to nfs lock; try02/.nfs*.
+    assert_equal(4,     Dir.glob("#{tmp}/try03/*").size)
+    assert_equal("CONTCAR_02\n", File.open("#{tmp}/try03/POSCAR", "r").readline)
+
+    FileUtils.rm_rf tmp if FileTest.exist? tmp
+  end
+
+  def test_reset_reincarnation
+    orig = TEST_DIR + "/reset_reincarnation/orig"
+    tmp  = TEST_DIR + "/reset_reincarnation/tmp"
+
+    FileUtils.rm_r tmp if FileTest.exist? tmp
+
+    FileUtils.cp_r(orig, tmp)
+    vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
+    vgo.reset_reincarnate
 
     assert_equal(true,  File.exist?("#{tmp}/try00"))
     assert_equal(false, File.exist?("#{tmp}/try01"))
@@ -111,14 +164,6 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
     assert_equal("CONTCAR_01\n", File.open("#{tmp}/try00/POSCAR", "r").readline)
 
     FileUtils.rm_rf tmp if FileTest.exist? tmp
-  end
-
-  def test_next
-    TODO
-  end
-
-  def test_init
-    TODO
   end
 
 end

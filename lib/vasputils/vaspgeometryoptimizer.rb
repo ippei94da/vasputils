@@ -12,12 +12,17 @@ require "comana/computationmanager.rb"
 #require "vasputils/vaspdir.rb"
 
 #
-#
+#The directory must has subdirs whose name is started by 'try'.
+#This restriction of naming is necessary to distinguish from simple aggregation
+#of vasp directories.
 #
 class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
   class NoVaspDirError < Exception; end
   class LatestDirStartedError < Exception; end
   class NoIntegerEndedNameError < Exception; end
+  class NoContcarError < Exception; end
+
+  PREFIX = "try"
 
   def initialize(dir)
     super(dir)
@@ -76,7 +81,7 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
   #   which can define a method <=>.
   #   Usually, it is simple sort of String.
   def latest_dir
-    Dir.glob("#{@dir}/*").sort.reverse.find do |dir|
+    Dir.glob("#{@dir}/#{PREFIX}*").sort.reverse.find do |dir|
       begin
         vd = VaspUtils::VaspDir.new(dir)
         return vd
@@ -87,12 +92,67 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     raise NoVaspDirError, @dir
   end
 
-  #Generate a new vaspdir as 'try01'.
-  #Other directories are removed.
-  def reincarnate
+  #Keep 'try00/{POSCAR,POTCAR,INCAR,POTCAR}', remove others.
+  def reset_init
+    poscars = Dir.glob("#{@dir}/try*/POSCAR").sort
+    poscar = nil
+    path = nil
+    poscars.each do |poscar|
+      begin
+        VaspUtils::Poscar.load_file poscar
+        path = File.dirname(poscar)
+        break
+      rescue VaspUtils::Poscar::ParseError
+        next
+      end
+    end
+    raise NoVaspDirError unless path
+
+    ##try*
+    rm_list = Dir.glob "#{@dir}/try*"
+    rm_list.delete path
+    ##input files
+    rm_list << Dir.glob("#{path}/*")
+    rm_list.flatten!
+    ["KPOINTS", "INCAR", "POTCAR", "POSCAR"].each do |file|
+      rm_list.delete "#{path}/#{file}"
+    end
+    ##queeue
+    rm_list += Dir.glob "#{@dir}/lock*"
+    rm_list += Dir.glob "#{@dir}/*.sh"
+    rm_list += Dir.glob "#{@dir}/*.log"
+    rm_list += Dir.glob "#{@dir}/*.o*"
+    ##remove
+    rm_list.each do |file|
+      FileUtils.rm_rf file
+    end
+  end
+
+  #Generate a new vaspdir as 'try00'.
+  #Other directories, including old 'try00', are removed.
+  def reset_next
+    prepare_next
+    rm_list =  []
+    rm_list += Dir.glob "#{@dir}/lock*"
+    rm_list += Dir.glob "#{@dir}/*.sh"
+    rm_list += Dir.glob "#{@dir}/*.log"
+    rm_list += Dir.glob "#{@dir}/*.o*"
+    rm_list.each do |file|
+      FileUtils.rm_rf file
+    end
+  end
+
+  #Generate a new vaspdir as 'try00'.
+  #Other directories, including old 'try00', are removed.
+  def reset_reincarnate
+    #CONTCAR を最後から解釈していく。
+    #全てだめだったら POSCAR を解釈する。
+    #全部だめだったら例外を投げる。
+
+    #CONTCAR を解釈できたディレクトリで INCAR, KPOINTS, POTCAR を取得。
+    #try01 という名前でディレクトリを作る。
     contcars = Dir.glob("#{@dir}/try*/CONTCAR").sort.reverse
     contcars += Dir.glob("#{@dir}/try*/POSCAR").sort.reverse
-    #pp contcars
     poscar = nil
     path = nil
     contcars.each do |contcar|
@@ -109,7 +169,6 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
 
     new_dir = "#{@dir}/new_try00"
     Dir.mkdir new_dir
-    #pp poscar
     FileUtils.mv("#{path}/KPOINTS", "#{new_dir}/KPOINTS")
     FileUtils.mv("#{path}/INCAR"  , "#{new_dir}/INCAR"  )
     FileUtils.mv("#{path}/POTCAR" , "#{new_dir}/POTCAR" )
@@ -125,32 +184,42 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     end
 
     FileUtils.mv new_dir, "#{@dir}/try00"
-
-    #CONTCAR を最後から解釈していく。
-    #全てだめだったら POSCAR を解釈する。
-    #全部だめだったら例外を投げる。
-
-    #CONTCAR を解釈できたディレクトリで INCAR, KPOINTS, POTCAR を取得。
-    #try01 という名前でディレクトリを作る。
   end
 
   private
 
-  # Generate next directory of latest_dir.
+  # Generate next directory from latest_dir.
   def prepare_next
+    raise NoContcarError unless File.exist? "#{latest_dir.dir}/CONTCAR"
+
     new_dir = self.class.next_name(latest_dir.dir)
     Dir.mkdir new_dir
-    FileUtils.cp("#{latest_dir.dir}/CHG"     , "#{new_dir}/CHG"     )
-    FileUtils.cp("#{latest_dir.dir}/CHGCAR"  , "#{new_dir}/CHGCAR"  )
-    FileUtils.cp("#{latest_dir.dir}/DOSCAR"  , "#{new_dir}/DOSCAR"  )
-    FileUtils.cp("#{latest_dir.dir}/EIGENVAL", "#{new_dir}/EIGENVAL")
-    FileUtils.cp("#{latest_dir.dir}/INCAR"   , "#{new_dir}/INCAR"   )
-    FileUtils.cp("#{latest_dir.dir}/KPOINTS" , "#{new_dir}/KPOINTS" )
-    FileUtils.cp("#{latest_dir.dir}/OSZICAR" , "#{new_dir}/OSZICAR" )
-    FileUtils.cp("#{latest_dir.dir}/PCDAT"   , "#{new_dir}/PCDAT"   )
-    FileUtils.cp("#{latest_dir.dir}/POTCAR"  , "#{new_dir}/POTCAR"  )
-    FileUtils.cp("#{latest_dir.dir}/WAVECAR" , "#{new_dir}/WAVECAR" )
-    FileUtils.cp("#{latest_dir.dir}/XDATCAR" , "#{new_dir}/XDATCAR" )
+
+    #FileUtils.cp("#{latest_dir.dir}/CHG"     , "#{new_dir}/CHG"     )
+    #FileUtils.cp("#{latest_dir.dir}/CHGCAR"  , "#{new_dir}/CHGCAR"  )
+    #FileUtils.cp("#{latest_dir.dir}/DOSCAR"  , "#{new_dir}/DOSCAR"  )
+    #FileUtils.cp("#{latest_dir.dir}/EIGENVAL", "#{new_dir}/EIGENVAL")
+    #FileUtils.cp("#{latest_dir.dir}/INCAR"   , "#{new_dir}/INCAR"   )
+    #FileUtils.cp("#{latest_dir.dir}/KPOINTS" , "#{new_dir}/KPOINTS" )
+    #FileUtils.cp("#{latest_dir.dir}/OSZICAR" , "#{new_dir}/OSZICAR" )
+    #FileUtils.cp("#{latest_dir.dir}/PCDAT"   , "#{new_dir}/PCDAT"   )
+    #FileUtils.cp("#{latest_dir.dir}/POTCAR"  , "#{new_dir}/POTCAR"  )
+    #FileUtils.cp("#{latest_dir.dir}/WAVECAR" , "#{new_dir}/WAVECAR" )
+    #FileUtils.cp("#{latest_dir.dir}/XDATCAR" , "#{new_dir}/XDATCAR" )
+
+    possible_files = ["CHG", "CHGCAR", "DOSCAR", "EIGENVAL", 
+      "OSZICAR", "PCDAT", "WAVECAR", "XDATCAR"]
+    possible_files.each do |file|
+      if File.exist? "#{latest_dir.dir}/#{file}"
+        FileUtils.cp("#{latest_dir.dir}/#{file}", "#{new_dir}/#{file}")
+      end
+    end
+
+    necessary_files = ["INCAR", "KPOINTS", "POTCAR"]
+    necessary_files.each do |file|
+      FileUtils.cp("#{latest_dir.dir}/#{file}", "#{new_dir}/#{file}")
+    end
+
     FileUtils.cp("#{latest_dir.dir}/CONTCAR" , "#{new_dir}/POSCAR"  ) # change name
     # without POSCAR, OUTCAR, vasprun.xml
     VaspUtils::VaspDir.new(new_dir)

@@ -6,6 +6,11 @@
   - Update bin/symposcar .
   - Adjust to CrystalCell-0.0.1 .
   - Add options to bin/checkvasp and modified output format.
+  - Rename VaspGeomOpt to VaspGeometryOptimizer
+  - Add VaspGeometryOptimizer::reset_init
+  - Add VaspGeometryOptimizer::reset_next
+  - Add VaspGeometryOptimizer::reset_reincarnation
+  - Add bin/setvaspgeompot
 
 == Version 0.0.11
   - Modify bin/qsubvasp
