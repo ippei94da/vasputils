@@ -8,32 +8,32 @@ require "comana"
 require "vasputils"
 
 ## option analysis
-OPTIONS = {}
-op = OptionParser.new
-op.on("-r", "--reset", "Reset to initial state, remove except for 4 files."){OPTIONS[:reset] = true}
-op.on("-y", "--yes"  , "Answer yes to all questions."        ){OPTIONS[:yes]  = true}
-op.on("-n", "--no"   , "Answer no  to all questions."        ){OPTIONS[:no ]  = true}
-op.parse!(ARGV)
+#OPTIONS = {}
+#op = OptionParser.new
+#op.on("-r", "--reset", "Reset to initial state, remove except for 4 files."){OPTIONS[:reset] = true}
+#op.on("-y", "--yes"  , "Answer yes to all questions."        ){OPTIONS[:yes]  = true}
+#op.on("-n", "--no"   , "Answer no  to all questions."        ){OPTIONS[:no ]  = true}
+#op.parse!(ARGV)
 
 tgts = ARGV
 tgts = [ENV['PWD']] if tgts.size == 0
 
 #pp tgts; exit
 
-def ask
-  print "  Execute? [y/n]: "
-  if OPTIONS[:yes]
-    puts "-y option is indicated."
-    return true
-  end
-
-  if OPTIONS[:no]
-    puts "-n option is indicated."
-    return false
-  end
-
-  /^y/i =~ $stdin.readline
-end
+#def ask
+#  print "  Execute? [y/n]: "
+#  if OPTIONS[:yes]
+#    puts "-y option is indicated."
+#    return true
+#  end
+#
+#  if OPTIONS[:no]
+#    puts "-n option is indicated."
+#    return false
+#  end
+#
+#  /^y/i =~ $stdin.readline
+#end
 
 tgts.each do |tgt_dir|
   puts "Directory: #{tgt_dir}"

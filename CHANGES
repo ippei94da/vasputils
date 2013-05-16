@@ -10,7 +10,10 @@
   - Add VaspGeometryOptimizer::reset_init
   - Add VaspGeometryOptimizer::reset_next
   - Add VaspGeometryOptimizer::reset_reincarnation
-  - Add bin/setvaspgeompot
+  - Add bin/resetvaspgeompot
+  - Remove bin/nextvasp. Use bin/resetvaspgeomopt -n.
+  - Rename bin/setvaspdir to bin/resetvaspdir
+  - Remove optiions from bin/resetvaspdir
 
 == Version 0.0.11
   - Modify bin/qsubvasp
