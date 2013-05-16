@@ -65,12 +65,12 @@ tgts.each do |tgt_dir|
   puts "  Keep files:"
   keep_files.each { |file| puts "    #{file}" }
 
-  if ask
+  #if ask
     remove_files.each do |file|
       puts "    Removing: #{file}"
       FileUtils.rm_rf "#{tgt_dir}/#{file}"
     end
-  else
-    puts "  Nothing to do. Next."
-  end
+  #else
+    #puts "  Nothing to do. Next."
+  #end
 end
