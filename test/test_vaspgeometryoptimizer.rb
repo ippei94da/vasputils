@@ -107,43 +107,51 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
   def test_reset_init
     orig = TEST_DIR + "/reset_init/orig"
     tmp  = TEST_DIR + "/reset_init/tmp"
-
     FileUtils.rm_r tmp if FileTest.exist? tmp
-
     FileUtils.cp_r(orig, tmp)
     vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
     vgo.reset_init
-
     assert_equal(true,  File.exist?("#{tmp}/try00"))
     assert_equal(false, File.exist?("#{tmp}/try01"))
-    #assert_equal(1,     Dir.glob("#{tmp}/*").size)
-      #This test may rail in NFS environment due to nfs lock; try02/.nfs*.
     assert_equal(4,     Dir.glob("#{tmp}/try00/*").size)
     assert_equal("POSCAR_00\n", File.open("#{tmp}/try00/POSCAR", "r").readline)
-
     FileUtils.rm_rf tmp if FileTest.exist? tmp
   end
 
   def test_reset_next
+    #with correct POSCAR and CONTCAR
     orig = TEST_DIR + "/reset_next/orig"
     tmp  = TEST_DIR + "/reset_next/tmp"
-
     FileUtils.rm_r tmp if FileTest.exist? tmp
-
     FileUtils.cp_r(orig, tmp)
     vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
     vgo.reset_next
-
     assert_equal(true,  File.exist?("#{tmp}/try00"))
     assert_equal(true,  File.exist?("#{tmp}/try01"))
     assert_equal(true,  File.exist?("#{tmp}/try02"))
     assert_equal(true,  File.exist?("#{tmp}/try03"))
-    #assert_equal(1,     Dir.glob("#{tmp}/*").size)
-      #This test may rail in NFS environment due to nfs lock; try02/.nfs*.
     assert_equal(4,     Dir.glob("#{tmp}/try03/*").size)
     assert_equal("CONTCAR_02\n", File.open("#{tmp}/try03/POSCAR", "r").readline)
-
     FileUtils.rm_rf tmp if FileTest.exist? tmp
+
+    TODO
+
+    #with correct POSCAR and empty CONTCAR
+    orig = TEST_DIR + "/reset_next/orig"
+    tmp  = TEST_DIR + "/reset_next/tmp"
+    FileUtils.rm_r tmp if FileTest.exist? tmp
+    FileUtils.cp_r(orig, tmp)
+    vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
+    vgo.reset_next
+    assert_equal(true,  File.exist?("#{tmp}/try00"))
+    assert_equal(true,  File.exist?("#{tmp}/try01"))
+    assert_equal(true,  File.exist?("#{tmp}/try02"))
+    assert_equal(true,  File.exist?("#{tmp}/try03"))
+    assert_equal(4,     Dir.glob("#{tmp}/try03/*").size)
+    assert_equal("CONTCAR_02\n", File.open("#{tmp}/try03/POSCAR", "r").readline)
+    FileUtils.rm_rf tmp if FileTest.exist? tmp
+
+
   end
 
   def test_reset_reincarnation
