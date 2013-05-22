@@ -139,6 +139,9 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     rescue Errno::ENOENT
       latest_dir.reset_init(io)
       clean_queue_files
+    rescue VaspUtils::Poscar::ParseError
+      latest_dir.reset_init(io)
+      clean_queue_files
     end
   end
 

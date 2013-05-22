@@ -137,6 +137,21 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
     FileUtils.rm_rf tmp if FileTest.exist? tmp
 
     #with correct POSCAR and empty CONTCAR
+    orig = TEST_DIR + "/reset_next/empty-contcar/orig"
+    tmp  = TEST_DIR + "/reset_next/empty-contcar/tmp"
+    FileUtils.rm_r tmp if FileTest.exist? tmp
+    FileUtils.cp_r(orig, tmp)
+    vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
+    vgo.reset_next(io)
+    assert_equal(true,  File.exist?("#{tmp}/try00"))
+    assert_equal(true,  File.exist?("#{tmp}/try01"))
+    assert_equal(true,  File.exist?("#{tmp}/try02"))
+    assert_equal(false,  File.exist?("#{tmp}/try03"))
+    assert_equal(4,     Dir.glob("#{tmp}/try02/*").size)
+    assert_equal("POSCAR_02\n", File.open("#{tmp}/try02/POSCAR", "r").readline)
+    FileUtils.rm_rf tmp if FileTest.exist? tmp
+
+    #with correct POSCAR and no CONTCAR
     orig = TEST_DIR + "/reset_next/no-contcar/orig"
     tmp  = TEST_DIR + "/reset_next/no-contcar/tmp"
     FileUtils.rm_r tmp if FileTest.exist? tmp
@@ -150,8 +165,6 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
     assert_equal(4,     Dir.glob("#{tmp}/try02/*").size)
     assert_equal("POSCAR_02\n", File.open("#{tmp}/try02/POSCAR", "r").readline)
     FileUtils.rm_rf tmp if FileTest.exist? tmp
-
-
   end
 
   def test_reset_reincarnation
