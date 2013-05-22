@@ -3,12 +3,15 @@
 
 $TEST = true
 
+require "helper"
+require "fileutils"
+require "stringio"
 require "rubygems"
-gem "comana"
-require "comana/computationmanager.rb"
+#gem "comana"
+#require "comana/computationmanager.rb"
 
 require "test/unit"
-require "vasputils.rb"
+#require "vasputils.rb"
 
 # assert_equal( cor, data)
 # assert_in_delta( cor, data, $tolerance )
@@ -112,6 +115,48 @@ class TC_VaspDir < Test::Unit::TestCase
   def test_outcar
     assert_equal("test/vaspdir/started/OUTCAR", @vd02.outcar[:name])
     assert_equal("test/vaspdir/finished/OUTCAR", @vd03.outcar[:name])
+  end
+
+  def test_reset_init
+    orig = "test/vaspdir/reset_init/finished/orig"
+    tmp  = "test/vaspdir/reset_init/finished/tmp"
+    FileUtils.rm_rf(tmp) if File.exist?(tmp)
+    FileUtils.cp_r(orig, tmp)
+
+    io = StringIO.new
+
+    vd = VaspUtils::VaspDir.new(tmp)
+    assert_equal(true, File.exist?("#{tmp}/CONTCAR"))
+    assert_equal(true, File.exist?("#{tmp}/INCAR"))
+    assert_equal(true, File.exist?("#{tmp}/KPOINTS"))
+    assert_equal(true, File.exist?("#{tmp}/OUTCAR"))
+    assert_equal(true, File.exist?("#{tmp}/POSCAR"))
+    assert_equal(true, File.exist?("#{tmp}/POTCAR"))
+    vd.reset_init(io)
+    assert_equal(false, File.exist?("#{tmp}/CONTCAR"))
+    assert_equal(true , File.exist?("#{tmp}/INCAR"))
+    assert_equal(true , File.exist?("#{tmp}/KPOINTS"))
+    assert_equal(false, File.exist?("#{tmp}/OUTCAR"))
+    assert_equal(true , File.exist?("#{tmp}/POSCAR"))
+    assert_equal(true , File.exist?("#{tmp}/POTCAR"))
+    line = File.open("#{tmp}/POSCAR", "r").readlines[0]
+    assert_equal("POSCAR\n", line )
+
+    io.rewind
+    lines = io.readlines
+    #"  Remove files:",
+    #"    CONTCAR",
+    #"    OUTCAR",
+    #"  Keep files:",
+    #"    INCAR",
+    #"    KPOINTS",
+    #"    POSCAR",
+    #"    POTCAR",
+    assert_equal("  Removing: CONTCAR\n", lines.shift)
+    assert_equal("  Removing: OUTCAR\n",  lines.shift)
+    assert_equal(nil         ,  lines.shift)
+
+    FileUtils.rm_rf(tmp) if File.exist? tmp
   end
 
   def test_poscar

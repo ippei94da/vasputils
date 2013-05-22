@@ -59,11 +59,11 @@ tgts.each do |tgt_dir|
 
   if OPTIONS[:next]
     puts "  Generate next: #{tgt_dir}"
-    begin
+    #begin
       tgt.reset_next
-    rescue VaspUtils::VaspGeometryOptimizer::NoContcarError
-      puts "  CONTCAR not exist in latest_dir: #{tgt_dir}"
-    end
+    #rescue VaspUtils::VaspGeometryOptimizer::NoContcarError
+      #puts "  CONTCAR not exist in latest_dir: #{tgt_dir}"
+    #end
   end
 
   if OPTIONS[:reincarnate]

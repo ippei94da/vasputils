@@ -5,8 +5,9 @@ require "pp"
 require "fileutils"
 
 require "rubygems"
-gem "comana"
-require "comana/computationmanager.rb"
+#gem "comana"
+#require "comana/computationmanager.rb"
+#require "comana/computationmanager.rb"
 
 #require "vasputils.rb"
 #require "vasputils/vaspdir.rb"
@@ -130,15 +131,14 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
 
   #Generate a new vaspdir as 'try00'.
   #Other directories, including old 'try00', are removed.
-  def reset_next
-    prepare_next
-    rm_list =  []
-    rm_list += Dir.glob "#{@dir}/lock*"
-    rm_list += Dir.glob "#{@dir}/*.sh"
-    rm_list += Dir.glob "#{@dir}/*.log"
-    rm_list += Dir.glob "#{@dir}/*.o*"
-    rm_list.each do |file|
-      FileUtils.rm_rf file
+  def reset_next(io = $stdout)
+    begin
+      latest_dir.contcar
+      prepare_next
+      clean_queue_files
+    rescue Errno::ENOENT
+      latest_dir.reset_init(io)
+      clean_queue_files
     end
   end
 
@@ -189,6 +189,7 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
   private
 
   # Generate next directory from latest_dir.
+  # Need proper CONTCAR. If not, raise NoContcarError.
   def prepare_next
     raise NoContcarError unless File.exist? "#{latest_dir.dir}/CONTCAR"
 
@@ -223,6 +224,17 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     FileUtils.cp("#{latest_dir.dir}/CONTCAR" , "#{new_dir}/POSCAR"  ) # change name
     # without POSCAR, OUTCAR, vasprun.xml
     VaspUtils::VaspDir.new(new_dir)
+  end
+
+  def clean_queue_files
+    rm_list = []
+    rm_list += Dir.glob "#{@dir}/lock*"
+    rm_list += Dir.glob "#{@dir}/*.sh"
+    rm_list += Dir.glob "#{@dir}/*.log"
+    rm_list += Dir.glob "#{@dir}/*.o*"
+    rm_list.each do |file|
+      FileUtils.rm_rf file
+    end
   end
 
 end

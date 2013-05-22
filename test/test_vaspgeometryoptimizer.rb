@@ -2,6 +2,7 @@
 # coding: utf-8
 
 require "fileutils"
+require "stringio"
 require "test/unit"
 
 require "vasputils.rb"
@@ -120,12 +121,13 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
 
   def test_reset_next
     #with correct POSCAR and CONTCAR
-    orig = TEST_DIR + "/reset_next/orig"
-    tmp  = TEST_DIR + "/reset_next/tmp"
+    orig = TEST_DIR + "/reset_next/poscar-contcar/orig"
+    tmp  = TEST_DIR + "/reset_next/poscar-contcar/tmp"
     FileUtils.rm_r tmp if FileTest.exist? tmp
     FileUtils.cp_r(orig, tmp)
     vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
-    vgo.reset_next
+    io = StringIO.new
+    vgo.reset_next(io)
     assert_equal(true,  File.exist?("#{tmp}/try00"))
     assert_equal(true,  File.exist?("#{tmp}/try01"))
     assert_equal(true,  File.exist?("#{tmp}/try02"))
@@ -134,21 +136,19 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
     assert_equal("CONTCAR_02\n", File.open("#{tmp}/try03/POSCAR", "r").readline)
     FileUtils.rm_rf tmp if FileTest.exist? tmp
 
-    TODO
-
     #with correct POSCAR and empty CONTCAR
-    orig = TEST_DIR + "/reset_next/orig"
-    tmp  = TEST_DIR + "/reset_next/tmp"
+    orig = TEST_DIR + "/reset_next/no-contcar/orig"
+    tmp  = TEST_DIR + "/reset_next/no-contcar/tmp"
     FileUtils.rm_r tmp if FileTest.exist? tmp
     FileUtils.cp_r(orig, tmp)
     vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
-    vgo.reset_next
+    vgo.reset_next(io)
     assert_equal(true,  File.exist?("#{tmp}/try00"))
     assert_equal(true,  File.exist?("#{tmp}/try01"))
     assert_equal(true,  File.exist?("#{tmp}/try02"))
-    assert_equal(true,  File.exist?("#{tmp}/try03"))
-    assert_equal(4,     Dir.glob("#{tmp}/try03/*").size)
-    assert_equal("CONTCAR_02\n", File.open("#{tmp}/try03/POSCAR", "r").readline)
+    assert_equal(false,  File.exist?("#{tmp}/try03"))
+    assert_equal(4,     Dir.glob("#{tmp}/try02/*").size)
+    assert_equal("POSCAR_02\n", File.open("#{tmp}/try02/POSCAR", "r").readline)
     FileUtils.rm_rf tmp if FileTest.exist? tmp
 
 

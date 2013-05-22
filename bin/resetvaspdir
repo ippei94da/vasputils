@@ -40,37 +40,12 @@ tgts.each do |tgt_dir|
 
   # Check tgt_dir is VaspDir?
   begin
-    VaspUtils::VaspDir.new(tgt_dir)
+    vd = VaspUtils::VaspDir.new(tgt_dir)
   rescue VaspUtils::VaspDir::InitializeError
     puts "  Not VaspDir: #{tgt_dir}"
     next
   end
 
-  fullpath = File.expand_path tgt_dir
-  keep_files   = ["INCAR", "KPOINTS", "POSCAR", "POTCAR"]
-  remove_files = []
-  Dir.entries( fullpath ).sort.each do |file|
-    next if file == "."
-    next if file == ".."
-    remove_files << file unless keep_files.include? file
-  end
+  vd.reset_init
 
-  puts "  No remove files. Next"
-  next if remove_files.size == 0
-
-  #pp fullpath; exit
-  puts "  Remove files:"
-  remove_files.each { |file| puts "    #{file}" }
-
-  puts "  Keep files:"
-  keep_files.each { |file| puts "    #{file}" }
-
-  #if ask
-    remove_files.each do |file|
-      puts "    Removing: #{file}"
-      FileUtils.rm_rf "#{tgt_dir}/#{file}"
-    end
-  #else
-    #puts "  Nothing to do. Next."
-  #end
 end

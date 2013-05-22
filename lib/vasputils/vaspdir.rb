@@ -6,8 +6,8 @@ require "pp"
 require "date"
 require "yaml"
 
-require "rubygems"
-require "comana"
+#require "rubygems"
+#require "comana"
 
 # Class for VASP executable directory,
 # including input and output files.
@@ -68,6 +68,34 @@ class VaspUtils::VaspDir < Comana::ComputationManager
       return VaspUtils::Outcar.load_file("#{@dir}/OUTCAR")[:normal_ended]
     rescue Errno::ENOENT
       return false
+    end
+  end
+
+  def reset_init(io = $stdout)
+    #fullpath = File.expand_path @dir
+    keep_files   = ["INCAR", "KPOINTS", "POSCAR", "POTCAR"]
+    remove_files = []
+    Dir.entries( @dir ).sort.each do |file|
+      next if file == "."
+      next if file == ".."
+      remove_files << file unless keep_files.include? file
+    end
+
+    if remove_files.size == 0
+      io.puts "  No remove files."
+      return
+    else
+      #pp @dir; exit
+      #puts "  Remove files:"
+      #remove_files.each { |file| puts "    #{file}" }
+
+      #puts "  Keep files:"
+      #keep_files.each { |file| puts "    #{file}" }
+
+      remove_files.each do |file|
+        io.puts "  Removing: #{file}"
+        FileUtils.rm_rf "#{@dir}/#{file}"
+      end
     end
   end
 
