@@ -32,7 +32,7 @@ OPTIONS = {}
 op = OptionParser.new
 op.on("-c cluster", "--cluster=name" , "Cluster name."){|v| OPTIONS[:cluster] = v }
 op.on("-n number", "--nodes=num", "Indicate node number, or key in ~/.clustersetting."){|v|
-  OPTIONS[:nodes] = v
+  OPTIONS[:num_nodes] = v
 }
 op.on("-g", "--geom-opt", "Geometry optimization."){ OPTIONS[:geomopt] = true}
 op.on("-p num", "--priority=num", "Set priority of job."){|v| OPTIONS[:priority] = v }
@@ -44,7 +44,7 @@ def condition_check(opts)
   conds = {}
 
   conds[:cluster] = opts[:cluster]
-  conds[:nodes]   = opts[:nodes].to_i if opts[:nodes]
+  conds[:num_nodes]   = opts[:num_nodes].to_i if opts[:num_nodes]
 
   # target and command
   unless ARGV.size == 1
