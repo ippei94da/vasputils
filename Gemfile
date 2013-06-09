@@ -6,12 +6,12 @@ source "http://rubygems.org"
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
 group :development do
-  gem "rdoc", ">= 3.12"
+  gem "rdoc", "~> 4.0.1"
   gem "bundler", "~> 1.3.4"
-  gem "jeweler", ">= 1.8.3"
+  gem "jeweler", ">= 1.8.4"
   gem "simplecov", ">= 0"
   #gem "nokogiri", ">= 1.5.9"
-  gem "crystalcell", ">= 0.0.2"
+  gem "crystalcell", ">= 0.0.1"
   gem "mageo", ">= 0.0.2"
   gem "malge", ">= 0.0.8"
   gem "maset", ">= 0.0.0"
