@@ -13,6 +13,8 @@ require "yaml"
 # including input and output files.
 #
 class VaspUtils::VaspDir < Comana::ComputationManager
+  MACHINEFILE = "machines"
+
   class InitializeError < Exception; end
   class NoVaspBinaryError < Exception; end
   class PrepareNextError < Exception; end
@@ -106,14 +108,32 @@ class VaspUtils::VaspDir < Comana::ComputationManager
     begin
       info =
         Comana::ClusterSetting.load_file("#{ENV["HOME"]}/.clustersetting").settings_host(ENV["HOST"])
-      vasp = info["vasp"]
     rescue
-      #vasp = "vasp"
-      raise NoVaspBinaryError, "No vasp path in #{ENV["HOME"]}/.clustersetting"
+      puts "No vasp path in #{ENV["HOME"]}/.clustersetting"
+      pp info
+      raise NoVaspBinaryError
     end
+
+    if ENV["SGE_EXECD_PIDFILE"] #grid engine 経由のとき
+      nslots = ENV["NSLOTS"]
+      lines = open(ENV["PE_HOSTFILE"], "r").readlines.collect do |line|
+        line =~ /^(\S+)\s+(\S+)/
+        "#{$1} cpu=#{$2}"
+      end
+      generate_machinefile(lines)
+    else
+      nslots = 1
+      lines = ["localhost cpu=1"]
+      generate_machinefile(lines)
+    end
+
     command = "cd #{@dir};"
-    command += vasp
+    command += "#{info["mpi"]} -machinefile #{MACHINEFILE} -np #{nslots} #{info["vasp"]}"
     command += "> stdout"
+
+    io = File.open("#{@dir}/runvasp.log", "w")
+    io.puts command
+    io.close
 
     end_status = system command
     raise ExecuteError, "end_status is #{end_status.inspect}" unless end_status
@@ -122,6 +142,12 @@ class VaspUtils::VaspDir < Comana::ComputationManager
   def prepare_next
     #do_nothing
     raise PrepareNextError, "VaspDir doesn't need next."
+  end
+
+  def generate_machinefile(lines)
+    io = File.open("#{@dir}/#{MACHINEFILE}", "w")
+    io.puts lines
+    io.close
   end
 
 end

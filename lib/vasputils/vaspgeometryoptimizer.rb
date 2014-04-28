@@ -13,7 +13,7 @@ require "rubygems"
 #require "vasputils/vaspdir.rb"
 
 #
-#The directory must has subdirs whose name is started by 'try'.
+#The directory must has subdirs whose name is started by 'geomopt'.
 #This restriction of naming is necessary to distinguish from simple aggregation
 #of vasp directories.
 #
@@ -23,7 +23,7 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
   class NoIntegerEndedNameError < Exception; end
   class NoContcarError < Exception; end
 
-  PREFIX = "try"
+  PREFIX = "geomopt"
 
   def initialize(dir)
     super(dir)
@@ -93,9 +93,9 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     raise NoVaspDirError, @dir
   end
 
-  #Keep 'try00/{POSCAR,POTCAR,INCAR,POTCAR}', remove others.
+  #Keep 'geomopt00/{POSCAR,POTCAR,INCAR,POTCAR}', remove others.
   def reset_init
-    poscars = Dir.glob("#{@dir}/try*/POSCAR").sort
+    poscars = Dir.glob("#{@dir}/#{PREFIX}*/POSCAR").sort
     poscar = nil
     path = nil
     poscars.each do |poscar|
@@ -109,8 +109,8 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     end
     raise NoVaspDirError unless path
 
-    ##try*
-    rm_list = Dir.glob "#{@dir}/try*"
+    ##geomopt*
+    rm_list = Dir.glob "#{@dir}/#{PREFIX}*"
     rm_list.delete path
     ##input files
     rm_list << Dir.glob("#{path}/*")
@@ -129,8 +129,8 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     end
   end
 
-  #Generate a new vaspdir as 'try00'.
-  #Other directories, including old 'try00', are removed.
+  #Generate a new vaspdir as 'geomopt00'.
+  #Other directories, including old 'geomopt00', are removed.
   def reset_next(io = $stdout)
     begin
       latest_dir.contcar
@@ -145,17 +145,17 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     end
   end
 
-  #Generate a new vaspdir as 'try00'.
-  #Other directories, including old 'try00', are removed.
+  #Generate a new vaspdir as 'geomopt00'.
+  #Other directories, including old 'geomopt00', are removed.
   def reset_reincarnate
     #CONTCAR を最後から解釈していく。
     #全てだめだったら POSCAR を解釈する。
     #全部だめだったら例外を投げる。
 
     #CONTCAR を解釈できたディレクトリで INCAR, KPOINTS, POTCAR を取得。
-    #try01 という名前でディレクトリを作る。
-    contcars = Dir.glob("#{@dir}/try*/CONTCAR").sort.reverse
-    contcars += Dir.glob("#{@dir}/try*/POSCAR").sort.reverse
+    #geomopt01 という名前でディレクトリを作る。
+    contcars = Dir.glob("#{@dir}/#{PREFIX}*/CONTCAR").sort.reverse
+    contcars += Dir.glob("#{@dir}/#{PREFIX}*/POSCAR").sort.reverse
     poscar = nil
     path = nil
     contcars.each do |contcar|
@@ -170,14 +170,14 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     end
     raise NoVaspDirError unless poscar
 
-    new_dir = "#{@dir}/new_try00"
+    new_dir = "#{@dir}/new_#{PREFIX}00"
     Dir.mkdir new_dir
     FileUtils.mv("#{path}/KPOINTS", "#{new_dir}/KPOINTS")
     FileUtils.mv("#{path}/INCAR"  , "#{new_dir}/INCAR"  )
     FileUtils.mv("#{path}/POTCAR" , "#{new_dir}/POTCAR" )
     FileUtils.mv(poscar           , "#{new_dir}/POSCAR")
 
-    rm_list =  Dir.glob "#{@dir}/try*"
+    rm_list =  Dir.glob "#{@dir}/#{PREFIX}*"
     rm_list += Dir.glob "#{@dir}/lock*"
     rm_list += Dir.glob "#{@dir}/*.sh"
     rm_list += Dir.glob "#{@dir}/*.log"
@@ -186,7 +186,7 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
       FileUtils.rm_rf file
     end
 
-    FileUtils.mv new_dir, "#{@dir}/try00"
+    FileUtils.mv new_dir, "#{@dir}/#{PREFIX}00"
   end
 
   private

@@ -15,15 +15,9 @@ require "optparse"
 opts = {}
 op = OptionParser.new
 op.on("-g"    , "--geom-opt",  "Geometry optimization"){opts[:geom] = true}
-op.on("-c"    , "--cond-find", "Condition finding"    ){opts[:cond] = true}
 op.parse!(ARGV)
 
 dir = ARGV[0] || "."
-
-if opts[:geom] && opts[:cond]
-  puts "-g and -c must not be duplicated."
-  exit
-end
 
 if opts[:geom]
   begin
@@ -32,8 +26,6 @@ if opts[:geom]
     puts "Not suitable for VaspGeometryOptimizer: #{dir}"
     exit
   end
-elsif opts[:cond]
-  TODO
 else
   begin
     calc_dir = VaspUtils::VaspDir.new(dir)
@@ -42,7 +34,6 @@ else
     exit
   end
 end
-
 
 begin
   calc_dir.start
