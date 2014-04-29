@@ -14,9 +14,9 @@ require "vasputils"
 ## option analysis
 OPTIONS = {}
 op = OptionParser.new
-op.on("-i", "--reset-init", "Remain only 'try00/{INCAR,KPOINTS,POSCAR,POTCAR}'."){OPTIONS[:init] = true}
+op.on("-i", "--reset-init", "Remain only 'geomopt00/{INCAR,KPOINTS,POSCAR,POTCAR}'."){OPTIONS[:init] = true}
 op.on("-n", "--next" , "Next vasp for geometry optimization."){OPTIONS[:next] = true}
-op.on("-r", "--reincarnate", "Like recet, but generate 'try00' using final CONTCAR."){OPTIONS[:reincarnate] = true}
+op.on("-r", "--reincarnate", "Like reset, but generate 'geomopt00' using final CONTCAR."){OPTIONS[:reincarnate] = true}
 
 #op.on("-Y", "--yes", "Answer 'yes' to all questions."){OPTIONS[:yes] = true}
 #op.on("-N", "--no",  "Answer 'no'  to all questions."){OPTIONS[:no ] = true}

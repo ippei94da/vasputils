@@ -14,6 +14,7 @@
   - Remove bin/nextvasp. Use bin/resetvaspgeomopt -n.
   - Rename bin/setvaspdir to bin/resetvaspdir
   - Remove optiions from bin/resetvaspdir
+  - Change prefix for subdir of VaspGeomOpt from "try" to "geomopt"
 
 == Version 0.0.11
   - Modify bin/qsubvasp
