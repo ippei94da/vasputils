@@ -19,6 +19,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
   class NoVaspBinaryError < Exception; end
   class PrepareNextError < Exception; end
   class ExecuteError < Exception; end
+  class InvalidValueError < Exception; end
 
   def initialize(dir)
     super(dir)
@@ -105,9 +106,12 @@ class VaspUtils::VaspDir < Comana::ComputationManager
 
   # vasp を投げる。
   def calculate
+    #HOSTNAME is for GridEngine
+    hostname = (ENV["HOST"] || ENV["HOSTNAME"]).sub(/\..*$/, "") #ignore domain name
+
     begin
-      info =
-        Comana::ClusterSetting.load_file("#{ENV["HOME"]}/.clustersetting").settings_host(ENV["HOST"])
+      clustersettings = Comana::ClusterSetting.load_file("#{ENV["HOME"]}/.clustersetting")
+      info = clustersettings.settings_host(hostname)
     rescue
       puts "No vasp path in #{ENV["HOME"]}/.clustersetting"
       pp info
@@ -127,6 +131,16 @@ class VaspUtils::VaspDir < Comana::ComputationManager
       generate_machinefile(lines)
     end
 
+    raise InvalidValueError,
+      "`clustersettings' is #{clustersettings.inspect}." unless clustersettings
+    raise InvalidValueError, "`info' is #{info.inspect}." unless info
+    raise InvalidValueError, "`info['mpi']' is #{info['mpi']}" unless info['mpi']
+    raise InvalidValueError, "`info['vasp']' is #{info['vasp']}" unless info['vasp']
+    raise InvalidValueError, "`MACHINEFILE' is #{MACHINEFILE}" unless MACHINEFILE
+    raise InvalidValueError, "`nslots' is #{nslots}" unless nslots
+    raise InvalidValueError, "`nslots' is #{nslots}" unless nslots
+
+    #pp "#{info["mpi"]} -machinefile #{MACHINEFILE} -np #{nslots} #{info["vasp"]}"
     command = "cd #{@dir};"
     command += "#{info["mpi"]} -machinefile #{MACHINEFILE} -np #{nslots} #{info["vasp"]}"
     command += "> stdout"

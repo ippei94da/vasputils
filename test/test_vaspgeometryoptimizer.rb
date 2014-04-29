@@ -29,15 +29,15 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
     }
 
     assert_raise(VaspUtils::VaspGeometryOptimizer::NoVaspDirError){
-      VaspUtils::VaspGeometryOptimizer.new( TEST_DIR + "/not-geomopt/not-try-subdir")
+      VaspUtils::VaspGeometryOptimizer.new( TEST_DIR + "/not-geomopt/not-geomopt-subdir")
     }
   end
 
   def test_latest_dir
-    assert_equal("#{@vgo00.dir}/try00", @vgo00.latest_dir.dir)
-    assert_equal("#{@vgo01.dir}/try00", @vgo01.latest_dir.dir)
-    assert_equal("#{@vgo02.dir}/try01", @vgo02.latest_dir.dir)
-    assert_equal("#{@vgo03.dir}/try01", @vgo03.latest_dir.dir)
+    assert_equal("#{@vgo00.dir}/geomopt00", @vgo00.latest_dir.dir)
+    assert_equal("#{@vgo01.dir}/geomopt00", @vgo01.latest_dir.dir)
+    assert_equal("#{@vgo02.dir}/geomopt01", @vgo02.latest_dir.dir)
+    assert_equal("#{@vgo03.dir}/geomopt01", @vgo03.latest_dir.dir)
   end
 
   def test_finished?
@@ -49,20 +49,20 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
   end
 
   def test_next_name
-    assert_equal( "try01" , VaspUtils::VaspGeometryOptimizer.next_name("try00"))
-    assert_equal( "try01" , VaspUtils::VaspGeometryOptimizer.next_name("try0"))
-    assert_equal( "try10" , VaspUtils::VaspGeometryOptimizer.next_name("try09"))
-    assert_equal( "try11" , VaspUtils::VaspGeometryOptimizer.next_name("try10"))
-    assert_equal( "try100", VaspUtils::VaspGeometryOptimizer.next_name("try99"))
+    assert_equal( "geomopt01" , VaspUtils::VaspGeometryOptimizer.next_name("geomopt00"))
+    assert_equal( "geomopt01" , VaspUtils::VaspGeometryOptimizer.next_name("geomopt0"))
+    assert_equal( "geomopt10" , VaspUtils::VaspGeometryOptimizer.next_name("geomopt09"))
+    assert_equal( "geomopt11" , VaspUtils::VaspGeometryOptimizer.next_name("geomopt10"))
+    assert_equal( "geomopt100", VaspUtils::VaspGeometryOptimizer.next_name("geomopt99"))
     assert_equal( "01"    , VaspUtils::VaspGeometryOptimizer.next_name("00"))
-    assert_equal( "try01" , VaspUtils::VaspGeometryOptimizer.next_name("try"))
+    assert_equal( "geomopt01" , VaspUtils::VaspGeometryOptimizer.next_name("geomopt"))
     #assert_raise(VaspUtils::VaspGeometryOptimizer::NoIntegerEndedNameError){VaspUtils::VaspGeometryOptimizer.next_name("try")}
   end
 
   def test_prepare_next
     dir = TEST_DIR + "/prepare_next/normal"
-    old_number_dir = dir + "/try00"
-    new_number_dir = dir + "/try01"
+    old_number_dir = dir + "/geomopt00"
+    new_number_dir = dir + "/geomopt01"
 
     if Dir.exist?(new_number_dir)
       Dir.glob(new_number_dir + "/*").each do |file|
@@ -112,10 +112,10 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
     FileUtils.cp_r(orig, tmp)
     vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
     vgo.reset_init
-    assert_equal(true,  File.exist?("#{tmp}/try00"))
-    assert_equal(false, File.exist?("#{tmp}/try01"))
-    assert_equal(4,     Dir.glob("#{tmp}/try00/*").size)
-    assert_equal("POSCAR_00\n", File.open("#{tmp}/try00/POSCAR", "r").readline)
+    assert_equal(true,  File.exist?("#{tmp}/geomopt00"))
+    assert_equal(false, File.exist?("#{tmp}/geomopt01"))
+    assert_equal(4,     Dir.glob("#{tmp}/geomopt00/*").size)
+    assert_equal("POSCAR_00\n", File.open("#{tmp}/geomopt00/POSCAR", "r").readline)
     FileUtils.rm_rf tmp if FileTest.exist? tmp
   end
 
@@ -128,12 +128,12 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
     vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
     io = StringIO.new
     vgo.reset_next(io)
-    assert_equal(true,  File.exist?("#{tmp}/try00"))
-    assert_equal(true,  File.exist?("#{tmp}/try01"))
-    assert_equal(true,  File.exist?("#{tmp}/try02"))
-    assert_equal(true,  File.exist?("#{tmp}/try03"))
-    assert_equal(4,     Dir.glob("#{tmp}/try03/*").size)
-    assert_equal("CONTCAR_02\n", File.open("#{tmp}/try03/POSCAR", "r").readline)
+    assert_equal(true,  File.exist?("#{tmp}/geomopt00"))
+    assert_equal(true,  File.exist?("#{tmp}/geomopt01"))
+    assert_equal(true,  File.exist?("#{tmp}/geomopt02"))
+    assert_equal(true,  File.exist?("#{tmp}/geomopt03"))
+    assert_equal(4,     Dir.glob("#{tmp}/geomopt03/*").size)
+    assert_equal("CONTCAR_02\n", File.open("#{tmp}/geomopt03/POSCAR", "r").readline)
     FileUtils.rm_rf tmp if FileTest.exist? tmp
 
     #with correct POSCAR and empty CONTCAR
@@ -143,12 +143,12 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
     FileUtils.cp_r(orig, tmp)
     vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
     vgo.reset_next(io)
-    assert_equal(true,  File.exist?("#{tmp}/try00"))
-    assert_equal(true,  File.exist?("#{tmp}/try01"))
-    assert_equal(true,  File.exist?("#{tmp}/try02"))
-    assert_equal(false,  File.exist?("#{tmp}/try03"))
-    assert_equal(4,     Dir.glob("#{tmp}/try02/*").size)
-    assert_equal("POSCAR_02\n", File.open("#{tmp}/try02/POSCAR", "r").readline)
+    assert_equal(true,  File.exist?("#{tmp}/geomopt00"))
+    assert_equal(true,  File.exist?("#{tmp}/geomopt01"))
+    assert_equal(true,  File.exist?("#{tmp}/geomopt02"))
+    assert_equal(false,  File.exist?("#{tmp}/geomopt03"))
+    assert_equal(4,     Dir.glob("#{tmp}/geomopt02/*").size)
+    assert_equal("POSCAR_02\n", File.open("#{tmp}/geomopt02/POSCAR", "r").readline)
     FileUtils.rm_rf tmp if FileTest.exist? tmp
 
     #with correct POSCAR and no CONTCAR
@@ -158,12 +158,12 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
     FileUtils.cp_r(orig, tmp)
     vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
     vgo.reset_next(io)
-    assert_equal(true,  File.exist?("#{tmp}/try00"))
-    assert_equal(true,  File.exist?("#{tmp}/try01"))
-    assert_equal(true,  File.exist?("#{tmp}/try02"))
-    assert_equal(false,  File.exist?("#{tmp}/try03"))
-    assert_equal(4,     Dir.glob("#{tmp}/try02/*").size)
-    assert_equal("POSCAR_02\n", File.open("#{tmp}/try02/POSCAR", "r").readline)
+    assert_equal(true,  File.exist?("#{tmp}/geomopt00"))
+    assert_equal(true,  File.exist?("#{tmp}/geomopt01"))
+    assert_equal(true,  File.exist?("#{tmp}/geomopt02"))
+    assert_equal(false,  File.exist?("#{tmp}/geomopt03"))
+    assert_equal(4,     Dir.glob("#{tmp}/geomopt02/*").size)
+    assert_equal("POSCAR_02\n", File.open("#{tmp}/geomopt02/POSCAR", "r").readline)
     FileUtils.rm_rf tmp if FileTest.exist? tmp
   end
 
@@ -177,12 +177,12 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
     vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
     vgo.reset_reincarnate
 
-    assert_equal(true,  File.exist?("#{tmp}/try00"))
-    assert_equal(false, File.exist?("#{tmp}/try01"))
+    assert_equal(true,  File.exist?("#{tmp}/geomopt00"))
+    assert_equal(false, File.exist?("#{tmp}/geomopt01"))
     #assert_equal(1,     Dir.glob("#{tmp}/*").size)
-      #This test may rail in NFS environment due to nfs lock; try02/.nfs*.
-    assert_equal(4,     Dir.glob("#{tmp}/try00/*").size)
-    assert_equal("CONTCAR_01\n", File.open("#{tmp}/try00/POSCAR", "r").readline)
+      #This test may rail in NFS environment due to nfs lock; geomopt02/.nfs*.
+    assert_equal(4,     Dir.glob("#{tmp}/geomopt00/*").size)
+    assert_equal("CONTCAR_01\n", File.open("#{tmp}/geomopt00/POSCAR", "r").readline)
 
     FileUtils.rm_rf tmp if FileTest.exist? tmp
   end
