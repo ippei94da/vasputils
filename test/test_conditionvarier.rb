@@ -110,9 +110,30 @@ class TC_ConditionVarier < Test::Unit::TestCase
         }
     end
 
-    def test_selfnth_combination
+    def test_self_mesh_points
+        ary = [3]
+        results = VaspUtils::ConditionVarier.mesh_points(ary)
+        corrects = [
+            [0],
+            [1],
+            [2],
+        ]
+        assert_equal(corrects, results)
+
+        ary = [2,3]
+        results = VaspUtils::ConditionVarier.mesh_points(ary)
+        corrects = [
+            [0,0],
+            [0,1],
+            [0,2],
+            [1,0],
+            [1,1],
+            [1,2],
+        ]
+        assert_equal(corrects, results)
+
         ary = [2,2,3]
-        results = VaspUtils::ConditionVarier.nth_combination(ary)
+        results = VaspUtils::ConditionVarier.mesh_points(ary)
         corrects = [
             [0,0,0],
             [0,0,1],

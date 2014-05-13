@@ -72,28 +72,47 @@ class VaspUtils::ConditionVarier
         end
     end
 
-    def self.nth_combination(ary)
-        size = ary.inject(1){|n, item| n *= item}
-        #pp size
-        size.times do |i|
-            #pp i
+    # Argument 'ary' is Array of Integer's.
+    # Return all variation of integers less than Integer's.
+    def self.mesh_points(ary)
+        if ary.size == 1
+            results = Array.new
+            ary[0].times do |i|
+                results[i] = [i]
+            end
+            return results
+        elsif ary.size > 1
+            variation = ary.shift
+            right_ary = self.mesh_points(ary)
+
+            results = Array.new
+            variation.times do |i|
+                right_ary.each do |ary|
+                    #p [i, *ary]
+                    results.push([i, *ary])
+                end
+            end
+            return results
+        else
+            raise RuntimeError, "Must not happen!"
         end
     end
 
     def generate
         keys = @options.keys.sort
-        conditions = []
-        #keys.size 
-        num = @options.values.inject(1){|n, ary| n *= ary.size}
-        #p num
-        #num.times do |
-        #keys.each do |key|
-        #    pp @options[key]
-        #end
-        #keys.size.times do |i|
+        values = keys.map { |key| @options[key] }
+        sizes = keys.map { |key| @options[key].size }
+        mesh_points = self.class.mesh_points(sizes)
+        #p keys
+        #p values
+        #p sizes
+        #p mesh_points
 
-            #keys.each do |key|
-        #end
+        mesh_points.each do |condition|
+            keys.size.times 
+
+        end
+
     end
 
 end
