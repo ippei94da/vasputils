@@ -10,6 +10,7 @@ require "helper"
 #end
 class VaspUtils::ConditionVarier
     attr_accessor :options
+    #public :hash_to_s
 end
 
 class TC_ConditionVarier < Test::Unit::TestCase
@@ -17,6 +18,9 @@ class TC_ConditionVarier < Test::Unit::TestCase
         dir = "test/conditionvarier/standard"
         options = { :ka => "1,2", :kbc => "1,2,4", :encut => "400,500"}
         @cv00 = VaspUtils::ConditionVarier.new(dir, options)
+
+        options = { :ka => "1,2", :encut => "400,500"}
+        @cv01 = VaspUtils::ConditionVarier.new(dir, options)
     end
 
     def test_initialize
@@ -151,11 +155,47 @@ class TC_ConditionVarier < Test::Unit::TestCase
         assert_equal(corrects, results)
     end
 
-    def test_generate
-        @cv00.generate
-        TODO
+    def test_generate_condition_dirs
+        dirs = [
+            "test/conditionvarier/encut_400.0,ka_1",
+            "test/conditionvarier/encut_400.0,ka_2",
+            "test/conditionvarier/encut_500.0,ka_1",
+            "test/conditionvarier/encut_500.0,ka_2",
+        ]
+        dirs.each do |dir|
+            FileUtils.rm_rf(dir)
+        end
+
+        @cv01.generate_condition_dirs("test/conditionvarier")
+
+        vd = VaspUtils::VaspDir.new("test/conditionvarier/encut_400.0,ka_1")
+        assert_equal("400.0", vd.incar["ENCUT"])
+        assert_equal([1, 5, 5], vd.kpoints[:mesh])
+
+        vd = VaspUtils::VaspDir.new("test/conditionvarier/encut_400.0,ka_2")
+        assert_equal("400.0", vd.incar["ENCUT"])
+        assert_equal([2, 5, 5], vd.kpoints[:mesh])
+
+        vd = VaspUtils::VaspDir.new("test/conditionvarier/encut_500.0,ka_1")
+        assert_equal("500.0", vd.incar["ENCUT"])
+        assert_equal([1, 5, 5], vd.kpoints[:mesh])
+
+        vd = VaspUtils::VaspDir.new("test/conditionvarier/encut_500.0,ka_2")
+        assert_equal("500.0", vd.incar["ENCUT"])
+        assert_equal([2, 5, 5], vd.kpoints[:mesh])
+
+        dirs.each do |dir|
+            FileUtils.rm_rf(dir)
+        end
+
     end
 
+    def test_self_hash_to_s
+        hash = {:encut=>400.0, :ka=>1, :kbc=>2}
+        result = VaspUtils::ConditionVarier.hash_to_s(hash)
+        correct = "encut_400.0,ka_1,kbc_2"
+        assert_equal(correct, result)
+    end
 
 end
 

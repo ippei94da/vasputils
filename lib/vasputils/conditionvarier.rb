@@ -6,6 +6,7 @@
 #
 class VaspUtils::ConditionVarier
     class InvalidOptionError < Exception; end
+    class ArgumentError < Exception; end
 
     #
     def initialize(standard_vaspdir, options)
@@ -75,6 +76,9 @@ class VaspUtils::ConditionVarier
     # Argument 'ary' is Array of Integer's.
     # Return all variation of integers less than Integer's.
     def self.mesh_points(ary)
+        raise ArgumentError, "Argument ary is empty: #{ary.inspect}" if ary.empty?
+        raise ArgumentError, "Argument ary is not Array: #{ary.inspect}" unless ary.is_a? Array
+
         if ary.size == 1
             results = Array.new
             ary[0].times do |i|
@@ -98,21 +102,55 @@ class VaspUtils::ConditionVarier
         end
     end
 
-    def generate
+    def self.hash_to_s(hash)
+        result = []
+        hash.keys.sort.each do |key|
+            result.push( key.to_s + "_" + hash[key].to_s)
+        end
+        result = result.join(",")
+        #pp result
+        result
+    end
+
+    def generate_condition_dirs(tgt_dir = ".")
         keys = @options.keys.sort
-        values = keys.map { |key| @options[key] }
-        sizes = keys.map { |key| @options[key].size }
-        mesh_points = self.class.mesh_points(sizes)
-        #p keys
-        #p values
-        #p sizes
-        #p mesh_points
+        # as order of 'keys'
 
-        mesh_points.each do |condition|
-            keys.size.times 
-
+        sizes = []
+        keys.each do |key|
+            sizes.push( @options[key].size)
         end
 
+        mesh_indices = self.class.mesh_points(sizes)
+
+        #p @options
+        #p keys
+        #p sizes
+        #p mesh_indices
+
+        conditions_list = []
+        mesh_indices.each do |ary|
+            conditions = {}
+            keys.size.times do |i|
+                key = keys[i]
+                conditions[key] = @options[key][ary[i]]
+            end
+            conditions_list << conditions
+        end
+        #pp conditions_list
+
+        conditions_list.each do |conditions|
+            dirname = self.class.hash_to_s(conditions)
+            #pp conditions.to_s
+            if File.exist? dirname
+                puts "#{dirname} is already exist."
+                next
+            end
+            #pp conditions
+            #pp dirname
+            dirname = tgt_dir + "/" + dirname
+            @standard_vaspdir.mutate(dirname, conditions)
+        end
     end
 
 end

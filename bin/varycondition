@@ -2,18 +2,20 @@
 # coding: utf-8
 
 require "optparse"
+require "rubygems"
+require "vasputils"
 
 ## option analysis
 OPTIONS = {}
 op = OptionParser.new
-op.on(nil, "--ka=list"   , "List of k_a mesh."             ){|v| OPTIONS[:ka]    = v}
-op.on(nil, "--kb=list"   , "List of k_b mesh."             ){|v| OPTIONS[:kb]    = v}
-op.on(nil, "--kc=list"   , "List of k_c mesh."             ){|v| OPTIONS[:kc]    = v}
-op.on(nil, "--kab=list"  , "List of k_a and k_b mesh."     ){|v| OPTIONS[:kab]   = v}
-op.on(nil, "--kbc=list"  , "List of k_b and k_c mesh."     ){|v| OPTIONS[:kbc]   = v}
-op.on(nil, "--kca=list"  , "List of k_c and k_a mesh."     ){|v| OPTIONS[:kca]   = v}
-op.on(nil, "--kabc=list" , "List of k_a, k_b and k_c mesh."){|v| OPTIONS[:kabc]  = v}
-op.on(nil, "--encut=list", "List of ENCUT."                ){|v| OPTIONS[:encut] = v}
+op.on("--ka=list"   , "List of k_a mesh."             ){|v| OPTIONS[:ka]    = v}
+op.on("--kb=list"   , "List of k_b mesh."             ){|v| OPTIONS[:kb]    = v}
+op.on("--kc=list"   , "List of k_c mesh."             ){|v| OPTIONS[:kc]    = v}
+op.on("--kab=list"  , "List of k_a and k_b mesh."     ){|v| OPTIONS[:kab]   = v}
+op.on("--kbc=list"  , "List of k_b and k_c mesh."     ){|v| OPTIONS[:kbc]   = v}
+op.on("--kca=list"  , "List of k_c and k_a mesh."     ){|v| OPTIONS[:kca]   = v}
+op.on("--kabc=list" , "List of k_a, k_b and k_c mesh."){|v| OPTIONS[:kabc]  = v}
+op.on("--encut=list", "List of ENCUT."                ){|v| OPTIONS[:encut] = v}
 op.parse!(ARGV)
 
 unless ARGV.size == 1
@@ -23,4 +25,4 @@ end
 
 cv = VaspUtils::ConditionVarier.new(ARGV[0], OPTIONS)
 
-cv.generate
+cv.generate_condition_dirs
