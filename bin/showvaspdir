@@ -30,12 +30,15 @@ end
 dirs = ARGV
 dirs = Dir.glob("*").sort if ARGV.empty?
 
-def show(klass_name, state, toten, i_step, e_step, dir)
+def show(klass_name, state, toten, i_step, e_step, time, dir)
   if (OPTIONS[:all]) || (OPTIONS[:show_state].include? state)
     unless OPTIONS[:filename]
       printf "%-11s ", klass_name
       printf "%-10s ", state
-      printf "%17s %3s (%3s) ", toten, i_step, e_step
+      printf "%17s " , toten
+      printf "%3s "  , i_step
+      printf "(%3s) ", e_step
+      printf "%15s ", time
     end
     print  dir
     puts
@@ -44,7 +47,7 @@ end
 
 #I_S is ionic steps
 #E_S is electronic steps
-show("TYPE", "STATE", "TOTEN", "I_S", "E_S", "DIR")
+show("TYPE", "STATE", "TOTEN", "I_S", "E_S", "MODIFIED_TIME", "DIR")
 puts "======================================================================"
 dirs.each do |dir|
   next unless File.directory? dir
@@ -58,8 +61,10 @@ dirs.each do |dir|
       toten  = sprintf("%17.6f", outcar[:totens][-1].to_f)
       i_step = outcar[:ionic_steps]
       e_step = outcar[:electronic_steps]
+      #time = calc.latest_modified_time.to_s
+      time = calc.latest_modified_time.strftime("%Y%m%d-%H%M%S")
     rescue
-      toten  = i_step = e_step = ""
+      toten  = i_step = e_step = time = ""
     end
 
   rescue VaspUtils::VaspDir::InitializeError
@@ -67,6 +72,6 @@ dirs.each do |dir|
     state = toten = i_step = e_step = "---"
   end
 
-  show(klass_name, state, toten, i_step, e_step, dir)
+  show(klass_name, state, toten, i_step, e_step, time, dir)
 end
 
