@@ -22,13 +22,18 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     class LatestDirStartedError < Exception; end
     class NoIntegerEndedNameError < Exception; end
     class NoContcarError < Exception; end
+    class InitializeError < Exception; end
 
     PREFIX = "geomopt"
 
     def initialize(dir)
         super(dir)
         @lockdir        = "lock_vaspgeomopt"
-        latest_dir # to check.
+        begin
+            latest_dir # to check.
+        rescue NoVaspDirError
+            raise InitializeError
+        end
     end
 
     # Return incremented name.

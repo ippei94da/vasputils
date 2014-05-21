@@ -1,0 +1,76 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+# Show state of vasp geometry optimization calculations.
+
+#require "vasputils/calcseries.rb"
+require "rubygems"
+gem "vasputils"
+require "vasputils.rb"
+
+require "pp"
+require "optparse"
+
+## option analysis
+OPTIONS = {}
+op = OptionParser.new
+OPTIONS[:show_state] = []
+op.on("-f", "--finished"  , "Show finished. -a is ignored."){OPTIONS[:show_state] << :finished}
+op.on("-y", "--yet"       , "Show yet."                    ){OPTIONS[:show_state] << :yet}
+op.on("-t", "--terminated", "Show terminated."             ){OPTIONS[:show_state] << :terminated}
+op.on("-s", "--started"   , "Show sarted."                 ){OPTIONS[:show_state] << :started}
+op.on("-l", "--files-with-matches", "Show filename only."  ){OPTIONS[:filename  ] = true}
+op.parse!(ARGV)
+
+## if all select are not set, all are set.
+if OPTIONS[:show_state].size == 0
+  OPTIONS[:all]   = true
+end
+
+dirs = ARGV
+dirs = Dir.glob("*").sort if ARGV.empty?
+
+def show(klass_name, state, toten, i_step, e_step, dir)
+  if (OPTIONS[:all]) || (OPTIONS[:show_state].include? state)
+    unless OPTIONS[:filename]
+      printf "%-11s ", klass_name
+      printf "%-10s ", state
+      printf "%17s %3s (%3s) ", toten, i_step, e_step
+    end
+    print  dir
+    puts
+  end
+end
+
+#I_S is ionic steps
+#E_S is electronic steps
+show("TYPE", "STATE", "TOTEN", "I_S", "E_S", "DIR")
+puts "======================================================================"
+dirs.each do |dir|
+  next unless File.directory? dir
+
+  begin
+    klass_name = "VaspGeomOpt"
+    calc = VaspUtils::VaspGeometryOptimizer.new(dir)
+    state = calc.state
+
+    ld = calc.latest_dir
+    try = sprintf "%5s", ld.dir.sub(/.*try/, "try")
+    begin
+      outcar = ld.outcar
+      toten  = sprintf("%15.6f ", outcar[:totens][-1].to_f)
+      i_step = outcar[:ionic_steps]
+      e_step = outcar[:electronic_steps]
+    rescue
+      toten  = i_step = e_step = ""
+    end
+
+  rescue VaspUtils::VaspGeometryOptimizer::InitializeError
+    klass_name = "-------"
+    state = toten = i_step = e_step = "---"
+  end
+
+  show(klass_name, state, toten, i_step, e_step, dir)
+end
+
+

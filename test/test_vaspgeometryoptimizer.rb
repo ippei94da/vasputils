@@ -24,11 +24,11 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
     end
 
     def test_initialize
-        assert_raise(VaspUtils::VaspGeometryOptimizer::NoVaspDirError){
+        assert_raise(VaspUtils::VaspGeometryOptimizer::InitializeError){
             VaspUtils::VaspGeometryOptimizer.new( TEST_DIR + "/not-geomopt/nothing")
         }
 
-        assert_raise(VaspUtils::VaspGeometryOptimizer::NoVaspDirError){
+        assert_raise(VaspUtils::VaspGeometryOptimizer::InitializeError){
             VaspUtils::VaspGeometryOptimizer.new( TEST_DIR + "/not-geomopt/not-geomopt-subdir")
         }
     end
