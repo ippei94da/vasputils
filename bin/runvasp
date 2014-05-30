@@ -1,43 +1,45 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
-require "rubygems"
-#require "comana"
-#gem "comana"
-#require "comana/computationmanager.rb"
+puts "'runvasp' is obsoleted. Use 'runvaspdir' or 'runvaspgeomopt'."
 
-#gem "vasputils"
-require "vasputils"
-
-require "optparse"
-
-## option analysis
-opts = {}
-op = OptionParser.new
-op.on("-g"    , "--geom-opt",  "Geometry optimization"){opts[:geom] = true}
-op.parse!(ARGV)
-
-dir = ARGV[0] || "."
-
-if opts[:geom]
-  begin
-    calc_dir = VaspUtils::VaspGeometryOptimizer.new(dir)
-  rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
-    puts "Not suitable for VaspGeometryOptimizer: #{dir}"
-    exit
-  end
-else
-  begin
-    calc_dir = VaspUtils::VaspDir.new(dir)
-  rescue VaspUtils::VaspDir::InitializeError
-    puts "Not VaspDir: #{dir}"
-    exit
-  end
-end
-
-begin
-  calc_dir.start
-rescue Comana::ComputationManager::AlreadyStartedError
-  puts "Already started. Exit."
-  exit
-end
+#require "rubygems"
+##require "comana"
+##gem "comana"
+##require "comana/computationmanager.rb"
+#
+##gem "vasputils"
+#require "vasputils"
+#
+#require "optparse"
+#
+### option analysis
+#opts = {}
+#op = OptionParser.new
+#op.on("-g"      , "--geom-opt",    "Geometry optimization"){opts[:geom] = true}
+#op.parse!(ARGV)
+#
+#dir = ARGV[0] || "."
+#
+#if opts[:geom]
+#    begin
+#        calc_dir = VaspUtils::VaspGeometryOptimizer.new(dir)
+#    rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
+#        puts "Not suitable for VaspGeometryOptimizer: #{dir}"
+#        exit
+#    end
+#else
+#    begin
+#        calc_dir = VaspUtils::VaspDir.new(dir)
+#    rescue VaspUtils::VaspDir::InitializeError
+#        puts "Not VaspDir: #{dir}"
+#        exit
+#    end
+#end
+#
+#begin
+#    calc_dir.start
+#rescue Comana::ComputationManager::AlreadyStartedError
+#    puts "Already started. Exit."
+#    exit
+#end

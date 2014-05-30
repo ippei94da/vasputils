@@ -1,0 +1,19 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+require "rubygems"
+require "vasputils"
+require "optparse"
+
+dir = ARGV[0] || "."
+
+begin
+    calc_dir = VaspUtils::VaspGeometryOptimizer.new(dir)
+    calc_dir.start
+rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
+    puts "Not suitable for VaspGeometryOptimizer: #{dir}"
+    exit
+rescue Comana::ComputationManager::AlreadyStartedError
+    puts "Already started. Exit."
+    exit
+end

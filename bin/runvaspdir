@@ -1,0 +1,19 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+require "rubygems" #require "comana"
+require "vasputils"
+require "optparse"
+
+dir = ARGV[0] || "."
+
+begin
+    calc_dir = VaspUtils::VaspDir.new(dir)
+    calc_dir.start
+rescue VaspUtils::VaspDir::InitializeError
+    puts "Not VaspDir: #{dir}"
+    exit
+rescue Comana::ComputationManager::AlreadyStartedError
+    puts "Already started. Exit."
+    exit
+end

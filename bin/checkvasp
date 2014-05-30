@@ -18,16 +18,16 @@ exit
 #OPTIONS = {}
 #op = OptionParser.new
 #OPTIONS[:show_state] = []
-#op.on("-f", "--finished"  , "Show finished. -a is ignored."){OPTIONS[:show_state] << :finished}
-#op.on("-y", "--yet"       , "Show yet."                    ){OPTIONS[:show_state] << :yet}
-#op.on("-t", "--terminated", "Show terminated."             ){OPTIONS[:show_state] << :terminated}
-#op.on("-s", "--started"   , "Show sarted."                 ){OPTIONS[:show_state] << :started}
+#op.on("-f", "--finished"    , "Show finished. -a is ignored."){OPTIONS[:show_state] << :finished}
+#op.on("-y", "--yet"             , "Show yet."                                      ){OPTIONS[:show_state] << :yet}
+#op.on("-t", "--terminated", "Show terminated."                         ){OPTIONS[:show_state] << :terminated}
+#op.on("-s", "--started"     , "Show sarted."                                   ){OPTIONS[:show_state] << :started}
 #op.on("-l", "--files-with-matches", "Show filename only."  ){OPTIONS[:filename  ] = true}
 #op.parse!(ARGV)
 #
 ### if all select are not set, all are set.
 #if OPTIONS[:show_state].size == 0
-#  OPTIONS[:all]   = true
+#    OPTIONS[:all]   = true
 #end
 ##pp OPTIONS; exit
 #
@@ -38,74 +38,74 @@ exit
 #dirs = Dir.glob("*").sort if ARGV.empty?
 #
 #def guess(dir)
-#  KLASSES.each do |klass|
-#    begin
-#      vd = klass.new(dir)
-#      return klass
-#    rescue klass::InitializeError
+#    KLASSES.each do |klass|
+#        begin
+#            vd = klass.new(dir)
+#            return klass
+#        rescue klass::InitializeError
+#        end
 #    end
-#  end
-#  raise "Cannot identify class for directory #{dir}."
+#    raise "Cannot identify class for directory #{dir}."
 #end
 #
 #def show(klass_name, state, try, toten, i_step, e_step, dir)
-#  if (OPTIONS[:all]) || (OPTIONS[:show_state].include? state)
-#    unless OPTIONS[:filename]
-#      printf "%-11s ", klass_name
-#      printf "%-10s ", state
-#      printf "%5s ", try
-#      printf "%17s %3s (%3s) ", toten, i_step, e_step
+#    if (OPTIONS[:all]) || (OPTIONS[:show_state].include? state)
+#        unless OPTIONS[:filename]
+#            printf "%-11s ", klass_name
+#            printf "%-10s ", state
+#            printf "%5s ", try
+#            printf "%17s %3s (%3s) ", toten, i_step, e_step
+#        end
+#        print  dir
+#        puts
 #    end
-#    print  dir
-#    puts
-#  end
 #end
 #
 #dirs.each do |dir|
-#  next unless File.directory? dir
+#    next unless File.directory? dir
 #
-#  begin
-#    klass = guess(dir)
-#    klass_name = klass.to_s
-#  rescue 
-#    klass_name = "UnknownDir"
-#  end
-#
-#  case klass_name
-#  when "VaspUtils::VaspDir"
-#    klass_name = "VaspDir"
-#    calc = klass.new(dir)
-#    state = calc.state
-#    try = ""
 #    begin
-#      outcar = calc.outcar
-#      toten  = sprintf("%17.6f", outcar[:totens][-1].to_f)
-#      i_step = outcar[:ionic_steps]
-#      e_step = outcar[:electronic_steps]
-#    rescue
-#      toten  = i_step = e_step = ""
+#        klass = guess(dir)
+#        klass_name = klass.to_s
+#    rescue 
+#        klass_name = "UnknownDir"
 #    end
 #
-#  when "VaspUtils::VaspGeometryOptimizer"
-#    klass_name = "VaspGeomOpt"
-#    calc = klass.new(dir)
-#    state = calc.state
+#    case klass_name
+#    when "VaspUtils::VaspDir"
+#        klass_name = "VaspDir"
+#        calc = klass.new(dir)
+#        state = calc.state
+#        try = ""
+#        begin
+#            outcar = calc.outcar
+#            toten  = sprintf("%17.6f", outcar[:totens][-1].to_f)
+#            i_step = outcar[:ionic_steps]
+#            e_step = outcar[:electronic_steps]
+#        rescue
+#            toten  = i_step = e_step = ""
+#        end
 #
-#    ld = calc.latest_dir
-#    try = sprintf "%5s", ld.dir.sub(/.*try/, "try")
-#    begin
-#      outcar = ld.outcar
-#      toten  = sprintf("%15.6f ", outcar[:totens][-1].to_f)
-#      i_step = outcar[:ionic_steps]
-#      e_step = outcar[:electronic_steps]
-#    rescue
-#      toten  = i_step = e_step = ""
+#    when "VaspUtils::VaspGeometryOptimizer"
+#        klass_name = "VaspGeomOpt"
+#        calc = klass.new(dir)
+#        state = calc.state
+#
+#        ld = calc.latest_dir
+#        try = sprintf "%5s", ld.dir.sub(/.*try/, "try")
+#        begin
+#            outcar = ld.outcar
+#            toten  = sprintf("%15.6f ", outcar[:totens][-1].to_f)
+#            i_step = outcar[:ionic_steps]
+#            e_step = outcar[:electronic_steps]
+#        rescue
+#            toten  = i_step = e_step = ""
+#        end
+#
+#    when "UnknownDir"
+#        klass_name = "UnknownDir"
+#        state = try = toten = i_step = e_step = ""
 #    end
-#
-#  when "UnknownDir"
-#    klass_name = "UnknownDir"
-#    state = try = toten = i_step = e_step = ""
-#  end
-#  show(klass_name, state, try, toten, i_step, e_step, dir)
+#    show(klass_name, state, try, toten, i_step, e_step, dir)
 #
 #end

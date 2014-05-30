@@ -21,7 +21,7 @@ elements = ARGV
 setting = VaspUtils::Setting.new
 
 vpc = VaspUtils::Potcar::Concatenater.new(
-  setting['potcar_dir'],
-  setting['element_potcar']
+    setting['potcar_dir'],
+    setting['element_potcar']
 )
 vpc.dump(elements, STDOUT)

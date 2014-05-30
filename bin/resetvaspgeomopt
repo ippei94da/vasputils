@@ -2,7 +2,7 @@
 # coding: utf-8
 
 USAGE = <<HERE
-  USAGE: setvaspgeomopt <-i|-n|-r> [-Y|-N] target_dirs ...
+    USAGE: setvaspgeomopt <-i|-n|-r> [-Y|-N] target_dirs ...
 HERE
 
 require "optparse"
@@ -19,20 +19,20 @@ op.on("-n", "--next" , "Next vasp for geometry optimization."){OPTIONS[:next] = 
 op.on("-r", "--reincarnate", "Like reset, but generate 'geomopt00' using final CONTCAR."){OPTIONS[:reincarnate] = true}
 
 #op.on("-Y", "--yes", "Answer 'yes' to all questions."){OPTIONS[:yes] = true}
-#op.on("-N", "--no",  "Answer 'no'  to all questions."){OPTIONS[:no ] = true}
+#op.on("-N", "--no",    "Answer 'no'    to all questions."){OPTIONS[:no ] = true}
 op.parse!(ARGV)
 
 def check_options(opts)
-  modes = [opts[:init], opts[:next], opts[:reincarnate]]
-  return false unless modes.select{|t| t ==true}.size == 1
+    modes = [opts[:init], opts[:next], opts[:reincarnate]]
+    return false unless modes.select{|t| t ==true}.size == 1
 
-  #return false if (opts[:yes] && opts[:no])
-  return true
+    #return false if (opts[:yes] && opts[:no])
+    return true
 end
 
 unless check_options(OPTIONS)
-  puts USAGE
-  exit
+    puts USAGE
+    exit
 end
 
 tgts = ARGV
@@ -42,32 +42,32 @@ tgts = [ENV['PWD']] if tgts.size == 0
 #pp tgts; exit
 #
 tgts.each do |tgt_dir|
-  puts "Directory: #{tgt_dir}"
+    puts "Directory: #{tgt_dir}"
 
-  # Check tgt_dir is VaspDir?
-  begin
-    tgt = VaspUtils::VaspGeometryOptimizer.new(tgt_dir)
-  rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
-    puts "  Not VaspGeometryOptimizer: #{tgt_dir}"
-    next
-  end
+    # Check tgt_dir is VaspDir?
+    begin
+        tgt = VaspUtils::VaspGeometryOptimizer.new(tgt_dir)
+    rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
+        puts "  Not VaspGeometryOptimizer: #{tgt_dir}"
+        next
+    end
 
-  if OPTIONS[:init]
-    puts "  Back to init: #{tgt_dir}"
-    tgt.reset_init
-  end
+    if OPTIONS[:init]
+        puts "  Back to init: #{tgt_dir}"
+        tgt.reset_init
+    end
 
-  if OPTIONS[:next]
-    puts "  Generate next: #{tgt_dir}"
-    #begin
-      tgt.reset_next
-    #rescue VaspUtils::VaspGeometryOptimizer::NoContcarError
-      #puts "  CONTCAR not exist in latest_dir: #{tgt_dir}"
-    #end
-  end
+    if OPTIONS[:next]
+        puts "  Generate next: #{tgt_dir}"
+        #begin
+            tgt.reset_next
+        #rescue VaspUtils::VaspGeometryOptimizer::NoContcarError
+            #puts "  CONTCAR not exist in latest_dir: #{tgt_dir}"
+        #end
+    end
 
-  if OPTIONS[:reincarnate]
-    puts "  Reincarnate(generate dir as new calc): #{tgt_dir}"
-    tgt.reset_reincarnate
-  end
+    if OPTIONS[:reincarnate]
+        puts "  Reincarnate(generate dir as new calc): #{tgt_dir}"
+        tgt.reset_reincarnate
+    end
 end

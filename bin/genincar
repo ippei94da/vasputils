@@ -21,8 +21,8 @@ op.parse!(ARGV)
 
 encut = ARGV[0].to_i
 if encut == 0
-  puts "ENCUT must be indicated as an argument."
-  exit
+    puts "ENCUT must be indicated as an argument."
+    exit
 end
 
 setting = VaspUtils::Setting.new
@@ -32,8 +32,8 @@ items = setting["incar_default"]
 items["ENCUT"] = encut
 
 VaspUtils::Incar.dump(items, STDOUT)
-#  setting['potcar_dir'],
-#  setting['element_potcar']
+#    setting['potcar_dir'],
+#    setting['element_potcar']
 #)
 #vpc.dump(elements, STDOUT)
 
