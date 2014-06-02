@@ -48,8 +48,10 @@ end
 
 #I_S is ionic steps
 #E_S is electronic steps
-show("TYPE", "STATE", "TOTEN", "I_S", "E_S", "MODIFIED_TIME", "DIR")
-puts "======================================================================"
+unless OPTIONS[:filename]
+    show("TYPE", "STATE", "TOTEN", "I_S", "E_S", "MODIFIED_TIME", "DIR")
+    puts "======================================================================"
+end
 dirs.each do |dir|
     next unless File.directory? dir
 

@@ -30,8 +30,8 @@ module VaspUtils::ConditionAnalyzer::Picker
         rescue VaspUtils::VaspDir::InitializeError
             raise InitializeError
         end
-        ibrion = vd.incar["IBRION"].to_i
-        raise InitializeError if ibrion == -1
+        #ibrion = vd.incar["IBRION"].to_i
+        #raise InitializeError if ibrion == -1
         raise InitializeError unless vd.finished?
         raise InitializeError unless vd.outcar[:ionic_steps] == 1
 
