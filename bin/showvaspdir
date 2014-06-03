@@ -11,55 +11,97 @@ require "vasputils.rb"
 require "pp"
 require "optparse"
 
+DEFAULT_ITEMS = [
+    :klass_name,
+    :state,
+    :toten,
+    :time,
+    :dir,
+]
+ALL_ITEMS = DEFAULT_ITEMS + [
+    :kpoints,
+    :i_step,
+    :e_step,
+]
+
+WIDTH = {
+    :dir         => 20,
+    :e_step      => 3,
+    :i_step      => 3,
+    :klass_name  => 11,
+    :kpoints     => 8,
+    :state       => 10,
+    :time        => 15,
+    :toten       => 17,
+}
+
+ALL_DIR_STATES = [
+    :finished,
+    :yet,
+    :terminated,
+    :started,
+]
+
 ## option analysis
+show_items = []
+show_dir_states = []
 OPTIONS = {}
 op = OptionParser.new
-OPTIONS[:show_state] = []
-op.on("-f", "--finished"  , "Show finished dir. -a is ignored."){OPTIONS[:show_state] << :finished}
-op.on("-y", "--yet"       , "Show yet dir."                    ){OPTIONS[:show_state] << :yet}
-op.on("-t", "--terminated", "Show terminated dir."             ){OPTIONS[:show_state] << :terminated}
-op.on("-s", "--started"   , "Show sarted dir."                 ){OPTIONS[:show_state] << :started}
+OPTIONS[:show_dir] = []
+op.on("-f", "--finished"  , "Show finished dir. -a is ignored."){show_dir_states << :finished}
+op.on("-y", "--yet"       , "Show yet dir."                    ){show_dir_states << :yet}
+op.on("-t", "--terminated", "Show terminated dir."             ){show_dir_states << :terminated}
+op.on("-s", "--started"   , "Show sarted dir."                 ){show_dir_states << :started}
 op.on("-l", "--files-with-matches", "Show dir name only."      ){OPTIONS[:filename  ] = true}
 
-op.on("-s", "--state"       , "Show STATE."    ){OPTIONS[:state    ] = true}
-op.on("-e", "--toten"       , "Show TOTEN."    ){OPTIONS[:toten    ] = true}
-op.on("-i", "--ionic-steps" , "Show ionic steps as I_S."    ){OPTIONS[:ionic_steps  ] = true}
-op.on("-L", "--last-update" , "Show LAST-UPDATE."  ){OPTIONS[:last_update  ] = true}
-op.on("-k", "--kpoints" , "Show KPOINTS."  ){OPTIONS[:kpoints  ] = true}
-op.on("-c", "--encut" , "Show ENCUT."  ){OPTIONS[:encut    ] = true}
+op.on("-a", "--all-items"   , "Show all items."         ){OPTIONS[:all_items] = true}
+op.on("-s", "--state"       , "Show STATE."             ){show_items << :state    }
+op.on("-e", "--toten"       , "Show TOTEN."             ){show_items << :toten    }
+op.on("-i", "--ionic-steps" , "Show ionic steps as I_S."){show_items << :ionic_steps}
+op.on("-L", "--last-update" , "Show LAST-UPDATE."       ){show_items << :last_update}
+op.on("-k", "--kpoints" , "Show KPOINTS."               ){show_items << :kpoints  }
+op.on("-c", "--encut" , "Show ENCUT."                   ){show_items << :encut    }
 op.parse!(ARGV)
 
-## if all select are not set, all are set.
-if OPTIONS[:show_state].size == 0
-    OPTIONS[:all]       = true
+if OPTIONS[:all_items]
+    SHOW_ITEMS = ALL_ITEMS
+elsif show_items.empty?
+    SHOW_ITEMS = DEFAULT_ITEMS
+else 
+    SHOW_ITEMS = show_items
+end
+
+if show_dir_states.empty?
+    show_dir_states = ALL_DIR_STATES
+else 
+    show_dir_states # do nothing
 end
 
 dirs = ARGV
 dirs = Dir.glob("*").sort if ARGV.empty?
 
 def show(hash)
-
-
-    klass_name, state, toten, i_step, e_step, time, dir
-    if (OPTIONS[:all]) || (OPTIONS[:show_state].include? state)
-        unless OPTIONS[:filename]
-            printf "%-11s ", klass_name
-            printf "%-10s ", state
-            printf "%17s " , toten
-            printf "%3s "    , i_step
-            printf "(%3s) ", e_step
-            printf "%15s ", time
-        end
-        print    dir
-        puts
+    line = ""
+    SHOW_ITEMS.each do |item|
+        line += sprintf("% #{WIDTH[item]}s ", hash[item])
     end
+
+    puts line
 end
 
 #I_S is ionic steps
 #E_S is electronic steps
 unless OPTIONS[:filename]
-        show("TYPE", "STATE", "TOTEN", "I_S", "E_S", "LAST_UPDATE", "DIR")
-        #puts "======================================================================"
+    results = {
+        :klass_name => "TYPE",
+        :state      => "STATE",
+        :toten      => "TOTEN",
+        :i_step     => "I_S",
+        :e_step     => "E_S",
+        :time       => "LAST_UPDATE",
+        :dir        => "DIR"
+    }
+    show(results)
 end
 
 dirs.each do |dir|
@@ -84,7 +126,17 @@ dirs.each do |dir|
         klass_name = "-------"
         state = toten = i_step = e_step = "---"
     end
+    results = {
+        :klass_name => klass_name,
+        :state      => state,
+        :toten      => toten,
+        :i_step     => i_step,
+        :e_step     => e_step,
+        :time       => time,
+        :dir        => dir,
+    }
 
-    show(klass_name, state, toten, i_step, e_step, time, dir)
+    show(results) if show_dir_states.include? results[:state]
+
 end
 
