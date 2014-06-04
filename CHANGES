@@ -1,7 +1,7 @@
 = vasputils changelog
 
 == Master (for 0.0.12)
-  - Add analyzeerror .
+  - Add analyzevasperror .
   - Add VaspUtils::ConditionAnalyzer etc.
   - Update bin/symposcar .
   - Adjust to CrystalCell-0.0.1 .
@@ -19,8 +19,8 @@
   - Add bin/varycondition and related libraries.
   - Raise InitializeError when VaspGeometryOptimizer.new is failed.
   - Divide bin/checkvasp to bin/showvaspdir and bin/showvaspgeomopt.
-
   - Divide bin/runvasp to bin/runvaspdir and bin/runvaspgeomopt.
+  - Add some options to bin/showvaspdir
 
 == Version 0.0.11
   - Modify bin/qsubvasp

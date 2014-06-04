@@ -15,24 +15,31 @@ DEFAULT_ITEMS = [
     :klass_name,
     :state,
     :toten,
-    :time,
     :dir,
 ]
-ALL_ITEMS = DEFAULT_ITEMS + [
-    :kpoints,
+ALL_ITEMS = [
+    :ka,
+    :kb,
+    :kc,
+    :encut,
     :i_step,
     :e_step,
-]
+    :time,
+] + DEFAULT_ITEMS
 
+# for printf option. minus value indicate left shifted printing.
 WIDTH = {
-    :dir         => 20,
-    :e_step      => 3,
-    :i_step      => 3,
-    :klass_name  => 11,
-    :kpoints     => 8,
-    :state       => 10,
-    :time        => 15,
-    :toten       => 17,
+    :dir         => "-20",
+    :e_step      => "3",
+    :i_step      => "3",
+    :klass_name  => "11",
+    :ka          => "2",
+    :kb          => "2",
+    :kc          => "2",
+    :encut       => "6",
+    :state       => "10",
+    :time        => "15",
+    :toten       => "17",
 }
 
 ALL_DIR_STATES = [
@@ -48,27 +55,34 @@ show_dir_states = []
 OPTIONS = {}
 op = OptionParser.new
 OPTIONS[:show_dir] = []
-op.on("-f", "--finished"  , "Show finished dir. -a is ignored."){show_dir_states << :finished}
-op.on("-y", "--yet"       , "Show yet dir."                    ){show_dir_states << :yet}
-op.on("-t", "--terminated", "Show terminated dir."             ){show_dir_states << :terminated}
-op.on("-s", "--started"   , "Show sarted dir."                 ){show_dir_states << :started}
-op.on("-l", "--files-with-matches", "Show dir name only."      ){OPTIONS[:filename  ] = true}
+op.on("-f", "--finished"  , "Show finished dir."   ){show_dir_states << :finished}
+op.on("-y", "--yet"       , "Show yet dir."        ){show_dir_states << :yet}
+op.on("-t", "--terminated", "Show terminated dir." ){show_dir_states << :terminated}
+op.on("-s", "--started"   , "Show sarted dir."     ){show_dir_states << :started}
+op.on("-l", "--dirs-with-matches", "Show dir name only."){OPTIONS[:dirnameonly  ] = true}
 
 op.on("-a", "--all-items"   , "Show all items."         ){OPTIONS[:all_items] = true}
-op.on("-s", "--state"       , "Show STATE."             ){show_items << :state    }
+op.on("-S", "--state"       , "Show STATE."             ){show_items << :state    }
 op.on("-e", "--toten"       , "Show TOTEN."             ){show_items << :toten    }
 op.on("-i", "--ionic-steps" , "Show ionic steps as I_S."){show_items << :ionic_steps}
 op.on("-L", "--last-update" , "Show LAST-UPDATE."       ){show_items << :last_update}
-op.on("-k", "--kpoints" , "Show KPOINTS."               ){show_items << :kpoints  }
+op.on("-k", "--kpoints" , "Show KPOINTS."               ){
+    show_items << :ka
+    show_items << :kb
+    show_items << :kc
+}
 op.on("-c", "--encut" , "Show ENCUT."                   ){show_items << :encut    }
+op.on("-C", "--csv" , "CSV format"                   ){OPTIONS[:csv] = true}
 op.parse!(ARGV)
 
 if OPTIONS[:all_items]
     SHOW_ITEMS = ALL_ITEMS
+elsif OPTIONS[:dirnameonly]
+    SHOW_ITEMS = [:dir]
 elsif show_items.empty?
     SHOW_ITEMS = DEFAULT_ITEMS
 else 
-    SHOW_ITEMS = show_items
+    SHOW_ITEMS = show_items.push :dir
 end
 
 if show_dir_states.empty?
@@ -81,19 +95,26 @@ dirs = ARGV
 dirs = Dir.glob("*").sort if ARGV.empty?
 
 def show(hash)
-    line = ""
-    SHOW_ITEMS.each do |item|
-        line += sprintf("% #{WIDTH[item]}s ", hash[item])
+    items = SHOW_ITEMS.map do |item|
+        val = sprintf("%#{WIDTH[item]}s", hash[item])
+        val = hash[item] if OPTIONS[:csv]
+        val
     end
+    separator = " "
+    separator = "," if OPTIONS[:csv]
 
-    puts line
+    puts items.join(separator)
 end
 
 #I_S is ionic steps
 #E_S is electronic steps
-unless OPTIONS[:filename]
+unless OPTIONS[:dirnameonly]
     results = {
         :klass_name => "TYPE",
+        :ka         => "KA",
+        :kb         => "KB",
+        :kc         => "KC",
+        :encut      => "ENCUT",
         :state      => "STATE",
         :toten      => "TOTEN",
         :i_step     => "I_S",
@@ -113,21 +134,27 @@ dirs.each do |dir|
         state = calc.state
         begin
             outcar = calc.outcar
-            toten    = sprintf("%17.6f", outcar[:totens][-1].to_f)
+            toten    = outcar[:totens][-1].to_f
             i_step = outcar[:ionic_steps]
             e_step = outcar[:electronic_steps]
             #time = calc.latest_modified_time.to_s
             time = calc.latest_modified_time.strftime("%Y%m%d-%H%M%S")
+            ka, kb, kc = calc.kpoints[:mesh]
+            encut = calc.incar["ENCUT"]
         rescue
-            toten    = i_step = e_step = time = ""
+            toten = i_step = e_step = time = ka = kb = kc = encut = ""
         end
 
     rescue VaspUtils::VaspDir::InitializeError
         klass_name = "-------"
-        state = toten = i_step = e_step = "---"
+        #state = toten = i_step = e_step = "---"
     end
     results = {
         :klass_name => klass_name,
+        :ka         => ka,
+        :kb         => kb,
+        :kc         => kc,
+        :encut      => encut,
         :state      => state,
         :toten      => toten,
         :i_step     => i_step,
