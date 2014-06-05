@@ -9,6 +9,7 @@ gem "vasputils"
 require "vasputils.rb"
 
 require "pp"
+require "csv"
 require "optparse"
 
 DEFAULT_ITEMS = [
