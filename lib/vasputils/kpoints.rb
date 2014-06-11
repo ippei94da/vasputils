@@ -11,7 +11,7 @@ module VaspUtils::Kpoints
         results = {}
         results[:comment] = io.readline.chomp
 
-        raise "Not automatic generating KPOINTS! 2nd line must be 0." unless io.readline == "0\n"
+        raise "Not automatic generating KPOINTS! 2nd line must be 0." unless io.readline =~ /^0$/
 
         line = io.readline
         case line
