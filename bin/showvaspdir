@@ -143,8 +143,8 @@ dirs.each do |dir|
             time = calc.latest_modified_time.strftime("%Y%m%d-%H%M%S")
             ka, kb, kc = calc.kpoints[:mesh]
             encut = calc.incar["ENCUT"]
-        #rescue
-        #    toten = i_step = e_step = time = ka = kb = kc = encut = ""
+        rescue
+            toten = i_step = e_step = time = ka = kb = kc = encut = ""
         end
 
     rescue VaspUtils::VaspDir::InitializeError
