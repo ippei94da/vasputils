@@ -7,8 +7,8 @@ source "http://rubygems.org"
 # Include everything needed to run rake, tests, features, etc.
 group :development do
   gem "rdoc", "~> 4.0.1"
-  gem "bundler", "~> 1.3.4"
-  gem "jeweler", ">= 1.8.4"
+  gem "bundler", "~> 1.7.2"
+  gem "jeweler", "~> 2.0.1"
   gem "simplecov", ">= 0"
   #gem "nokogiri", ">= 1.5.9"
   gem "crystalcell", ">= 0.0.1"
