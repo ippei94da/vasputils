@@ -1,8 +1,9 @@
 = vasputils changelog
 
-== Master (for 0.0.12)
+== Master (for 0.0.13)
+
+== Version 0.0.12 [2014-08-30] released
   - Update bin/symposcar .
-  - Adjust to CrystalCell-0.0.1 .
   - Add options to bin/checkvasp and modified output format.
   - Rename VaspGeomOpt to VaspGeometryOptimizer
   - Add VaspGeometryOptimizer::reset_init
@@ -19,6 +20,7 @@
   - Divide bin/checkvasp to bin/showvaspdir and bin/showvaspgeomopt.
   - Divide bin/runvasp to bin/runvaspdir and bin/runvaspgeomopt.
   - Add some options to bin/showvaspdir
+  - Update dependency on other gems.
 
 == Version 0.0.11
   - Modify bin/qsubvasp

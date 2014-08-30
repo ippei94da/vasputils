@@ -187,8 +187,6 @@ class TC_VaspDir < Test::Unit::TestCase
         assert_equal("Automatic mesh", t[:comment])
     end
 
-    #undef test_next
-
     def teardown
         GENERATED_FILES_VD00.each do |file|
             FileUtils.rm file if File.exist? file
