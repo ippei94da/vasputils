@@ -107,6 +107,30 @@ def show(hash)
     puts items.join(separator)
 end
 
+def form_time(second)
+    second = second.to_i
+    result = ""
+
+    result = sprintf("%02d", second % 60)
+
+    minute = second / 60
+    if 0 < minute
+        result = sprintf("%02d:#{result}", minute % 60)
+    end
+
+    hour = minute / 60
+    if 0 < hour
+        result = sprintf("%02d:#{result}", hour % 24)
+    end
+
+    day = hour / 24
+    if 0 < day
+        result = sprintf("%dd #{result}", day)
+    end
+
+    return result
+end
+
 #I_S is ionic steps
 #E_S is electronic steps
 unless OPTIONS[:dirnameonly]
@@ -120,7 +144,7 @@ unless OPTIONS[:dirnameonly]
         :toten      => "TOTEN",
         :i_step     => "I_S",
         :e_step     => "E_S",
-        :time       => "LAST_UPDATE",
+        :time       => "LAST_UPDATE_AGO",
         :dir        => "DIR"
     }
     show(results)
@@ -136,11 +160,12 @@ dirs.each do |dir|
         state = calc.state
         begin
             outcar = calc.outcar
-            toten    = outcar[:totens][-1].to_f
+            toten  = sprintf("%9.6f", outcar[:totens][-1].to_f)
             i_step = outcar[:ionic_steps]
             e_step = outcar[:electronic_steps]
             #time = calc.latest_modified_time.to_s
-            time = calc.latest_modified_time.strftime("%Y%m%d-%H%M%S")
+            #time = calc.latest_modified_time.strftime("%Y%m%d-%H%M%S")
+            time = form_time(Time.now - calc.latest_modified_time)
             ka, kb, kc = calc.kpoints[:mesh]
             encut = calc.incar["ENCUT"]
         rescue
