@@ -3,6 +3,7 @@
 == Master (for 0.0.13)
 - Small revision of output of 'showvaspdir' to show zero at the tail of toten.
 - LAST_UPDATE in 'showvaspdir -a' is changed to be "time ago".
+- Small revision of output of 'symposcar' to include 'operation_id'
 
 == Version 0.0.12 [2014-08-30] released
 - Update bin/symposcar .
