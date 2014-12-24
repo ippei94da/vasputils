@@ -14,6 +14,25 @@ require "yaml"
 #
 class VaspUtils::VaspDir < Comana::ComputationManager
     MACHINEFILE = "machines"
+    INSPECT_DEFAULT_ITEMS = [ :klass_name, :state, :toten, :dir, ]
+    INSPECT_ALL_ITEMS = [ :ka, :kb, :kc, :encut, :i_step, :e_step, :time, ] + INSPECT_DEFAULT_ITEMS
+
+    # for printf option. minus value indicate left shifted printing.
+    INSPECT_WIDTH = {
+        :dir         => "-20",
+        :e_step      => "3",
+        :i_step      => "3",
+        :klass_name  => "11",
+        :ka          => "2",
+        :kb          => "2",
+        :kc          => "2",
+        :encut       => "6",
+        :state       => "10",
+        :time        => "15",
+        :toten       => "17",
+    }
+    ALL_DIR_STATES = [ :finished, :yet, :terminated, :started, ]
+
 
     class InitializeError < Exception; end
     class NoVaspBinaryError < Exception; end
@@ -30,6 +49,151 @@ class VaspUtils::VaspDir < Comana::ComputationManager
             raise InitializeError, infile unless FileTest.exist? infile
         end
     end
+
+    def self.show_inspect(args)
+        ## option analysis
+        show_items = []
+        show_dir_states = []
+        options = {}
+
+        op = OptionParser.new
+        options[:show_dir] = []
+        op.on("-f", "--finished"  , "Show finished dir."   ){show_dir_states << :finished}
+        op.on("-y", "--yet"       , "Show yet dir."        ){show_dir_states << :yet}
+        op.on("-t", "--terminated", "Show terminated dir." ){show_dir_states << :terminated}
+        op.on("-s", "--started"   , "Show sarted dir."     ){show_dir_states << :started}
+        op.on("-l", "--dirs-with-matches", "Show dir name only."){options[:dirnameonly  ] = true}
+
+        op.on("-a", "--all-items"   , "Show all items."         ){options[:all_items] = true}
+        op.on("-S", "--state"       , "Show STATE."             ){options[:show_items] << :state    }
+        op.on("-e", "--toten"       , "Show TOTEN."             ){options[:show_items] << :toten    }
+        op.on("-i", "--ionic-steps" , "Show ionic steps as I_S."){options[:show_items] << :ionic_steps}
+        op.on("-L", "--last-update" , "Show LAST-UPDATE."       ){options[:show_items] << :last_update}
+        op.on("-k", "--kpoints" , "Show KPOINTS."               ){
+            options[:show_items] << :ka
+            options[:show_items] << :kb
+            options[:show_items] << :kc
+        }
+        op.on("-c", "--encut" , "Show ENCUT."                   ){options[:show_items] << :encut    }
+        op.parse!(args)
+
+        dirs = args
+        dirs = Dir.glob("*").sort if args.empty?
+
+        if options[:all_items]
+            options[:show_items] = INSPECT_ALL_ITEMS
+        elsif options[:dirnameonly]
+            options[:show_items] = [:dir]
+        elsif options[:show_items] == nil || options[:show_items].empty?
+            options[:show_items] = INSPECT_DEFAULT_ITEMS
+        else 
+            options[:show_items] = options[:show_items].push :dir
+        end
+
+        if show_dir_states.empty?
+            show_dir_states = ALL_DIR_STATES
+        else 
+            show_dir_states # do nothing
+        end
+
+        unless options[:dirnameonly]
+            # show title of items.
+            results = {
+                :klass_name => "TYPE",
+                :ka         => "KA",
+                :kb         => "KB",
+                :kc         => "KC",
+                :encut      => "ENCUT",
+                :state      => "STATE",
+                :toten      => "TOTEN",
+                :i_step     => "I_S", #I_S is ionic steps      
+                :e_step     => "E_S", #E_S is electronic steps 
+                :time       => "LAST_UPDATE_AGO",
+                :dir        => "DIR"
+            }
+            self.show_items(results, options)
+        end
+
+        dirs.each do |dir|
+            next unless File.directory? dir
+            #pp dir
+
+            begin
+                klass_name = "VaspDir"
+                calc = VaspUtils::VaspDir.new(dir)
+                state = calc.state
+                begin
+                    outcar = calc.outcar
+                    toten  = sprintf("%9.6f", outcar[:totens][-1].to_f)
+                    i_step = outcar[:ionic_steps]
+                    e_step = outcar[:electronic_steps]
+                    #time = calc.latest_modified_time.to_s
+                    #time = calc.latest_modified_time.strftime("%Y%m%d-%H%M%S")
+                    time = self.form_time(Time.now - calc.latest_modified_time)
+                    ka, kb, kc = calc.kpoints[:mesh]
+                    encut = calc.incar["ENCUT"]
+                rescue
+                    toten = i_step = e_step = time = ka = kb = kc = encut = ""
+                end
+
+            rescue VaspUtils::VaspDir::InitializeError
+                klass_name = "-------"
+                #state = toten = i_step = e_step = "---"
+            end
+            results = {
+                :klass_name => klass_name,
+                :ka         => ka,
+                :kb         => kb,
+                :kc         => kc,
+                :encut      => encut,
+                :state      => state,
+                :toten      => toten,
+                :i_step     => i_step,
+                :e_step     => e_step,
+                :time       => time,
+                :dir        => dir,
+            }
+
+            self.show_items(results, options) if show_dir_states.include? results[:state]
+
+        end
+    end
+
+    def self.show_items(hash, options = {})
+        items = options[:show_items].map do |item|
+            val = sprintf("%#{INSPECT_WIDTH[item]}s", hash[item])
+            val
+        end
+        separator = " "
+
+        puts items.join(separator)
+    end
+
+    def self.form_time(second)
+        second = second.to_i
+        result = ""
+
+        result = sprintf("%02d", second % 60)
+
+        minute = second / 60
+        if 0 < minute
+            result = sprintf("%02d:#{result}", minute % 60)
+        end
+
+        hour = minute / 60
+        if 0 < hour
+            result = sprintf("%02d:#{result}", hour % 24)
+        end
+
+        day = hour / 24
+        if 0 < day
+            result = sprintf("%dd #{result}", day)
+        end
+
+        return result
+    end
+
+
 
     # 配下の OUTCAR を Outcar インスタンスにして返す。
     # 存在しなければ例外 Errno::ENOENT を返す。
