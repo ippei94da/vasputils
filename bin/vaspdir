@@ -5,32 +5,17 @@
 # Show state of vasp geometry optimization calculations.
 
 #require "vasputils/calcseries.rb"
-require "rubygems"
-gem "vasputils"
-require "vasputils.rb"
-
+#require "rubygems"
+#gem "vasputils"
+require "vasputils"
 require "pp"
-require "csv"
 require "optparse"
 
-DEFAULT_ITEMS = [
-    :klass_name,
-    :state,
-    :toten,
-    :dir,
-]
-ALL_ITEMS = [
-    :ka,
-    :kb,
-    :kc,
-    :encut,
-    :i_step,
-    :e_step,
-    :time,
-] + DEFAULT_ITEMS
+INSPECT_DEFAULT_ITEMS = [ :klass_name, :state, :toten, :dir, ]
+INSPECT_ALL_ITEMS = [ :ka, :kb, :kc, :encut, :i_step, :e_step, :time, ] + INSPECT_DEFAULT_ITEMS
 
 # for printf option. minus value indicate left shifted printing.
-WIDTH = {
+INSPECT_WIDTH = {
     :dir         => "-20",
     :e_step      => "3",
     :i_step      => "3",
@@ -43,67 +28,23 @@ WIDTH = {
     :time        => "15",
     :toten       => "17",
 }
+ALL_DIR_STATES = [ :finished, :yet, :terminated, :started, ]
 
-ALL_DIR_STATES = [
-    :finished,
-    :yet,
-    :terminated,
-    :started,
-]
+def show_usage
+  puts <<-HERE
+USAGE
+  vaspdir command [option] [path]
 
-## option analysis
-show_items = []
-show_dir_states = []
-OPTIONS = {}
-op = OptionParser.new
-OPTIONS[:show_dir] = []
-op.on("-f", "--finished"  , "Show finished dir."   ){show_dir_states << :finished}
-op.on("-y", "--yet"       , "Show yet dir."        ){show_dir_states << :yet}
-op.on("-t", "--terminated", "Show terminated dir." ){show_dir_states << :terminated}
-op.on("-s", "--started"   , "Show sarted dir."     ){show_dir_states << :started}
-op.on("-l", "--dirs-with-matches", "Show dir name only."){OPTIONS[:dirnameonly  ] = true}
-
-op.on("-a", "--all-items"   , "Show all items."         ){OPTIONS[:all_items] = true}
-op.on("-S", "--state"       , "Show STATE."             ){show_items << :state    }
-op.on("-e", "--toten"       , "Show TOTEN."             ){show_items << :toten    }
-op.on("-i", "--ionic-steps" , "Show ionic steps as I_S."){show_items << :ionic_steps}
-op.on("-L", "--last-update" , "Show LAST-UPDATE."       ){show_items << :last_update}
-op.on("-k", "--kpoints" , "Show KPOINTS."               ){
-    show_items << :ka
-    show_items << :kb
-    show_items << :kc
-}
-op.on("-c", "--encut" , "Show ENCUT."                   ){show_items << :encut    }
-op.on("-C", "--csv" , "CSV format"                   ){OPTIONS[:csv] = true}
-op.parse!(ARGV)
-
-if OPTIONS[:all_items]
-    SHOW_ITEMS = ALL_ITEMS
-elsif OPTIONS[:dirnameonly]
-    SHOW_ITEMS = [:dir]
-elsif show_items.empty?
-    SHOW_ITEMS = DEFAULT_ITEMS
-else 
-    SHOW_ITEMS = show_items.push :dir
+  vaspdir inspect [option] [path]
+  HERE
 end
 
-if show_dir_states.empty?
-    show_dir_states = ALL_DIR_STATES
-else 
-    show_dir_states # do nothing
-end
-
-dirs = ARGV
-dirs = Dir.glob("*").sort if ARGV.empty?
-
-def show(hash)
+def show(hash, options = {})
     items = SHOW_ITEMS.map do |item|
-        val = sprintf("%#{WIDTH[item]}s", hash[item])
-        val = hash[item] if OPTIONS[:csv]
+        val = sprintf("%#{INSPECT_WIDTH[item]}s", hash[item])
         val
     end
     separator = " "
-    separator = "," if OPTIONS[:csv]
 
     puts items.join(separator)
 end
@@ -132,9 +73,8 @@ def form_time(second)
     return result
 end
 
-#I_S is ionic steps
-#E_S is electronic steps
-unless OPTIONS[:dirnameonly]
+def show_title
+    # show title of items.
     results = {
         :klass_name => "TYPE",
         :ka         => "KA",
@@ -143,55 +83,116 @@ unless OPTIONS[:dirnameonly]
         :encut      => "ENCUT",
         :state      => "STATE",
         :toten      => "TOTEN",
-        :i_step     => "I_S",
-        :e_step     => "E_S",
+        :i_step     => "I_S", #I_S is ionic steps      
+        :e_step     => "E_S", #E_S is electronic steps 
         :time       => "LAST_UPDATE_AGO",
         :dir        => "DIR"
     }
     show(results)
 end
 
-dirs.each do |dir|
-    next unless File.directory? dir
-    #pp dir
+def show_inspect
 
-    begin
-        klass_name = "VaspDir"
-        calc = VaspUtils::VaspDir.new(dir)
-        state = calc.state
-        begin
-            outcar = calc.outcar
-            toten  = sprintf("%9.6f", outcar[:totens][-1].to_f)
-            i_step = outcar[:ionic_steps]
-            e_step = outcar[:electronic_steps]
-            #time = calc.latest_modified_time.to_s
-            #time = calc.latest_modified_time.strftime("%Y%m%d-%H%M%S")
-            time = form_time(Time.now - calc.latest_modified_time)
-            ka, kb, kc = calc.kpoints[:mesh]
-            encut = calc.incar["ENCUT"]
-        rescue
-            toten = i_step = e_step = time = ka = kb = kc = encut = ""
-        end
+    ## option analysis
+    show_items = []
+    show_dir_states = []
+    options = {}
+    op = OptionParser.new
+    options[:show_dir] = []
+    op.on("-f", "--finished"  , "Show finished dir."   ){show_dir_states << :finished}
+    op.on("-y", "--yet"       , "Show yet dir."        ){show_dir_states << :yet}
+    op.on("-t", "--terminated", "Show terminated dir." ){show_dir_states << :terminated}
+    op.on("-s", "--started"   , "Show sarted dir."     ){show_dir_states << :started}
+    op.on("-l", "--dirs-with-matches", "Show dir name only."){options[:dirnameonly  ] = true}
 
-    rescue VaspUtils::VaspDir::InitializeError
-        klass_name = "-------"
-        #state = toten = i_step = e_step = "---"
-    end
-    results = {
-        :klass_name => klass_name,
-        :ka         => ka,
-        :kb         => kb,
-        :kc         => kc,
-        :encut      => encut,
-        :state      => state,
-        :toten      => toten,
-        :i_step     => i_step,
-        :e_step     => e_step,
-        :time       => time,
-        :dir        => dir,
+    op.on("-a", "--all-items"   , "Show all items."         ){options[:all_items] = true}
+    op.on("-S", "--state"       , "Show STATE."             ){show_items << :state    }
+    op.on("-e", "--toten"       , "Show TOTEN."             ){show_items << :toten    }
+    op.on("-i", "--ionic-steps" , "Show ionic steps as I_S."){show_items << :ionic_steps}
+    op.on("-L", "--last-update" , "Show LAST-UPDATE."       ){show_items << :last_update}
+    op.on("-k", "--kpoints" , "Show KPOINTS."               ){
+        show_items << :ka
+        show_items << :kb
+        show_items << :kc
     }
+    op.on("-c", "--encut" , "Show ENCUT."                   ){show_items << :encut    }
+    op.parse!(ARGV)
 
-    show(results) if show_dir_states.include? results[:state]
+    if options[:all_items]
+        SHOW_ITEMS = INSPECT_ALL_ITEMS
+    elsif options[:dirnameonly]
+        SHOW_ITEMS = [:dir]
+    elsif show_items.empty?
+        SHOW_ITEMS = INSPECT_DEFAULT_ITEMS
+    else 
+        SHOW_ITEMS = show_items.push :dir
+    end
 
+
+    dirs = ARGV
+    dirs = Dir.glob("*").sort if ARGV.empty?
+
+    show_title unless options[:dirnameonly]
+
+    if show_dir_states.empty?
+        show_dir_states = ALL_DIR_STATES
+    else 
+        show_dir_states # do nothing
+    end
+
+
+    dirs.each do |dir|
+        next unless File.directory? dir
+        #pp dir
+
+        begin
+            klass_name = "VaspDir"
+            calc = VaspUtils::VaspDir.new(dir)
+            state = calc.state
+            begin
+                outcar = calc.outcar
+                toten  = sprintf("%9.6f", outcar[:totens][-1].to_f)
+                i_step = outcar[:ionic_steps]
+                e_step = outcar[:electronic_steps]
+                #time = calc.latest_modified_time.to_s
+                #time = calc.latest_modified_time.strftime("%Y%m%d-%H%M%S")
+                time = form_time(Time.now - calc.latest_modified_time)
+                ka, kb, kc = calc.kpoints[:mesh]
+                encut = calc.incar["ENCUT"]
+            rescue
+                toten = i_step = e_step = time = ka = kb = kc = encut = ""
+            end
+
+        rescue VaspUtils::VaspDir::InitializeError
+            klass_name = "-------"
+            #state = toten = i_step = e_step = "---"
+        end
+        results = {
+            :klass_name => klass_name,
+            :ka         => ka,
+            :kb         => kb,
+            :kc         => kc,
+            :encut      => encut,
+            :state      => state,
+            :toten      => toten,
+            :i_step     => i_step,
+            :e_step     => e_step,
+            :time       => time,
+            :dir        => dir,
+        }
+
+        show(results) if show_dir_states.include? results[:state]
+
+    end
 end
 
+
+#case command
+#when "inspect"
+#  status
+#when "--help"
+#  show_usage
+#else
+#  puts "Unknown command: #{command}"
+#  show_usage
+#end
