@@ -35,12 +35,13 @@ def show_usage
 USAGE
   vaspdir command [option] [path]
 
+E.G.,
   vaspdir inspect [option] [path]
   HERE
 end
 
 def show(hash, options = {})
-    items = SHOW_ITEMS.map do |item|
+    items = options[:show_items].map do |item|
         val = sprintf("%#{INSPECT_WIDTH[item]}s", hash[item])
         val
     end
@@ -73,30 +74,12 @@ def form_time(second)
     return result
 end
 
-def show_title
-    # show title of items.
-    results = {
-        :klass_name => "TYPE",
-        :ka         => "KA",
-        :kb         => "KB",
-        :kc         => "KC",
-        :encut      => "ENCUT",
-        :state      => "STATE",
-        :toten      => "TOTEN",
-        :i_step     => "I_S", #I_S is ionic steps      
-        :e_step     => "E_S", #E_S is electronic steps 
-        :time       => "LAST_UPDATE_AGO",
-        :dir        => "DIR"
-    }
-    show(results)
-end
-
-def show_inspect
-
+def show_inspect(args)
     ## option analysis
     show_items = []
     show_dir_states = []
     options = {}
+
     op = OptionParser.new
     options[:show_dir] = []
     op.on("-f", "--finished"  , "Show finished dir."   ){show_dir_states << :finished}
@@ -106,33 +89,30 @@ def show_inspect
     op.on("-l", "--dirs-with-matches", "Show dir name only."){options[:dirnameonly  ] = true}
 
     op.on("-a", "--all-items"   , "Show all items."         ){options[:all_items] = true}
-    op.on("-S", "--state"       , "Show STATE."             ){show_items << :state    }
-    op.on("-e", "--toten"       , "Show TOTEN."             ){show_items << :toten    }
-    op.on("-i", "--ionic-steps" , "Show ionic steps as I_S."){show_items << :ionic_steps}
-    op.on("-L", "--last-update" , "Show LAST-UPDATE."       ){show_items << :last_update}
+    op.on("-S", "--state"       , "Show STATE."             ){options[:show_items] << :state    }
+    op.on("-e", "--toten"       , "Show TOTEN."             ){options[:show_items] << :toten    }
+    op.on("-i", "--ionic-steps" , "Show ionic steps as I_S."){options[:show_items] << :ionic_steps}
+    op.on("-L", "--last-update" , "Show LAST-UPDATE."       ){options[:show_items] << :last_update}
     op.on("-k", "--kpoints" , "Show KPOINTS."               ){
-        show_items << :ka
-        show_items << :kb
-        show_items << :kc
+        options[:show_items] << :ka
+        options[:show_items] << :kb
+        options[:show_items] << :kc
     }
-    op.on("-c", "--encut" , "Show ENCUT."                   ){show_items << :encut    }
-    op.parse!(ARGV)
+    op.on("-c", "--encut" , "Show ENCUT."                   ){options[:show_items] << :encut    }
+    op.parse!(args)
+
+    dirs = args
+    dirs = Dir.glob("*").sort if args.empty?
 
     if options[:all_items]
-        SHOW_ITEMS = INSPECT_ALL_ITEMS
+        options[:show_items] = INSPECT_ALL_ITEMS
     elsif options[:dirnameonly]
-        SHOW_ITEMS = [:dir]
-    elsif show_items.empty?
-        SHOW_ITEMS = INSPECT_DEFAULT_ITEMS
+        options[:show_items] = [:dir]
+    elsif options[:show_items] == nil || options[:show_items].empty?
+        options[:show_items] = INSPECT_DEFAULT_ITEMS
     else 
-        SHOW_ITEMS = show_items.push :dir
+        options[:show_items] = options[:show_items].push :dir
     end
-
-
-    dirs = ARGV
-    dirs = Dir.glob("*").sort if ARGV.empty?
-
-    show_title unless options[:dirnameonly]
 
     if show_dir_states.empty?
         show_dir_states = ALL_DIR_STATES
@@ -140,6 +120,23 @@ def show_inspect
         show_dir_states # do nothing
     end
 
+    unless options[:dirnameonly]
+        # show title of items.
+        results = {
+            :klass_name => "TYPE",
+            :ka         => "KA",
+            :kb         => "KB",
+            :kc         => "KC",
+            :encut      => "ENCUT",
+            :state      => "STATE",
+            :toten      => "TOTEN",
+            :i_step     => "I_S", #I_S is ionic steps      
+            :e_step     => "E_S", #E_S is electronic steps 
+            :time       => "LAST_UPDATE_AGO",
+            :dir        => "DIR"
+        }
+        show(results, options)
+    end
 
     dirs.each do |dir|
         next unless File.directory? dir
@@ -181,18 +178,19 @@ def show_inspect
             :dir        => dir,
         }
 
-        show(results) if show_dir_states.include? results[:state]
+        show(results, options) if show_dir_states.include? results[:state]
 
     end
 end
 
+command = ARGV.shift
 
-#case command
-#when "inspect"
-#  status
-#when "--help"
-#  show_usage
-#else
-#  puts "Unknown command: #{command}"
-#  show_usage
-#end
+case command
+when "inspect"
+  show_inspect(ARGV)
+when "--help"
+  show_usage
+else
+  puts "Unknown command: #{command}"
+  show_usage
+end
