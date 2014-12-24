@@ -1,9 +1,12 @@
 = vasputils changelog
 
-== Master (for 0.0.13)
+== Master (for 0.1.0)
 - Small revision of output of 'showvaspdir' to show zero at the tail of toten.
 - LAST_UPDATE in 'showvaspdir -a' is changed to be "time ago".
 - Small revision of output of 'symposcar' to include 'operation_id'
+
+- bin/vaspdir is made, instead of showvaspdir, etc.
+- bin/vaspgeomopt is made, instead of showvaspdir, etc.
 
 == Version 0.0.12 [2014-08-30] released
 - Update bin/symposcar .
