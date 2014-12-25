@@ -25,6 +25,8 @@ command = ARGV.shift
 case command
 when "inspect"
     VaspUtils::VaspDir.show_inspect(ARGV)
+when "run"
+    VaspUtils::VaspDir.run(ARGV)
 when "poscar"
     #VaspUtils::VaspDir.show_inspect(ARGV)
     #pp VaspUtils::VaspDir.poscar(ARGV)

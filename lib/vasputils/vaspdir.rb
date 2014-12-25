@@ -50,6 +50,11 @@ class VaspUtils::VaspDir < Comana::ComputationManager
         end
     end
 
+    #
+    def self.run(args)
+        TODO
+    end
+
     def self.show_inspect(args)
         ## option analysis
         show_items = []
