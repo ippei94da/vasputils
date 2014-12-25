@@ -1,6 +1,9 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
+puts "Coommand 'runvaspdir' is obsolated. Use 'vaspdir run'"
+exit
+
 require "rubygems" #require "comana"
 require "vasputils"
 require "optparse"

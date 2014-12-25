@@ -52,7 +52,22 @@ class VaspUtils::VaspDir < Comana::ComputationManager
 
     #
     def self.run(args)
-        TODO
+        #require "rubygems" #require "comana"
+        #require "vasputils"
+        #require "optparse"
+
+        dir = args[0] || "."
+
+        begin
+            calc_dir = VaspUtils::VaspDir.new(dir)
+            calc_dir.start
+        rescue VaspUtils::VaspDir::InitializeError
+            puts "Not VaspDir: #{dir}"
+            exit
+        rescue Comana::ComputationManager::AlreadyStartedError
+            puts "Already started. Exit."
+            exit
+        end
     end
 
     def self.show_inspect(args)

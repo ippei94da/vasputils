@@ -16,14 +16,15 @@ USAGE
   vaspdir command [option] [path]
 
 E.G.,
-  vaspdir inspect [option] [path]
+  vaspdir show [option] [path]
+  vaspdir run [option] [path]
   HERE
 end
 
 command = ARGV.shift
 
 case command
-when "inspect"
+when "show"
     VaspUtils::VaspDir.show_inspect(ARGV)
 when "run"
     VaspUtils::VaspDir.run(ARGV)
