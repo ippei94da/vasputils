@@ -70,12 +70,12 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
 
         #I_S is ionic steps
         #E_S is electronic steps
-        format_str = "%-11s %-10s %17s %3s (%3s) %15s\n"
+        format_str = "%-11s %-10s %17s %3s (%3s) %15s, %s\n"
         unless options[:filename]
             #printf("%-11s %-10s %17s %3s (%3s) %15s\n",
             printf(format_str,
                  "TYPE", "STATE", "TOTEN", "I_S", "E_S", "MODIFIED_TIME", "DIR")
-            puts "================================================================="
+            puts "="*80
         end
         dirs.each do |dir|
             next unless File.directory? dir

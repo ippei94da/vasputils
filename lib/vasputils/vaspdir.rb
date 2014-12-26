@@ -155,6 +155,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
             begin
                 klass_name = "VaspDir"
                 calc = VaspUtils::VaspDir.new(dir)
+                #pp calc.kpoints
                 state = calc.state
                 begin
                     outcar = calc.outcar
@@ -164,6 +165,9 @@ class VaspUtils::VaspDir < Comana::ComputationManager
                     #time = calc.latest_modified_time.to_s
                     #time = calc.latest_modified_time.strftime("%Y%m%d-%H%M%S")
                     time = self.form_time(Time.now - calc.latest_modified_time)
+                    #puts "test"
+                    #pp calc
+                    #pp calc.kpoints
                     ka, kb, kc = calc.kpoints[:mesh]
                     encut = calc.incar["ENCUT"]
                 rescue
@@ -187,6 +191,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
                 :time       => time,
                 :dir        => dir,
             }
+            #pp results
 
             self.show_items(results, options) if show_dir_states.include? results[:state]
 
