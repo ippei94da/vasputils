@@ -1,14 +1,14 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
-# Show state of vasp geometry optimization calculations.
+# Manipulate VaspDir from command line.
 
-#require "vasputils/calcseries.rb"
-#require "rubygems"
-#gem "vasputils"
-require "vasputils"
-require "pp"
+require "comana"
+require "fileutils"
 require "optparse"
+require "pp"
+require "rubygems"
+require "vasputils"
 
 def show_usage
   puts <<-HERE
@@ -16,8 +16,9 @@ USAGE
   vaspdir command [option] [path]
 
 E.G.,
-  vaspdir show [option] [path]
-  vaspdir run [option] [path]
+  vaspdir show  [option] [path]
+  vaspdir run   [option] [path]
+  vaspdir reset [option] [path]
   HERE
 end
 
@@ -28,12 +29,16 @@ when "show"
     VaspUtils::VaspDir.show_inspect(ARGV)
 when "run"
     VaspUtils::VaspDir.run(ARGV)
-when "poscar"
-    #VaspUtils::VaspDir.show_inspect(ARGV)
-    #pp VaspUtils::VaspDir.poscar(ARGV)
+when "reset"
+    VaspUtils::VaspDir.reset(ARGV)
+#when "poscar"
+#    #VaspUtils::VaspDir.show_inspect(ARGV)
+#    #pp VaspUtils::VaspDir.poscar(ARGV)
 when "--help"
     show_usage
 else
     puts "Unknown command: #{command}"
     show_usage
 end
+
+exit

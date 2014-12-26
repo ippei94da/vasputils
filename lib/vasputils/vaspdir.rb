@@ -43,7 +43,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
 
     def initialize(dir)
         super(dir)
-        @lockdir        = "lock_vaspdir"
+        @lockdir        = "lock_run"
         %w(INCAR KPOINTS POSCAR POTCAR).each do |file|
             infile = "#{@dir}/#{file}"
             raise InitializeError, infile unless FileTest.exist? infile
@@ -52,10 +52,6 @@ class VaspUtils::VaspDir < Comana::ComputationManager
 
     #
     def self.run(args)
-        #require "rubygems" #require "comana"
-        #require "vasputils"
-        #require "optparse"
-
         dir = args[0] || "."
 
         begin
@@ -67,6 +63,24 @@ class VaspUtils::VaspDir < Comana::ComputationManager
         rescue Comana::ComputationManager::AlreadyStartedError
             puts "Already started. Exit."
             exit
+        end
+    end
+
+    def self.reset(args)
+        tgts = ARGV
+        tgts = [ENV['PWD']] if tgts.size == 0
+        tgts.each do |tgt_dir|
+            puts "Directory: #{tgt_dir}"
+
+            # Check tgt_dir is VaspDir?
+            begin
+                vd = VaspUtils::VaspDir.new(tgt_dir)
+            rescue VaspUtils::VaspDir::InitializeError
+                puts "  Do nothing due to not VaspDir."
+                next
+            end
+
+            vd.reset_init
         end
     end
 
@@ -259,6 +273,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
         end
     end
 
+    # Delete all except for four files, INCAR, KPOINTS, POSCAR, POTCAR.
     def reset_init(io = $stdout)
         #fullpath = File.expand_path @dir
         keep_files   = ["INCAR", "KPOINTS", "POSCAR", "POTCAR"]
@@ -273,13 +288,6 @@ class VaspUtils::VaspDir < Comana::ComputationManager
             io.puts "    No remove files."
             return
         else
-            #pp @dir; exit
-            #puts "  Remove files:"
-            #remove_files.each { |file| puts "      #{file}" }
-
-            #puts "  Keep files:"
-            #keep_files.each { |file| puts "        #{file}" }
-
             remove_files.each do |file|
                 io.puts "    Removing: #{file}"
                 FileUtils.rm_rf "#{@dir}/#{file}"

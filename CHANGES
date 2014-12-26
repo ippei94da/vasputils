@@ -5,7 +5,10 @@
 - LAST_UPDATE in 'showvaspdir -a' is changed to be "time ago".
 - Small revision of output of 'symposcar' to include 'operation_id'
 
-- bin/vaspdir is made, instead of showvaspdir, etc.
+- Add bin/vaspdir with subcommands;
+    - 'vaspdir show' shows inspect VaspDir, instead of showvaspdir.
+    - 'vaspdir run'  runs vasp calculation, instead of runvaspdir.
+    - 'vaspdir reset' reset to inital state of VaspDir, instead of resetvaspdir.
 - bin/vaspgeomopt is made, instead of showvaspdir, etc.
 
 == Version 0.0.12 [2014-08-30] released

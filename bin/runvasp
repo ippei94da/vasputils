@@ -2,6 +2,7 @@
 # coding: utf-8
 
 puts "'runvasp' is obsoleted. Use 'runvaspdir' or 'runvaspgeomopt'."
+exit
 
 #require "rubygems"
 ##require "comana"

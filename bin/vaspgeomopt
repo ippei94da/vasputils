@@ -1,0 +1,42 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+require "comana"
+require "fileutils"
+require "optparse"
+require "pp"
+require "rubygems"
+require "vasputils"
+
+
+def show_usage
+  puts <<-HERE
+USAGE
+  vaspgeomopt command [option] [path]
+
+E.G.,
+  vaspgeomopt show  [option] [path] # Show state of vasp geometry optimization.
+  vaspgeomopt run   [option] [path] # Run vasp geometry optimization
+  vaspgeomopt reset [option] [path] # Reset directory for new calculation.
+  HERE
+end
+
+command = ARGV.shift
+
+case command
+when "show"
+    VaspUtils::VaspGeometryOptimizer.show_inspect(ARGV)
+when "run"
+    VaspUtils::VaspGeometryOptimizer.run(ARGV)
+when "reset"
+    VaspUtils::VaspGeometryOptimizer.reset(ARGV)
+when "--help"
+    show_usage
+else
+    puts "Unknown command: #{command}"
+    show_usage
+end
+
+exit
+
+
