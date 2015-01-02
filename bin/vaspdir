@@ -11,15 +11,20 @@ require "rubygems"
 require "vasputils"
 
 def show_usage
-  puts <<-HERE
+    puts <<-HERE
 USAGE
-  vaspdir command [option] [path]
+    vaspdir command [option] [path]
 
 E.G.,
-  vaspdir show  [option] [path]
-  vaspdir run   [option] [path]
-  vaspdir reset [option] [path]
-  HERE
+    vaspdir show [option] [path]
+    vaspdir run [path]
+    vaspdir clean [path]
+        delete output files of vasp command.
+    vaspdir initialize [path]
+        delete except for four input files; INCAR, KPOINTS, POSCAR, POTCAR.
+
+    If [path] is not explicitely indicated, "." would be used.
+    HERE
 end
 
 command = ARGV.shift
@@ -29,8 +34,10 @@ when "show"
     VaspUtils::VaspDir.show_inspect(ARGV)
 when "run"
     VaspUtils::VaspDir.run(ARGV)
-when "reset"
-    VaspUtils::VaspDir.reset(ARGV)
+when "clean"
+    VaspUtils::VaspDir.reset_clean(ARGV)
+when "initialize"
+    VaspUtils::VaspDir.reset_initialize(ARGV)
 #when "poscar"
 #    #VaspUtils::VaspDir.show_inspect(ARGV)
 #    #pp VaspUtils::VaspDir.poscar(ARGV)

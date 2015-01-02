@@ -31,7 +31,6 @@ class VaspUtils::VaspDir < Comana::ComputationManager
         :time        => "15",
         :toten       => "17",
     }
-    ALL_DIR_STATES = [ :finished, :yet, :terminated, :started, ]
 
 
     class InitializeError < Exception; end
@@ -52,35 +51,41 @@ class VaspUtils::VaspDir < Comana::ComputationManager
 
     #
     def self.run(args)
-        dir = args[0] || "."
+        tgts = args
+        tgts = [ENV['PWD']] if tgts.size == 0
 
-        begin
-            calc_dir = VaspUtils::VaspDir.new(dir)
-            calc_dir.start
-        rescue VaspUtils::VaspDir::InitializeError
-            puts "Not VaspDir: #{dir}"
-            exit
-        rescue Comana::ComputationManager::AlreadyStartedError
-            puts "Already started. Exit."
-            exit
+        tgts.each do |dir|
+            begin
+                calc_dir = VaspUtils::VaspDir.new(dir)
+                calc_dir.start
+            rescue VaspUtils::VaspDir::InitializeError
+                puts "Not VaspDir: #{dir}"
+                exit
+            rescue Comana::ComputationManager::AlreadyStartedError
+                puts "Already started. Exit."
+                exit
+            end
         end
     end
 
-    def self.reset(args)
-        tgts = ARGV
-        tgts = [ENV['PWD']] if tgts.size == 0
-        tgts.each do |tgt_dir|
-            puts "Directory: #{tgt_dir}"
+    def self.reset_clean(args)
+    end
 
-            # Check tgt_dir is VaspDir?
+    def self.reset_initialize(args)
+        targets = args
+        targets = [ENV['PWD']] if targets.size == 0
+        targets.each do |target_dir|
+            puts "Directory: #{target_dir}"
+
+            # Check target_dir is VaspDir?
             begin
-                vd = VaspUtils::VaspDir.new(tgt_dir)
+                vd = VaspUtils::VaspDir.new(target_dir)
             rescue VaspUtils::VaspDir::InitializeError
                 puts "  Do nothing due to not VaspDir."
                 next
             end
 
-            vd.reset_init
+            vd.reset_initialize
         end
     end
 
@@ -112,7 +117,8 @@ class VaspUtils::VaspDir < Comana::ComputationManager
         op.parse!(args)
 
         dirs = args
-        dirs = Dir.glob("*").sort if args.empty?
+        #dirs = Dir.glob("*").sort if args.empty?
+        dirs = ["."] if args.empty?
 
         if options[:all_items]
             options[:show_items] = INSPECT_ALL_ITEMS
@@ -122,12 +128,6 @@ class VaspUtils::VaspDir < Comana::ComputationManager
             options[:show_items] = INSPECT_DEFAULT_ITEMS
         else 
             options[:show_items] = options[:show_items].push :dir
-        end
-
-        if show_dir_states.empty?
-            show_dir_states = ALL_DIR_STATES
-        else 
-            show_dir_states # do nothing
         end
 
         unless options[:dirnameonly]
@@ -193,8 +193,13 @@ class VaspUtils::VaspDir < Comana::ComputationManager
             }
             #pp results
 
-            self.show_items(results, options) if show_dir_states.include? results[:state]
-
+            if show_dir_states.empty?
+                self.show_items(results, options)
+            else 
+                if show_dir_states.include? results[:state]
+                    self.show_items(results, options)
+                end
+            end
         end
     end
 
@@ -278,8 +283,12 @@ class VaspUtils::VaspDir < Comana::ComputationManager
         end
     end
 
+    def reset_clean(io = $stdout)
+        TODO
+    end
+
     # Delete all except for four files, INCAR, KPOINTS, POSCAR, POTCAR.
-    def reset_init(io = $stdout)
+    def reset_initialize(io = $stdout)
         #fullpath = File.expand_path @dir
         keep_files   = ["INCAR", "KPOINTS", "POSCAR", "POTCAR"]
         remove_files = []

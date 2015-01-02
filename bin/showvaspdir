@@ -1,6 +1,6 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
-puts "Coommand 'showvaspdir' is obsolated. Use 'vaspdir inspect'"
+puts "Command 'showvaspdir' is obsolated. Use 'vaspdir show *'"
 exit
 
