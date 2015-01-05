@@ -117,9 +117,9 @@ class TC_VaspDir < Test::Unit::TestCase
         assert_equal("test/vaspdir/finished/OUTCAR", @vd03.outcar[:name])
     end
 
-    def test_reset_init
-        orig = "test/vaspdir/reset_init/finished/orig"
-        tmp  = "test/vaspdir/reset_init/finished/tmp"
+    def test_reset_initialize
+        orig = "test/vaspdir/reset_initialize/finished/orig"
+        tmp  = "test/vaspdir/reset_initialize/finished/tmp"
         FileUtils.rm_rf(tmp) if File.exist?(tmp)
         FileUtils.cp_r(orig, tmp)
 
@@ -132,7 +132,7 @@ class TC_VaspDir < Test::Unit::TestCase
         assert_equal(true, File.exist?("#{tmp}/OUTCAR"))
         assert_equal(true, File.exist?("#{tmp}/POSCAR"))
         assert_equal(true, File.exist?("#{tmp}/POTCAR"))
-        vd.reset_init(io)
+        vd.reset_initialize(io)
         assert_equal(false, File.exist?("#{tmp}/CONTCAR"))
         assert_equal(true , File.exist?("#{tmp}/INCAR"))
         assert_equal(true , File.exist?("#{tmp}/KPOINTS"))

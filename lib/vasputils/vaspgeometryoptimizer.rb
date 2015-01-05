@@ -65,8 +65,8 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
         end
 
         dirs = args
-        dirs = Dir.glob("*").sort if args.empty?
-
+        #dirs = Dir.glob("*").sort if args.empty?
+        dirs = ["."] if args.empty?
 
         #I_S is ionic steps
         #E_S is electronic steps
@@ -110,7 +110,9 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     
     # Run geometry optimization.
     def self.run(args)
-        dir = args[0] || "."
+        #dir = args[0] || "."
+        tgts = args
+        tgts = [ENV['PWD']] if tgts.size == 0
 
         begin
             calc_dir = VaspUtils::VaspGeometryOptimizer.new(dir)
@@ -124,26 +126,7 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
         end
     end
 
-    # reset geometry optimization.
-    def self.reset(args)
-        usage = "USAGE: setvaspgeomopt <-i|-n|-r> [-Y|-N] target_dirs ..."
-
-        ## option analysis
-        options = {}
-        op = OptionParser.new
-        op.on("-i", "--reset-init", "Remain only 'geomopt00/{INCAR,KPOINTS,POSCAR,POTCAR}'."){options[:init] = true}
-        op.on("-n", "--next" , "Next vasp for geometry optimization."){options[:next] = true}
-        op.on("-r", "--reincarnate", "Like reset, but generate 'geomopt00' using final CONTCAR."){options[:reincarnate] = true}
-
-        #op.on("-Y", "--yes", "Answer 'yes' to all questions."){options[:yes] = true}
-        #op.on("-N", "--no",    "Answer 'no'    to all questions."){options[:no ] = true}
-        op.parse!(ARGV)
-
-        if [options[:init], options[:next], options[:reincarnate]].count(true) != 1
-            puts usage
-            exit
-        end
-
+    def self.next(args)
         tgts = ARGV
         tgts = [ENV['PWD']] if tgts.size == 0
 
@@ -158,26 +141,107 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
                 next
             end
 
-            if options[:init]
-                puts "  Back to init: #{tgt_dir}"
-                tgt.reset_init
-            end
-
-            if options[:next]
-                puts "  Generate next: #{tgt_dir}"
-                #begin
-                    tgt.reset_next
-                #rescue VaspUtils::VaspGeometryOptimizer::NoContcarError
-                    #puts "  CONTCAR not exist in latest_dir: #{tgt_dir}"
-                #end
-            end
-
-            if options[:reincarnate]
-                puts "  Reincarnate(generate dir as new calc): #{tgt_dir}"
-                tgt.reset_reincarnate
+            puts "  Generate next: #{tgt_dir}"
+            begin
+                tgt.reset_next
+            rescue VaspUtils::VaspGeometryOptimizer::NoContcarError
+                puts "  CONTCAR not exist in latest_dir: #{tgt_dir}"
             end
         end
     end
+
+    def self.reset_initialize(args)
+        tgts = ARGV
+        tgts = [ENV['PWD']] if tgts.size == 0
+
+        tgts.each do |tgt_dir|
+            puts "Directory: #{tgt_dir}"
+
+            # Check tgt_dir is VaspDir?
+            begin
+                tgt = VaspUtils::VaspGeometryOptimizer.new(tgt_dir)
+            rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
+                puts "  Not VaspGeometryOptimizer: #{tgt_dir}"
+                next
+            end
+
+            puts "  Back to init: #{tgt_dir}"
+            tgt.reset_initialize
+        end
+    end
+
+    def self.reincarnate(args)
+        tgts = ARGV
+        tgts = [ENV['PWD']] if tgts.size == 0
+
+        tgts.each do |tgt_dir|
+            puts "Directory: #{tgt_dir}"
+
+            # Check tgt_dir is VaspDir?
+            begin
+                tgt = VaspUtils::VaspGeometryOptimizer.new(tgt_dir)
+            rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
+                puts "  Not VaspGeometryOptimizer: #{tgt_dir}"
+                next
+            end
+
+            puts "  Reincarnate(generate dir as new calc): #{tgt_dir}"
+            tgt.reset_reincarnate
+        end
+    end
+
+#    # reset geometry optimization.
+#    def self.reset(args)
+#        usage = "USAGE: setvaspgeomopt <-i|-n|-r> [-Y|-N] target_dirs ..."
+#
+#        ## option analysis
+#        options = {}
+#        op = OptionParser.new
+#        op.on("-i", "--reset-init", "Remain only 'geomopt00/{INCAR,KPOINTS,POSCAR,POTCAR}'."){options[:init] = true}
+#        op.on("-n", "--next" , "Next vasp for geometry optimization."){options[:next] = true}
+#        op.on("-r", "--reincarnate", "Like reset, but generate 'geomopt00' using final CONTCAR."){options[:reincarnate] = true}
+#
+#        op.parse!(ARGV)
+#
+#        if [options[:init], options[:next], options[:reincarnate]].count(true) != 1
+#            puts usage
+#            exit
+#        end
+#
+#        tgts = ARGV
+#        tgts = [ENV['PWD']] if tgts.size == 0
+#
+#        tgts.each do |tgt_dir|
+#            puts "Directory: #{tgt_dir}"
+#
+#            # Check tgt_dir is VaspDir?
+#            begin
+#                tgt = VaspUtils::VaspGeometryOptimizer.new(tgt_dir)
+#            rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
+#                puts "  Not VaspGeometryOptimizer: #{tgt_dir}"
+#                next
+#            end
+#
+#            if options[:init]
+#                puts "  Back to init: #{tgt_dir}"
+#                tgt.reset_initialize
+#            end
+#
+#            if options[:next]
+#                puts "  Generate next: #{tgt_dir}"
+#                #begin
+#                    tgt.reset_next
+#                #rescue VaspUtils::VaspGeometryOptimizer::NoContcarError
+#                    #puts "  CONTCAR not exist in latest_dir: #{tgt_dir}"
+#                #end
+#            end
+#
+#            if options[:reincarnate]
+#                puts "  Reincarnate(generate dir as new calc): #{tgt_dir}"
+#                tgt.reset_reincarnate
+#            end
+#        end
+#    end
 
     # 注目した VaspDir が yet なら実行し、続ける。
     # yet 以外なら例外。
@@ -232,7 +296,7 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     end
 
     #Keep 'geomopt00/{POSCAR,POTCAR,INCAR,POTCAR}', remove others.
-    def reset_init
+    def reset_initialize
         poscars = Dir.glob("#{@dir}/#{PREFIX}*/POSCAR").sort
         poscar = nil
         path = nil
@@ -275,10 +339,10 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
             prepare_next
             clean_queue_files
         rescue Errno::ENOENT
-            latest_dir.reset_init(io)
+            latest_dir.reset_initialize(io)
             clean_queue_files
         rescue VaspUtils::Poscar::ParseError
-            latest_dir.reset_init(io)
+            latest_dir.reset_initialize(io)
             clean_queue_files
         end
     end

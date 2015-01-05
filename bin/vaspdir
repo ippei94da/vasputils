@@ -21,7 +21,8 @@ E.G.,
     vaspdir clean [path]
         delete output files of vasp command.
     vaspdir initialize [path]
-        delete except for four input files; INCAR, KPOINTS, POSCAR, POTCAR.
+        delete all files except for four input files.
+        (INCAR, KPOINTS, POSCAR, POTCAR.)
 
     If [path] is not explicitely indicated, "." would be used.
     HERE

@@ -110,13 +110,13 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
     end
 
 
-    def test_reset_init
-        orig = TEST_DIR + "/reset_init/orig"
-        tmp  = TEST_DIR + "/reset_init/tmp"
+    def test_reset_initialize
+        orig = TEST_DIR + "/reset_initialize/orig"
+        tmp  = TEST_DIR + "/reset_initialize/tmp"
         FileUtils.rm_r tmp if FileTest.exist? tmp
         FileUtils.cp_r(orig, tmp)
         vgo = VaspUtils::VaspGeometryOptimizer.new(tmp)
-        vgo.reset_init
+        vgo.reset_initialize
         assert_equal(true,  File.exist?("#{tmp}/geomopt00"))
         assert_equal(false, File.exist?("#{tmp}/geomopt01"))
         assert_equal(4,         Dir.glob("#{tmp}/geomopt00/*").size)

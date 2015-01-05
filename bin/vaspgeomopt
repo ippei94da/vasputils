@@ -28,8 +28,14 @@ when "show"
     VaspUtils::VaspGeometryOptimizer.show_inspect(ARGV)
 when "run"
     VaspUtils::VaspGeometryOptimizer.run(ARGV)
-when "reset"
-    VaspUtils::VaspGeometryOptimizer.reset(ARGV)
+#when "reset"
+#    VaspUtils::VaspGeometryOptimizer.reset(ARGV)
+when "next"
+    VaspUtils::VaspGeometryOptimizer.next(ARGV)
+when "initialize"
+    VaspUtils::VaspGeometryOptimizer.reset_initialize(ARGV)
+when "reincarnate"
+    VaspUtils::VaspGeometryOptimizer.reincarnate(ARGV)
 when "--help"
     show_usage
 else
