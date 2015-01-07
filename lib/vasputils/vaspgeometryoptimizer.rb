@@ -111,26 +111,28 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     # Run geometry optimization.
     def self.run(args)
         #dir = args[0] || "."
-        tgts = args
-        tgts = [ENV['PWD']] if tgts.size == 0
+        targets = args
+        targets = [ENV['PWD']] if targets.size == 0
 
-        begin
-            calc_dir = VaspUtils::VaspGeometryOptimizer.new(dir)
-            calc_dir.start
-        rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
-            puts "Not suitable for VaspGeometryOptimizer: #{dir}"
-            exit
-        rescue Comana::ComputationManager::AlreadyStartedError
-            puts "Already started. Exit."
-            exit
+        targets.each do |dir|
+            begin
+                calc_dir = VaspUtils::VaspGeometryOptimizer.new(dir)
+                calc_dir.start
+            rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
+                puts "Not suitable for VaspGeometryOptimizer: #{dir}"
+                exit
+            rescue Comana::ComputationManager::AlreadyStartedError
+                puts "Already started. Exit."
+                exit
+            end
         end
     end
 
     def self.next(args)
-        tgts = ARGV
-        tgts = [ENV['PWD']] if tgts.size == 0
+        targets = ARGV
+        targets = [ENV['PWD']] if targets.size == 0
 
-        tgts.each do |tgt_dir|
+        targets.each do |tgt_dir|
             puts "Directory: #{tgt_dir}"
 
             # Check tgt_dir is VaspDir?
@@ -151,10 +153,10 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     end
 
     def self.reset_initialize(args)
-        tgts = ARGV
-        tgts = [ENV['PWD']] if tgts.size == 0
+        targets = ARGV
+        targets = [ENV['PWD']] if targets.size == 0
 
-        tgts.each do |tgt_dir|
+        targets.each do |tgt_dir|
             puts "Directory: #{tgt_dir}"
 
             # Check tgt_dir is VaspDir?
@@ -171,10 +173,10 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     end
 
     def self.reincarnate(args)
-        tgts = ARGV
-        tgts = [ENV['PWD']] if tgts.size == 0
+        targets = ARGV
+        targets = [ENV['PWD']] if targets.size == 0
 
-        tgts.each do |tgt_dir|
+        targets.each do |tgt_dir|
             puts "Directory: #{tgt_dir}"
 
             # Check tgt_dir is VaspDir?
@@ -208,10 +210,10 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
 #            exit
 #        end
 #
-#        tgts = ARGV
-#        tgts = [ENV['PWD']] if tgts.size == 0
+#        targets = ARGV
+#        targets = [ENV['PWD']] if targets.size == 0
 #
-#        tgts.each do |tgt_dir|
+#        targets.each do |tgt_dir|
 #            puts "Directory: #{tgt_dir}"
 #
 #            # Check tgt_dir is VaspDir?
