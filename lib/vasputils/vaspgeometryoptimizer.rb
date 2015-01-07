@@ -108,6 +108,24 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
         end
     end
     
+    def self.show_latest(args)
+        targets = args
+        targets = ["."] if args.empty?
+
+        #pp targets
+        targets.each do |target|
+            klass_name = "VaspGeomOpt"
+            begin
+                calc = VaspUtils::VaspGeometryOptimizer.new(target)
+            rescue
+                next
+            end
+
+            puts calc.latest_dir.dir
+        end
+
+    end
+
     # Run geometry optimization.
     def self.run(args)
         #dir = args[0] || "."

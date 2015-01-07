@@ -16,6 +16,7 @@ USAGE
 
 E.G.,
   vaspgeomopt show  [option] [path] # Show state of vasp geometry optimization.
+  vaspgeomopt latest         [path] # Show latest vaspdir.
   vaspgeomopt run   [option] [path] # Run vasp geometry optimization
   vaspgeomopt next  [option] [path] # Generate next step of geomopt.
   vaspgeomopt initialize  [option] [path] # Initialize geomopt.
@@ -28,6 +29,8 @@ command = ARGV.shift
 case command
 when "show"
     VaspUtils::VaspGeometryOptimizer.show_inspect(ARGV)
+when "latest"
+    VaspUtils::VaspGeometryOptimizer.show_latest(ARGV)
 when "run"
     VaspUtils::VaspGeometryOptimizer.run(ARGV)
 #when "reset"
@@ -46,5 +49,4 @@ else
 end
 
 exit
-
 
