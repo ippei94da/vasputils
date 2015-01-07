@@ -17,7 +17,9 @@ USAGE
 E.G.,
   vaspgeomopt show  [option] [path] # Show state of vasp geometry optimization.
   vaspgeomopt run   [option] [path] # Run vasp geometry optimization
-  vaspgeomopt reset [option] [path] # Reset directory for new calculation.
+  vaspgeomopt next  [option] [path] # Generate next step of geomopt.
+  vaspgeomopt initialize  [option] [path] # Initialize geomopt.
+  vaspgeomopt reincarnate [option] [path] # Generate new geomopt from final structure.
   HERE
 end
 
