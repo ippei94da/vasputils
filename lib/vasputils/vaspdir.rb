@@ -69,6 +69,20 @@ class VaspUtils::VaspDir < Comana::ComputationManager
     end
 
     def self.reset_clean(args)
+        targets = args
+        targets = [ENV['PWD']] if targets.size == 0
+        targets.each do |target_dir|
+            puts "Directory: #{target_dir}"
+
+            # Check target_dir is VaspDir?
+            begin
+                vd = VaspUtils::VaspDir.new(target_dir)
+            rescue VaspUtils::VaspDir::InitializeError
+                puts "  Do nothing due to not VaspDir."
+                next
+            end
+            vd.reset_clean
+        end
     end
 
     def self.reset_initialize(args)
@@ -84,7 +98,6 @@ class VaspUtils::VaspDir < Comana::ComputationManager
                 puts "  Do nothing due to not VaspDir."
                 next
             end
-
             vd.reset_initialize
         end
     end
@@ -283,8 +296,28 @@ class VaspUtils::VaspDir < Comana::ComputationManager
         end
     end
 
+    # VASP の出力ファイルを削除する。
+    #入力のみに使うもの、残す
+    #   INCAR KPOINTS POSCAR POTCAR
+    #
+    #主に出力。消す。
+    #   CHG CHGCAR CONTCAR DOSCAR EIGENVAL EIGENVALUE ELFCAR
+    #   EXHCAR IBZKPT LOCPOT OSZICAR OUTCAR PCDAT PRJCAR PROCAR
+    #   PROOUT STOPCAR TMPCAR WAVECAR XDATCAR vasprun.xml
+    #
+    #付随する出力ファイル。残す。
+    #   machines stderr stdout
     def reset_clean(io = $stdout)
-        TODO
+        remove_files = %w(
+            CHG CHGCAR CONTCAR DOSCAR EIGENVAL EIGENVALUE
+            ELFCAR EXHCAR IBZKPT LOCPOT OSZICAR OUTCAR PCDAT
+            PRJCAR PROCAR
+            PROOUT STOPCAR TMPCAR WAVECAR XDATCAR vasprun.xml
+        )
+        remove_files.each do |file|
+            io.puts "    Removing: #{file}"
+            FileUtils.rm_rf "#{@dir}/#{file}"
+        end
     end
 
     # Delete all except for four files, INCAR, KPOINTS, POSCAR, POTCAR.
