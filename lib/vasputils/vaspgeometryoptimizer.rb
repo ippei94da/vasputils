@@ -70,11 +70,11 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
 
         #I_S is ionic steps
         #E_S is electronic steps
-        format_str = "%-11s %-10s %17s %3s (%3s) %15s, %s\n"
+        format_str = "%-11s %-10s %17s %7s %15s, %s\n"
         unless options[:filename]
-            #printf("%-11s %-10s %17s %3s (%3s) %15s\n",
             printf(format_str,
-                 "TYPE", "STATE", "TOTEN", "I_S", "E_S", "MODIFIED_TIME", "DIR")
+                 #"TYPE", "STATE", "TOTEN", "I_S", "MODIFIED_TIME", "DIR")
+                 "TYPE", "STATE", "TOTEN", "geomOpt", "MODIFIED_TIME", "DIR")
             puts "="*80
         end
         dirs.each do |dir|
@@ -90,21 +90,24 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
                 begin
                     outcar = ld.outcar
                     toten    = sprintf("%15.6f ", outcar[:totens][-1].to_f)
-                    i_step = outcar[:ionic_steps]
-                    e_step = outcar[:electronic_steps]
+                    #i_step = outcar[:ionic_steps]
+                    #ldir = latest_dir
                     time = calc.latest_modified_time.strftime("%Y%m%d-%H%M%S")
                 rescue
-                    toten    = i_step = e_step = time = ""
+                    #toten    = i_step = time = ""
+                    toten = time = ld = ""
                 end
 
             rescue VaspUtils::VaspGeometryOptimizer::InitializeError
                 klass_name = "-------"
-                state = toten = i_step = e_step = "---"
+                #state = toten = i_step = "---"
+                state = toten = ld = "---"
             end
 
             #printf("%-11s %-10s %17s %3s (%3s) %15s\n",
             printf(format_str,
-                klass_name, state, toten, i_step, e_step, time, dir)
+                #klass_name, state, toten, i_step, time, dir)
+                klass_name, state, toten, ld.dir, time, dir)
         end
     end
     
