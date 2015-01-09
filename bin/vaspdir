@@ -26,15 +26,16 @@ E.G.,
 
     If [path] is not explicitely indicated, "." would be used.
 
-    Lines from stdin are simply added to end of command line arguments.
     HERE
 end
+    #Lines from stdin are simply added to end of command line arguments.
 
-stdin_items = $stdin.readlines.map{|str| str.chomp}
+#stdin_items = $stdin.readlines.map{|str| str.chomp}
 
 command = ARGV.shift
+args = ARGV
 
-args = ARGV + stdin_items
+#args = ARGV + stdin_items
 
 case command
 when "show"
