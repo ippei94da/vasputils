@@ -25,23 +25,29 @@ E.G.,
         (INCAR, KPOINTS, POSCAR, POTCAR.)
 
     If [path] is not explicitely indicated, "." would be used.
+
+    Lines from stdin are simply added to end of command line arguments.
     HERE
 end
 
+stdin_items = $stdin.readlines.map{|str| str.chomp}
+
 command = ARGV.shift
+
+args = ARGV + stdin_items
 
 case command
 when "show"
-    VaspUtils::VaspDir.show_inspect(ARGV)
+    VaspUtils::VaspDir.show_inspect(args)
 when "run"
-    VaspUtils::VaspDir.run(ARGV)
+    VaspUtils::VaspDir.run(args)
 when "clean"
-    VaspUtils::VaspDir.reset_clean(ARGV)
+    VaspUtils::VaspDir.reset_clean(args)
 when "initialize"
-    VaspUtils::VaspDir.reset_initialize(ARGV)
+    VaspUtils::VaspDir.reset_initialize(args)
 #when "poscar"
-#    #VaspUtils::VaspDir.show_inspect(ARGV)
-#    #pp VaspUtils::VaspDir.poscar(ARGV)
+#    #VaspUtils::VaspDir.show_inspect(args)
+#    #pp VaspUtils::VaspDir.poscar(args)
 when "--help"
     show_usage
 else

@@ -59,8 +59,9 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
         assert_equal( "geomopt10" , VaspUtils::VaspGeometryOptimizer.next_name("geomopt09"))
         assert_equal( "geomopt11" , VaspUtils::VaspGeometryOptimizer.next_name("geomopt10"))
         assert_equal( "geomopt100", VaspUtils::VaspGeometryOptimizer.next_name("geomopt99"))
-        assert_equal( "01"      , VaspUtils::VaspGeometryOptimizer.next_name("00"))
-        assert_equal( "geomopt01" , VaspUtils::VaspGeometryOptimizer.next_name("geomopt"))
+        #assert_equal( "01"      , VaspUtils::VaspGeometryOptimizer.next_name("00"))
+        #assert_equal( "geomopt01" , VaspUtils::VaspGeometryOptimizer.next_name("geomopt"))
+        assert_equal( "geomopt01" , VaspUtils::VaspGeometryOptimizer.next_name("geomopt00-start"))
         #assert_raise(VaspUtils::VaspGeometryOptimizer::NoIntegerEndedNameError){VaspUtils::VaspGeometryOptimizer.next_name("try")}
     end
 

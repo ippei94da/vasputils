@@ -41,9 +41,8 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     # return incremental value with the basename.
     # If not ended with integer, this method assume "00"
     def self.next_name(name)
-        basename = name.sub(/(\d*)$/, "")
-        new_num = $1.to_i + 1
-        return basename + sprintf("%02d", new_num)
+        name =~ /^(.*#{PREFIX})(\d+)/
+        return sprintf("%s%02d", $1, $2.to_i + 1)
     end
 
     # Show inspect.
@@ -70,11 +69,10 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
 
         #I_S is ionic steps
         #E_S is electronic steps
-        format_str = "%-11s %-10s %17s %7s %15s, %s\n"
+        format_str = "%-11s %-10s %14s %9s %15s %s\n"
         unless options[:filename]
             printf(format_str,
-                 #"TYPE", "STATE", "TOTEN", "I_S", "MODIFIED_TIME", "DIR")
-                 "TYPE", "STATE", "TOTEN", "geomOpt", "MODIFIED_TIME", "DIR")
+                 "TYPE", "STATE", "TOTEN", "LATEST", "MODIFIED_TIME", "DIR")
             puts "="*80
         end
         dirs.each do |dir|
@@ -86,28 +84,23 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
                 state = calc.state
 
                 ld = calc.latest_dir
-                try = sprintf "%5s", ld.dir.sub(/.*try/, "try")
                 begin
                     outcar = ld.outcar
-                    toten    = sprintf("%15.6f ", outcar[:totens][-1].to_f)
-                    #i_step = outcar[:ionic_steps]
-                    #ldir = latest_dir
+                    toten    = sprintf("%14.6f", outcar[:totens][-1].to_f)
+                    ld_str = ld.dir.sub("#{dir}/", "")
                     time = calc.latest_modified_time.strftime("%Y%m%d-%H%M%S")
                 rescue
                     #toten    = i_step = time = ""
-                    toten = time = ld = ""
+                    toten = time = ld_str = ""
                 end
 
             rescue VaspUtils::VaspGeometryOptimizer::InitializeError
                 klass_name = "-------"
-                #state = toten = i_step = "---"
-                state = toten = ld = "---"
+                state = toten = ld_str = "---"
             end
 
-            #printf("%-11s %-10s %17s %3s (%3s) %15s\n",
             printf(format_str,
-                #klass_name, state, toten, i_step, time, dir)
-                klass_name, state, toten, ld.dir, time, dir)
+                klass_name, state, toten, ld_str, time, dir)
         end
     end
     
@@ -115,7 +108,6 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
         targets = args
         targets = ["."] if args.empty?
 
-        #pp targets
         targets.each do |target|
             klass_name = "VaspGeomOpt"
             begin
@@ -131,7 +123,6 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
 
     # Run geometry optimization.
     def self.run(args)
-        #dir = args[0] || "."
         targets = args
         targets = [ENV['PWD']] if targets.size == 0
 
@@ -422,6 +413,7 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
         raise NoContcarError unless File.exist? "#{latest_dir.dir}/CONTCAR"
 
         new_dir = self.class.next_name(latest_dir.dir)
+        #sleep 60
         Dir.mkdir new_dir
 
         #FileUtils.cp("#{latest_dir.dir}/CHG"           , "#{new_dir}/CHG"       )
