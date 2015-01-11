@@ -50,6 +50,9 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
         ## option analysis
         options = {}
         op = OptionParser.new
+        op.banner = [
+            "Usage: vaspgeomopt show [options] [dirs]",
+        ].join("\n")
         options[:show_state] = []
         op.on("-f", "--finished"  , "Show finished. -a is ignored."){options[:show_state] << :finished}
         op.on("-y", "--yet"       , "Show yet."                    ){options[:show_state] << :yet}
@@ -59,8 +62,8 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
         op.parse!(args)
 
         ## if all select are not set, all are set.
-        if options[:show_state].size == 0
-            options[:all]       = true
+        if options[:show_state].empty?
+            options[:show_state] = [:finished, :yet, :terminated, :started]
         end
 
         dirs = args
@@ -79,11 +82,13 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
             next unless File.directory? dir
 
             begin
-                klass_name = "VaspGeomOpt"
                 calc = VaspUtils::VaspGeometryOptimizer.new(dir)
+                klass_name = "VaspGeomOpt"
                 state = calc.state
-
                 ld = calc.latest_dir
+
+                next unless options[:show_state].include?(state)
+
                 begin
                     outcar = ld.outcar
                     toten    = sprintf("%14.6f", outcar[:totens][-1].to_f)
@@ -99,8 +104,11 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
                 state = toten = ld_str = "---"
             end
 
-            printf(format_str,
-                klass_name, state, toten, ld_str, time, dir)
+            if options[:filename]
+                puts dir
+            else
+                printf(format_str, klass_name, state, toten, ld_str, time, dir)
+            end
         end
     end
     
