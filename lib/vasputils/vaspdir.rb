@@ -163,8 +163,6 @@ class VaspUtils::VaspDir < Comana::ComputationManager
 
         dirs.each do |dir|
             next unless File.directory? dir
-            #pp dir
-
             begin
                 klass_name = "VaspDir"
                 calc = VaspUtils::VaspDir.new(dir)
