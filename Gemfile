@@ -13,7 +13,6 @@ group :development do
   gem "mageo", ">= 0.0.3"
   gem "malge", ">= 0.0.8"
   gem "maset", ">= 0.0.0"
-  gem "vasputils", ">= 0.1.0"
   gem "comana", ">= 0.0.10"
   gem "builtinextension", ">= 0.1.2"
   gem "crystalcell", ">= 0.0.2"
