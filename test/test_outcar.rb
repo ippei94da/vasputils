@@ -13,6 +13,7 @@ class TC_Outcar < Test::Unit::TestCase
         @o02        = VaspUtils::Outcar.load_file( "test/outcar/02-05-FIN.OUTCAR" )
         @o03        = VaspUtils::Outcar.load_file( "test/outcar/03-05-FIN.OUTCAR" )
         @o04        = VaspUtils::Outcar.load_file( "test/outcar/10-01-FIN.OUTCAR" )
+        @o05        = VaspUtils::Outcar.load_file( "test/outcar/bench.Hg.OUTCAR" )
     end
 
     def test_self_load_file
@@ -32,6 +33,7 @@ class TC_Outcar < Test::Unit::TestCase
         assert_equal(true , @o02     [:normal_ended])
         assert_equal(true , @o03     [:normal_ended])
         assert_equal(true , @o04     [:normal_ended])
+        assert_equal(true , @o05     [:normal_ended])
     end
 
     def test_ionic_steps
@@ -40,6 +42,7 @@ class TC_Outcar < Test::Unit::TestCase
         assert_equal( 2, @o02       [:ionic_steps])
         assert_equal( 3, @o03       [:ionic_steps])
         assert_equal(10, @o04       [:ionic_steps])
+        assert_equal( 1, @o05       [:ionic_steps])
     end
 
     def test_electronic_steps
@@ -48,6 +51,7 @@ class TC_Outcar < Test::Unit::TestCase
         assert_equal(18, @o02       [:electronic_steps])
         assert_equal(23, @o03       [:electronic_steps])
         assert_equal(30, @o04       [:electronic_steps])
+        assert_equal(13, @o05       [:electronic_steps])
     end
 
     def test_totens
@@ -132,6 +136,9 @@ class TC_Outcar < Test::Unit::TestCase
         #assert_in_delta( Iter1-Nsw0/OUTCAR:1017:    free energy        TOTEN    =      -53232.70751179
         #assert_in_delta( Iter1-Nsw0/OUTCAR:1055:    free energy        TOTEN    =      -53232.70759898
         #assert_in_delta( Iter1-Nsw0/OUTCAR:1463:    free    energy     TOTEN    =      -53232.707599
+        #
+        assert_in_delta(
+            -53232.707599, @o05     [:totens][13], $tolerance )
     end
 
     #def test_volume
@@ -154,6 +161,7 @@ class TC_Outcar < Test::Unit::TestCase
     def test_elapsed_time
         assert_equal(nil, @o01int[:elapsed_time])
         assert_in_delta(164.134, @o04[:elapsed_time], $tolerance )
+        assert_in_delta( 23.216, @o05[:elapsed_time], $tolerance )
     end
 
     #def test_irreducible_kpoints
