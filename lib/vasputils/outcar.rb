@@ -13,6 +13,9 @@
 #       grep でなんとかなるし。
 #
 # 基本的に終了した計算から情報を取り出すには vasprun.xml を読む。
+# だが、計算途中の状態を知りたいとうのもよくある要求。
+# こういう場合には vasprun.xml はきちんと閉じた xmlにならないので
+# 使えない。
 # OUTCAR は終了する前も含めてなんか簡単に見るために使う、という位置付けで。
 module VaspUtils::Outcar
     #toten は全 electronic and ionic steps のを flat に並べただけのもの。
