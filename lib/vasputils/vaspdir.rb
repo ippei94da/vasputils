@@ -179,6 +179,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
                     #puts "test"
                     #pp calc
                     #pp calc.kpoints
+                    #pp e_step
                     ka, kb, kc = calc.kpoints[:mesh]
                     encut = calc.incar["ENCUT"]
                 rescue
