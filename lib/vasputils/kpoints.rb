@@ -6,31 +6,34 @@
 # Module dearing with KPOINTS.
 # This can deal with only Automatic mesh style of KPOINTS,
 # i.e., this cannot deal with other various styles of KPOINTS.
-module VaspUtils::Kpoints
-    def self.parse(io)
-        results = {}
-        results[:comment] = io.readline.chomp
+class VaspUtils::Kpoints
 
-        raise "Not automatic generating KPOINTS! 2nd line must be 0." unless io.readline =~ /^0$/
+    attr_reader :comment, :mesh, :shift, :type
 
-        line = io.readline
-        case line
-        when /^m/i; then; results[:type] = :monkhorst
-        when /^g/i; then; results[:type] = :gamma_center
-        else
-            raise "Kpoints module can deal with only monkhorst and gamma-center."
-        end
+    #def self.parse(io)
+    #    results = {}
+    #    results[:comment] = io.readline.chomp
 
-        results[:mesh] = io.readline.strip.split(/\s+/).map{|i| i.to_i}
-        results[:shift] = io.readline.strip.split(/\s+/).map{|i| i.to_f}
+    #    raise "Not automatic generating KPOINTS! 2nd line must be 0." unless io.readline =~ /^0$/
 
-        return results
-    end
+    #    line = io.readline
+    #    case line
+    #    when /^m/i; then; results[:type] = :monkhorst
+    #    when /^g/i; then; results[:type] = :gamma_center
+    #    else
+    #        raise "Kpoints module can deal with only monkhorst and gamma-center."
+    #    end
 
-    # 
-    def self.load_file(file)
-        self.parse(File.open(file, "r"))
-    end
+    #    results[:mesh] = io.readline.strip.split(/\s+/).map{|i| i.to_i}
+    #    results[:shift] = io.readline.strip.split(/\s+/).map{|i| i.to_f}
+
+    #    return results
+    #end
+
+    ## 
+    #def self.load_file(file)
+    #    self.parse(File.open(file, "r"))
+    #end
 
     def self.dump(data, io)
         io.puts "Automatic mesh"
@@ -38,6 +41,24 @@ module VaspUtils::Kpoints
         io.puts data[:type].to_s.capitalize
         io.puts data[:mesh].join(" ")
         io.puts data[:shift].join(" ")
+    end
+
+    def initialize(path)
+        io = File.open(path, "r")
+        @comment = io.readline.chomp
+
+        raise "Not automatic generating KPOINTS! 2nd line must be 0." unless io.readline =~ /^0$/
+
+        line = io.readline
+        case line
+        when /^m/i; then; @type = :monkhorst
+        when /^g/i; then; @type = :gamma_center
+        else
+            raise "Kpoints module can deal with only monkhorst and gamma-center."
+        end
+
+        @mesh = io.readline.strip.split(/\s+/).map{|i| i.to_i}
+        @shift = io.readline.strip.split(/\s+/).map{|i| i.to_f}
     end
 end
 
