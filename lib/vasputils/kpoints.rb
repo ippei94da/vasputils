@@ -47,14 +47,19 @@ class VaspUtils::Kpoints
         io = File.open(path, "r")
         @comment = io.readline.chomp
 
-        raise "Not automatic generating KPOINTS! 2nd line must be 0." unless io.readline =~ /^0$/
+        #raise "Not automatic generating KPOINTS! 2nd line must be 0." unless io.readline =~ /^0$/
+        scheme = io.readline.to_i
 
-        line = io.readline
-        case line
-        when /^m/i; then; @type = :monkhorst
-        when /^g/i; then; @type = :gamma_center
+        if scheme == 0
+            line = io.readline
+            case line
+            when /^m/i; then; @type = :monkhorst
+            when /^g/i; then; @type = :gamma_center
+            else
+                raise "Kpoints module can deal with only monkhorst and gamma-center."
+            end
         else
-            raise "Kpoints module can deal with only monkhorst and gamma-center."
+            
         end
 
         @mesh = io.readline.strip.split(/\s+/).map{|i| i.to_i}

@@ -17,10 +17,33 @@ class TC_Kpoints < Test::Unit::TestCase
     end
 
     def test_reader
-        pp @k00
-        HERE
-        #pp @k01
-        #pp @k02
+        assert_equal("Automatic mesh", @k00.comment   )
+        assert_equal(:automatic      , @k00.scheme    )
+        assert_equal([1, 2, 3]       , @k00.mesh      )
+        assert_equal([0.4, 0.5, 0.6] , @k00.shift     )
+        assert_equal(:gamma_center   , @k00.type      )
+        assert_equal('1x2x3'         , @k00.points    )
+
+        assert_equal("Automatic mesh", @k01.comment   )
+        assert_equal(:automatic      , @k01.scheme    )
+        assert_equal([1, 2, 3]       , @k01.mesh      )
+        assert_equal([0.4, 0.5, 0.6] , @k01.shift     )
+        assert_equal(:monkhorst      , @k01.type      )
+        assert_equal('1x2x3'         , @k00.points    )
+
+        assert_equal("K dimer"       , @k02.comment   )
+        assert_equal(:explicit       , @k02.scheme    )
+        assert_equal(nil             , @k02.mesh      )
+        assert_equal(nil             , @k02.shift     )
+        assert_equal(nil             , @k02.type      )
+        assert_equal('1'             , @k02.points    )
+
+        TODO
+        #1
+        #Cartesian
+        #0.0   0.0   0.0   1.0
+
+
     end
 
 
