@@ -8,7 +8,7 @@
 # i.e., this cannot deal with other various styles of KPOINTS.
 class VaspUtils::Kpoints
 
-    attr_reader :comment, :mesh, :shift, :type
+    attr_reader :comment, :mesh, :shift, :type, :scheme
 
     #def self.parse(io)
     #    results = {}
@@ -48,9 +48,9 @@ class VaspUtils::Kpoints
         @comment = io.readline.chomp
 
         #raise "Not automatic generating KPOINTS! 2nd line must be 0." unless io.readline =~ /^0$/
-        scheme = io.readline.to_i
-
-        if scheme == 0
+        num = io.readline.to_i
+        if num == 0
+            @scheme = :automatic
             line = io.readline
             case line
             when /^m/i; then; @type = :monkhorst
@@ -58,12 +58,25 @@ class VaspUtils::Kpoints
             else
                 raise "Kpoints module can deal with only monkhorst and gamma-center."
             end
-        else
-            
-        end
 
-        @mesh = io.readline.strip.split(/\s+/).map{|i| i.to_i}
-        @shift = io.readline.strip.split(/\s+/).map{|i| i.to_f}
+            @mesh = io.readline.strip.split(/\s+/).map{|i| i.to_i}
+            @shift = io.readline.strip.split(/\s+/).map{|i| i.to_f}
+        else
+            @scheme = :explicit
+            @mesh = []
+            num.times do |i|
+                @mesh << io.readline.strip.split(/\s+/).map{|v| v.to_f}
+            end
+        end
     end
+
+    def points_str
+        if @scheme == :automatic
+            return @mesh.join(",")
+        else
+            return @mesh.size.to_s
+        end
+    end
+
 end
 
