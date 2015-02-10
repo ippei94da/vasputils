@@ -3,7 +3,7 @@
 
 #require "vasputils.rb"
 
-# Module dearing with KPOINTS.
+# Class to dearl with KPOINTS.
 # This can deal with only Automatic mesh style of KPOINTS,
 # i.e., this cannot deal with other various styles of KPOINTS.
 class VaspUtils::Kpoints
@@ -93,6 +93,7 @@ class VaspUtils::Kpoints
         self.new(options)
     end
 
+    # Return like '1,2,3', when automatic generation.
     def size_str
         if @scheme == :automatic
             return @mesh.join(",")
@@ -101,6 +102,8 @@ class VaspUtils::Kpoints
         end
     end
 
+    # Dump in KPOINTS style.
+    # Only automatic generation scheme is supported.
     def dump(io)
         io.puts "Automatic mesh"
         io.puts "0"

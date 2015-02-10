@@ -11,6 +11,35 @@ require "crystalcell"
 class TC_Poscar < Test::Unit::TestCase
     $tolerance = 10 ** (-10)
 
+    def test_initialize
+
+    end
+
+    def test_load_file
+        cell = VaspUtils::Poscar.load_file("test/poscar/POSCAR.4-0")
+        assert_equal("sample0", cell.comment)
+        assert_equal(
+            CrystalCell::LatticeAxes.new( [
+                [1.0, 0.0, 0.0 ],
+                [0.0, 1.0, 0.0 ],
+                [0.0, 0.0, 1.0 ],
+            ]),
+            cell.axes
+        )
+        assert_equal(
+            CrystalCell::Atom.new(0, [0.0, 0.0, 0.0], "#Li-001"), cell.atoms[0])
+        assert_equal(
+            CrystalCell::Atom.new(1, [0.5, 0.0, 0.0], "#Ge-002"), cell.atoms[1])
+        assert_equal(
+            CrystalCell::Atom.new(2, [0.5, 0.5, 0.0], "#O--003"), cell.atoms[2])
+
+
+        assert_raise(VaspUtils::Poscar::ParseError) {
+            VaspUtils::Poscar.load_file("test/poscar/NOT_POSCAR")
+        }
+    end
+
+
     def test_dump
         # 例外ケース
         axes = CrystalCell::LatticeAxes.new( [
@@ -258,27 +287,7 @@ class TC_Poscar < Test::Unit::TestCase
             CrystalCell::Atom.new("O", [0.5, 0.5, 0.0], "#O--003"), cell.atoms[2])
     end
 
-    def test_load_file
-        cell = VaspUtils::Poscar.load_file("test/poscar/POSCAR.4-0")
-        assert_equal("sample0", cell.comment)
-        assert_equal(
-            CrystalCell::LatticeAxes.new( [
-                [1.0, 0.0, 0.0 ],
-                [0.0, 1.0, 0.0 ],
-                [0.0, 0.0, 1.0 ],
-            ]),
-            cell.axes
-        )
-        assert_equal(
-            CrystalCell::Atom.new(0, [0.0, 0.0, 0.0], "#Li-001"), cell.atoms[0])
-        assert_equal(
-            CrystalCell::Atom.new(1, [0.5, 0.0, 0.0], "#Ge-002"), cell.atoms[1])
-        assert_equal(
-            CrystalCell::Atom.new(2, [0.5, 0.5, 0.0], "#O--003"), cell.atoms[2])
-
-
-        assert_raise(VaspUtils::Poscar::ParseError) {
-            VaspUtils::Poscar.load_file("test/poscar/NOT_POSCAR")
-        }
+    def test_to_cell
+        TODO
     end
 end

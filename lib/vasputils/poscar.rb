@@ -22,6 +22,19 @@ class VaspUtils::Poscar
     class ElementMismatchError < Exception; end
     class ParseError < Exception; end
 
+    def initialize(hash)
+        hash.each do |key,val|
+            @comment            = if :comment            ==key
+            @scale              = if :scale              ==key
+            @axes               = if :axes               ==key
+            @elements           = if :elements           ==key
+            @nums_elements      = if :nums_elements      ==key
+            @selective_dynamics = if :selective_dynamics ==key
+            @direct             = if :direct             ==key
+            @atoms              = if :atoms              ==key
+        end
+    end
+
     # io を読み込んで Cell クラスインスタンスを返す。
     # 構文解析できなければ例外 Poscar::ParseError を投げる。
     def self.parse(io)

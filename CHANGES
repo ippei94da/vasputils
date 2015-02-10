@@ -11,6 +11,8 @@
     - 'vaspdir reset' reset to inital state of VaspDir, instead of resetvaspdir.
 - bin/vaspgeomopt is made, instead of showvaspdir, etc.
 
+- Poscar, Kpoints, Incar, Potcar modules converted to class.
+
 == Version 0.0.12 [2014-08-30] released
 - Update bin/symposcar .
 - Add options to bin/checkvasp and modified output format.
