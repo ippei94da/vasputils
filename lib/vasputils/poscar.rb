@@ -35,7 +35,7 @@ class VaspUtils::Poscar
         end
     end
 
-    # io を読み込んで Cell クラスインスタンスを返す。
+    # io を読み込んで Poscar クラスインスタンスを返す。
     # 構文解析できなければ例外 Poscar::ParseError を投げる。
     def self.parse(io)
         # analyze POSCAR.
@@ -105,9 +105,20 @@ class VaspUtils::Poscar
             raise ParseError, "end of file reached"
         end
 
-        cell = CrystalCell::Cell.new(axes, atoms)
-        cell.comment = comment
-        cell
+        #cell = CrystalCell::Cell.new(axes, atoms)
+        #cell.comment = comment
+        #cell
+        options = {
+            :comment            = comment            
+            :scale              = scale              
+            :axes               = axes               
+            :elements           = elements           
+            :nums_elements      = nums_elements      
+            :selective_dynamics = selective_dynamics 
+            :direct             = direct             
+            :atoms              = atoms              
+        }
+        self.new(options)
     end
 
     # file で与えられた名前のファイルを読み込んで CrystalCell::Cell クラスインスタンスを返す。

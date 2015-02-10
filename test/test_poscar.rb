@@ -12,10 +12,12 @@ class TC_Poscar < Test::Unit::TestCase
     $tolerance = 10 ** (-10)
 
     def test_initialize
+        TODO
 
     end
 
     def test_load_file
+        TODO
         cell = VaspUtils::Poscar.load_file("test/poscar/POSCAR.4-0")
         assert_equal("sample0", cell.comment)
         assert_equal(
@@ -41,6 +43,7 @@ class TC_Poscar < Test::Unit::TestCase
 
 
     def test_dump
+        TODO
         # 例外ケース
         axes = CrystalCell::LatticeAxes.new( [
             [1.0, 0.0, 0.0 ],
