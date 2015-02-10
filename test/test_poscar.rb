@@ -12,8 +12,44 @@ class TC_Poscar < Test::Unit::TestCase
     $tolerance = 10 ** (-10)
 
     def test_initialize
-        TODO
+        hash = {
+            comment            => 'comment',
+            scale              => 1.0,
+            axes               => [
+                [1.0, 0.0, 0.0 ],
+                [0.0, 1.0, 0.0 ],
+                [0.0, 0.0, 1.0 ],
+            ],
+            elements           => %w(Li Ge O),
+            nums_elements      => [1,1,2],
+            selective_dynamics => false,
+            direct             => false,
+            atoms              => TODO,
+        }
+        ("sample0", cell.comment)
+        poscar = VaspUtils::Poscar.new
 
+
+        assert_equal("sample0", cell.comment)
+        assert_equal(
+            CrystalCell::LatticeAxes.new( [
+                [1.0, 0.0, 0.0 ],
+                [0.0, 1.0, 0.0 ],
+                [0.0, 0.0, 1.0 ],
+            ]),
+            cell.axes
+        )
+        assert_equal(
+            CrystalCell::Atom.new(0, [0.0, 0.0, 0.0], "#Li-001"), cell.atoms[0])
+        assert_equal(
+            CrystalCell::Atom.new(1, [0.5, 0.0, 0.0], "#Ge-002"), cell.atoms[1])
+        assert_equal(
+            CrystalCell::Atom.new(2, [0.5, 0.5, 0.0], "#O--003"), cell.atoms[2])
+
+
+        assert_raise(VaspUtils::Poscar::ParseError) {
+            VaspUtils::Poscar.load_file("test/poscar/NOT_POSCAR")
+        }
     end
 
     def test_load_file
@@ -293,4 +329,9 @@ class TC_Poscar < Test::Unit::TestCase
     def test_to_cell
         TODO
     end
+
+    undef test_to_cell
+    undef test_load_file
+    undef test_dump
+    undef test_parse
 end

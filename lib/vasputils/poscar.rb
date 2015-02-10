@@ -24,14 +24,14 @@ class VaspUtils::Poscar
 
     def initialize(hash)
         hash.each do |key,val|
-            @comment            = if :comment            ==key
-            @scale              = if :scale              ==key
-            @axes               = if :axes               ==key
-            @elements           = if :elements           ==key
-            @nums_elements      = if :nums_elements      ==key
-            @selective_dynamics = if :selective_dynamics ==key
-            @direct             = if :direct             ==key
-            @atoms              = if :atoms              ==key
+            @comment            = val if :comment            ==key
+            @scale              = val if :scale              ==key
+            @axes               = val if :axes               ==key
+            @elements           = val if :elements           ==key
+            @nums_elements      = val if :nums_elements      ==key
+            @selective_dynamics = val if :selective_dynamics ==key
+            @direct             = val if :direct             ==key
+            @atoms              = val if :atoms              ==key
         end
     end
 
@@ -109,14 +109,14 @@ class VaspUtils::Poscar
         #cell.comment = comment
         #cell
         options = {
-            :comment            = comment            
-            :scale              = scale              
-            :axes               = axes               
-            :elements           = elements           
-            :nums_elements      = nums_elements      
-            :selective_dynamics = selective_dynamics 
-            :direct             = direct             
-            :atoms              = atoms              
+            :comment            => comment           ,
+            :scale              => scale             ,
+            :axes               => axes              ,
+            :elements           => elements          ,
+            :nums_elements      => nums_elements     ,
+            :selective_dynamics => selective_dynamics,
+            :direct             => direct            ,
+            :atoms              => atoms             ,
         }
         self.new(options)
     end
