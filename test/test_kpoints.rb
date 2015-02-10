@@ -11,9 +11,9 @@ class TC_Kpoints < Test::Unit::TestCase
     $tolerance = 1E-10
 
     def setup
-        @k00 = VaspUtils::Kpoints.new('test/kpoints/g123-456')
-        @k01 = VaspUtils::Kpoints.new('test/kpoints/m123-456')
-        @k02 = VaspUtils::Kpoints.new('test/kpoints/bench.Hg')
+        @k00 = VaspUtils::Kpoints.load_file('test/kpoints/g123-456')
+        @k01 = VaspUtils::Kpoints.load_file('test/kpoints/m123-456')
+        @k02 = VaspUtils::Kpoints.load_file('test/kpoints/bench.Hg')
     end
 
     def test_reader
@@ -22,28 +22,22 @@ class TC_Kpoints < Test::Unit::TestCase
         assert_equal([1, 2, 3]       , @k00.mesh      )
         assert_equal([0.4, 0.5, 0.6] , @k00.shift     )
         assert_equal(:gamma_center   , @k00.type      )
-        assert_equal('1,2,3'         , @k00.points_str    )
+        assert_equal('1,2,3'         , @k00.size_str    )
 
         assert_equal("Automatic mesh", @k01.comment   )
         assert_equal(:automatic      , @k01.scheme    )
         assert_equal([1, 2, 3]       , @k01.mesh      )
         assert_equal([0.4, 0.5, 0.6] , @k01.shift     )
         assert_equal(:monkhorst      , @k01.type      )
-        assert_equal('1,2,3'         , @k00.points_str    )
+        assert_equal('1,2,3'         , @k00.size_str    )
 
         assert_equal("K dimer"       , @k02.comment   )
         assert_equal(:explicit       , @k02.scheme    )
         assert_equal(nil             , @k02.mesh      )
+        assert_equal([[0.0, 0.0, 0.0, 1.0]], @k02.points    )
         assert_equal(nil             , @k02.shift     )
         assert_equal(nil             , @k02.type      )
-        assert_equal('1'             , @k02.points_str    )
-
-        TODO
-        #1
-        #Cartesian
-        #0.0   0.0   0.0   1.0
-
-
+        assert_equal('1'             , @k02.size_str    )
     end
 
 
@@ -106,7 +100,7 @@ class TC_Kpoints < Test::Unit::TestCase
             :shift => [0.4, 0.5, 0.6],
         }
         io = StringIO.new
-        VaspUtils::Kpoints.dump(hash, io)
+        VaspUtils::Kpoints.new(hash).dump(io)
         io.rewind
         results = io.readlines
         corrects = [
@@ -128,7 +122,7 @@ class TC_Kpoints < Test::Unit::TestCase
             :shift => [0.4, 0.5, 0.6],
         }
         io = StringIO.new
-        VaspUtils::Kpoints.dump(hash, io)
+        VaspUtils::Kpoints.new(hash).dump(io)
         io.rewind
         results = io.readlines
         corrects = [
