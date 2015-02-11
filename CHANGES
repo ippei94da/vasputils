@@ -13,6 +13,11 @@
 
 - Poscar, Kpoints, Incar, Potcar modules converted to class.
 
+poscar.parse, poscar.load_file が poscar クラスインスタンスを返すようにする。
+poscar.to_cell を作る。
+poscar.load_cell を作る。
+
+
 == Version 0.0.12 [2014-08-30] released
 - Update bin/symposcar .
 - Add options to bin/checkvasp and modified output format.
