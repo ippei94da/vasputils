@@ -8,15 +8,6 @@ require "crystalcell"
 # Class to manage POSCAR format of VASP.
 # 
 # parse と dump のどちらかだけでなく、両方を統括して扱うクラス。
-#
-# MEMO
-# POSCAR 自身は元素の情報を持っていない。
-# POSCAR が native に持っている情報だけを取り扱う。
-# Poscar では個々の原子が何の element であるかという情報を取り扱わない。
-# 1番目の種類の原子種が何かだけを扱う。
-# こうしておくことで POTCAR がない環境でも POSCAR を扱うことができる。
-#
-# VASP 5 系を使うようになれば事情が変わるだろう。
 class VaspUtils::Poscar
 
     class ElementMismatchError < Exception; end
