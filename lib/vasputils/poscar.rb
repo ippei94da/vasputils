@@ -13,6 +13,10 @@ class VaspUtils::Poscar
     class ElementMismatchError < Exception; end
     class ParseError < Exception; end
 
+    attr_reader :comment, :scale, :axes, :elements, :nums_elements,
+        :selective_dynamics, :direct, :positions
+
+
     def initialize(hash)
         hash.each do |key,val|
             @comment            = val if :comment            ==key
@@ -22,7 +26,7 @@ class VaspUtils::Poscar
             @nums_elements      = val if :nums_elements      ==key
             @selective_dynamics = val if :selective_dynamics ==key
             @direct             = val if :direct             ==key
-            @atoms              = val if :atoms              ==key
+            @positions              = val if :positions              ==key
         end
     end
 
@@ -60,6 +64,7 @@ class VaspUtils::Poscar
 
             # 'Selective dynamics' or not (bool)
             line = io.readline
+            selective_dynamics = false
             if line =~ /^\s*s/i
                 selective_dynamics = true
                 line = io.readline      # when this situation, reading one more line is nessesarry
@@ -75,7 +80,7 @@ class VaspUtils::Poscar
             # e.g., positions_of_elements
             # e.g., movable_flags_of_elements
 
-            atoms = []
+            positions = []
             nums_elements.size.times do |elem_index|
                 nums_elements[elem_index].times do |index|
                 items = io.readline.strip.split(/\s+/)
@@ -86,9 +91,9 @@ class VaspUtils::Poscar
                     items[3..5].each do |i|
                         (i =~ /^t/i) ? mov_flags << true : mov_flags << false
                     end
-                    atoms << CrystalCell::Atom.new(elements[elem_index], pos, mov_flags)
+                    positions << CrystalCell::Atom.new(elements[elem_index], pos, mov_flags)
                 else
-                    atoms << CrystalCell::Atom.new(elements[elem_index], pos)
+                    positions << CrystalCell::Atom.new(elements[elem_index], pos)
                 end
                 end
             end
@@ -96,7 +101,7 @@ class VaspUtils::Poscar
             raise ParseError, "end of file reached"
         end
 
-        #cell = CrystalCell::Cell.new(axes, atoms)
+        #cell = CrystalCell::Cell.new(axes, positions)
         #cell.comment = comment
         #cell
         options = {
@@ -107,7 +112,7 @@ class VaspUtils::Poscar
             :nums_elements      => nums_elements     ,
             :selective_dynamics => selective_dynamics,
             :direct             => direct            ,
-            :atoms              => atoms             ,
+            :positions              => positions             ,
         }
         self.new(options)
     end
@@ -192,6 +197,10 @@ class VaspUtils::Poscar
                 io.puts tmp
             end
         end
+    end
+
+    def to_cell
+        
     end
 
 end
