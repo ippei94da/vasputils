@@ -84,7 +84,7 @@ class VaspUtils::Poscar
             nums_elements.size.times do |elem_index|
                 nums_elements[elem_index].times do |index|
                 items = io.readline.strip.split(/\s+/)
-                pos = items[0..2].map {|coord| coord.to_f}
+                positions << items[0..2].map {|coord| coord.to_f}
 
                 mov_flags = []
                 if items.size >= 6 then
@@ -200,6 +200,23 @@ class VaspUtils::Poscar
     end
 
     def to_cell
+            positions = []
+            nums_elements.size.times do |elem_index|
+                nums_elements[elem_index].times do |index|
+                items = io.readline.strip.split(/\s+/)
+                pos = items[0..2].map {|coord| coord.to_f}
+
+                mov_flags = []
+                if items.size >= 6 then
+                    items[3..5].each do |i|
+                        (i =~ /^t/i) ? mov_flags << true : mov_flags << false
+                    end
+                    positions << CrystalCell::Atom.new(elements[elem_index], pos, mov_flags)
+                else
+                    positions << CrystalCell::Atom.new(elements[elem_index], pos)
+                end
+                end
+            end
         
     end
 
