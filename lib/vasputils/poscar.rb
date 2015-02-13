@@ -66,7 +66,7 @@ class VaspUtils::Poscar
             line = io.readline
             selective_dynamics = false
             if line =~ /^\s*s/i
-                selective_dynamics = true
+                selective_dynamics = []
                 line = io.readline      # when this situation, reading one more line is nessesarry
             end
 
@@ -83,18 +83,19 @@ class VaspUtils::Poscar
             positions = []
             nums_elements.size.times do |elem_index|
                 nums_elements[elem_index].times do |index|
-                items = io.readline.strip.split(/\s+/)
-                positions << items[0..2].map {|coord| coord.to_f}
+                    items = io.readline.strip.split(/\s+/)
+                    positions << items[0..2].map {|coord| coord.to_f}
 
-                mov_flags = []
-                if items.size >= 6 then
-                    items[3..5].each do |i|
-                        (i =~ /^t/i) ? mov_flags << true : mov_flags << false
+                    if selective_dynamics
+                        mov_flags = []
+                        if items.size >= 6 then
+                            items[3..5].each do |i|
+                                #(i =~ /^t/i) ? mov_flags << true : mov_flags << false
+                                (i =~ /^t/i) ? mov_flags << true : false
+                            end
+                            selective_dynamics << mov_flags
+                        end
                     end
-                    positions << CrystalCell::Atom.new(elements[elem_index], pos, mov_flags)
-                else
-                    positions << CrystalCell::Atom.new(elements[elem_index], pos)
-                end
                 end
             end
         rescue EOFError
@@ -215,8 +216,8 @@ class VaspUtils::Poscar
                 else
                     positions << CrystalCell::Atom.new(elements[elem_index], pos)
                 end
-                end
             end
+        end
         
     end
 

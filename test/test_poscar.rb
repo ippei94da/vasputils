@@ -106,6 +106,41 @@ class TC_Poscar < Test::Unit::TestCase
         )
 
 
+        poscar = VaspUtils::Poscar.load_file("test/poscar/POSCAR.5-selectivedynamics")
+        assert_equal("sample0", poscar.comment)
+        assert_equal(1.0, poscar.scale)
+        assert_equal(
+            [
+                [1.0, 0.0, 0.0 ],
+                [0.0, 1.0, 0.0 ],
+                [0.0, 0.0, 1.0 ],
+            ],
+            poscar.axes
+        )
+        assert_equal(%w(Li Ge O), poscar.elements)
+        assert_equal([1,1,1], poscar.nums_elements)
+        assert_equal(
+            [
+                [false, false, false],
+                [false, true , false],
+                [true , true , true ],
+                [true , true , true ],
+            ],
+            poscar.selective_dynamics
+        )
+
+        assert_equal(true, poscar.direct)
+        assert_equal(
+            [
+                [0.0,  0.0,  0.0],
+                [0.5,  0.0,  0.0],
+                [0.5,  0.5,  0.0],
+                [0.5,  0.5,  0.5],
+            ],
+            poscar.positions
+        )
+
+
         poscar = VaspUtils::Poscar.load_file("test/poscar/POSCAR.4-0")
         assert_equal("sample1", poscar.comment)
         assert_equal(2.0, poscar.scale)
@@ -119,7 +154,7 @@ class TC_Poscar < Test::Unit::TestCase
         )
         assert_equal(nil, poscar.elements)
         assert_equal([1,1,2], poscar.nums_elements)
-        assert_equal(true, poscar.selective_dynamics)
+        assert_equal(false, poscar.selective_dynamics)
         assert_equal(true, poscar.direct)
         assert_equal(
             [
@@ -164,7 +199,15 @@ class TC_Poscar < Test::Unit::TestCase
         )
         assert_equal(%w(Li O), poscar.elements)
         assert_equal([2,1], poscar.nums_elements)
-        assert_equal(true, poscar.selective_dynamics)
+        assert_equal(
+            [
+                [false, true , true ], 
+                [false, false, true ], 
+                [false, false, false], 
+            ],
+            poscar.selective_dynamics
+        )
+
         assert_equal(true, poscar.direct)
         assert_equal(
             [
