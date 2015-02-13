@@ -26,6 +26,7 @@ class TC_Poscar < Test::Unit::TestCase
                 [0.0,  0.0,  0.0],
                 [0.5,  0.0,  0.0],
                 [0.5,  0.5,  0.0],
+                [0.5,  0.5,  0.5],
             ]
         }
         @p00 = VaspUtils::Poscar.new(hash)
@@ -118,7 +119,7 @@ class TC_Poscar < Test::Unit::TestCase
             poscar.axes
         )
         assert_equal(%w(Li Ge O), poscar.elements)
-        assert_equal([1,1,1], poscar.nums_elements)
+        assert_equal([1,1,2], poscar.nums_elements)
         assert_equal(
             [
                 [false, false, false],
@@ -142,8 +143,8 @@ class TC_Poscar < Test::Unit::TestCase
 
 
         poscar = VaspUtils::Poscar.load_file("test/poscar/POSCAR.4-0")
-        assert_equal("sample1", poscar.comment)
-        assert_equal(2.0, poscar.scale)
+        assert_equal("sample0", poscar.comment)
+        assert_equal(1.0, poscar.scale)
         assert_equal(
             [
                 [1.0, 0.0, 0.0 ],
@@ -153,7 +154,7 @@ class TC_Poscar < Test::Unit::TestCase
             poscar.axes
         )
         assert_equal(nil, poscar.elements)
-        assert_equal([1,1,2], poscar.nums_elements)
+        assert_equal([1,1,1], poscar.nums_elements)
         assert_equal(false, poscar.selective_dynamics)
         assert_equal(true, poscar.direct)
         assert_equal(
@@ -161,7 +162,6 @@ class TC_Poscar < Test::Unit::TestCase
                 [0.0,  0.0,  0.0],
                 [0.5,  0.0,  0.0],
                 [0.5,  0.5,  0.0],
-                [0.5,  0.5,  0.5],
             ],
             poscar.positions
         )
@@ -274,7 +274,6 @@ class TC_Poscar < Test::Unit::TestCase
                 [0.0,  0.0,  0.0],
                 [0.5,  0.0,  0.0],
                 [0.5,  0.5,  0.0],
-                [0.5,  0.5,  0.5],
             ],
             poscar.positions
         )
@@ -288,12 +287,18 @@ class TC_Poscar < Test::Unit::TestCase
             [0.0, 0.0, 1.0 ],
             ])
         atoms = [
-            CrystalCell::Atom.new("Li", [0.1, 0.2, 0.3], "atom0", [false, true , true ]),
-            CrystalCell::Atom.new("O" , [0.2, 0.3, 0.4], "atom1", [false, false, true ]),
-            CrystalCell::Atom.new("Li", [0.3, 0.4, 0.5], "atom2", [false, false, false]),
+            CrystalCell::Atom.new("Li", [0.0, 0.0, 0.0], nil, nil),
+            CrystalCell::Atom.new("Ge", [0.5, 0.0, 0.0], nil, nil),
+            CrystalCell::Atom.new("O" , [0.5, 0.5, 0.0], nil, nil),
+            CrystalCell::Atom.new("O" , [0.5, 0.5, 0.5], nil, nil),
         ]
         correct = CrystalCell::Cell.new(axes, atoms)
-        assert_equal(correct, result)
+        assert_equal(correct.axes, result.axes)
+        assert_equal(correct.atoms[0], result.atoms[0])
+        assert_equal(correct.atoms[1], result.atoms[1])
+        assert_equal(correct.atoms[2], result.atoms[2])
+        assert_equal(correct.atoms[3], result.atoms[3])
+        assert_equal(correct.atoms.size, result.atoms.size)
     end
 
     def test_accessor #reader
@@ -313,13 +318,11 @@ class TC_Poscar < Test::Unit::TestCase
             [0.0,  0.0,  0.0],
             [0.5,  0.0,  0.0],
             [0.5,  0.5,  0.0],
+            [0.5,  0.5,  0.5],
         ]
         assert_equal(positions, @p00.positions             )
     end
 
-
-    undef test_to_cell
-    undef test_dump
-    undef test_load_cell
+    #undef test_dump
 end
 

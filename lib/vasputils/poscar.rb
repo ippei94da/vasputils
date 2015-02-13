@@ -26,7 +26,7 @@ class VaspUtils::Poscar
             @nums_elements      = val if :nums_elements      ==key
             @selective_dynamics = val if :selective_dynamics ==key
             @direct             = val if :direct             ==key
-            @positions              = val if :positions              ==key
+            @positions          = val if :positions          ==key
         end
     end
 
@@ -51,16 +51,15 @@ class VaspUtils::Poscar
             end
 
             # Element symbol (vasp 5). Nothing in vasp 4.
+
             #elements = io.readline.strip.split(/\s+/).map{|i| i.to_i}
             vals = io.readline.strip.split(/\s+/)
+            elements = nil
             if vals[0].to_i == 0
                 elements = vals
-                nums_elements = io.readline.strip.split(/\s+/).map{|i| i.to_i}
-            else
-                elements = []
-                vals.size.times { |i| elements << i }
-                nums_elements = vals.map{|i| i.to_i}
+                vals = io.readline.strip.split(/\s+/)
             end
+            nums_elements = vals.map{|i| i.to_i}
 
             # 'Selective dynamics' or not (bool)
             line = io.readline
@@ -90,8 +89,7 @@ class VaspUtils::Poscar
                         mov_flags = []
                         if items.size >= 6 then
                             items[3..5].each do |i|
-                                #(i =~ /^t/i) ? mov_flags << true : mov_flags << false
-                                (i =~ /^t/i) ? mov_flags << true : false
+                                (i =~ /^t/i) ? mov_flags << true : mov_flags << false
                             end
                             selective_dynamics << mov_flags
                         end
@@ -102,9 +100,6 @@ class VaspUtils::Poscar
             raise ParseError, "end of file reached"
         end
 
-        #cell = CrystalCell::Cell.new(axes, positions)
-        #cell.comment = comment
-        #cell
         options = {
             :comment            => comment           ,
             :scale              => scale             ,
@@ -123,6 +118,24 @@ class VaspUtils::Poscar
     def self.load_file(file)
         io = File.open(file, "r")
         self.parse(io)
+    end
+
+    # CrystalCell::Cell クラスインスタンスから
+    # Poscar クラスインスタンスを生成
+    def self.load_cell(cell)
+        pp cell.atoms
+
+        options = {
+            :comment            => cell.comment           ,
+            :scale              => 1.0               ,
+            :axes               => cell.axes.to_a,
+            :elements           => elements          ,
+            :nums_elements      => nums_elements     ,
+            :selective_dynamics => selective_dynamics,
+            :direct             => direct            ,
+            :positions              => positions             ,
+        }
+        self.new(options)
     end
 
     # POSCAR 形式で書き出す。
@@ -201,24 +214,30 @@ class VaspUtils::Poscar
     end
 
     def to_cell
-            positions = []
-            nums_elements.size.times do |elem_index|
-                nums_elements[elem_index].times do |index|
-                items = io.readline.strip.split(/\s+/)
-                pos = items[0..2].map {|coord| coord.to_f}
+        axes = CrystalCell::LatticeAxes.new( @axes)
 
-                mov_flags = []
-                if items.size >= 6 then
-                    items[3..5].each do |i|
-                        (i =~ /^t/i) ? mov_flags << true : mov_flags << false
-                    end
-                    positions << CrystalCell::Atom.new(elements[elem_index], pos, mov_flags)
-                else
-                    positions << CrystalCell::Atom.new(elements[elem_index], pos)
+        atoms = []
+        total_id = 0
+        #pp @positions
+        @nums_elements.each_with_index do |num, elem_id|
+            num.times do |atom_id|
+                element = elem_id
+                element = @elements[elem_id] if @elements
+
+                movable_flags = nil
+                if @selective_dynamics
+                    movable_flags = @selective_dynamics[total_id]
                 end
+                atoms << CrystalCell::Atom.new(
+                    element, 
+                    @positions[total_id],
+                    movable_flags
+                )
+                total_id += 1
             end
         end
-        
+
+        cell = CrystalCell::Cell.new(axes, atoms)
     end
 
 end
