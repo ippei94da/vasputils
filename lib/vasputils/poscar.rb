@@ -75,10 +75,6 @@ class VaspUtils::Poscar
                 raise "Not 'direct' indication."
             end
 
-            # atom positions
-            # e.g., positions_of_elements
-            # e.g., movable_flags_of_elements
-
             positions = []
             nums_elements.size.times do |elem_index|
                 nums_elements[elem_index].times do |index|
@@ -123,7 +119,25 @@ class VaspUtils::Poscar
     # CrystalCell::Cell クラスインスタンスから
     # Poscar クラスインスタンスを生成
     def self.load_cell(cell)
-        pp cell.atoms
+        elements = cell.elements.sort.uniq
+
+        atoms = cell.atoms.sort_by{|atom| atom.element}
+
+        nums_elements = {}
+        atoms.each do |atom|
+            nums_elements[atom.element] ||= 0
+            nums_elements[atom.element] += 1
+        end
+        nums_elements = elements.map{|elem| nums_elements[elem]}
+
+        positions = []
+        movable_flags = []
+        selective_dynamics = false
+        atoms.each do |atom|
+            positions << atom.position
+            movable_flags << atom.movable_flags
+            selective_dynamics = true if movable_flags
+        end
 
         options = {
             :comment            => cell.comment           ,
@@ -132,8 +146,8 @@ class VaspUtils::Poscar
             :elements           => elements          ,
             :nums_elements      => nums_elements     ,
             :selective_dynamics => selective_dynamics,
-            :direct             => direct            ,
-            :positions              => positions             ,
+            :direct             => true,
+            :positions          => positions             ,
         }
         self.new(options)
     end
