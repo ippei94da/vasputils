@@ -6,18 +6,20 @@
 #
 # Class for dealing with POTCAR.
 #
-module VaspUtils::Potcar
-    def self.load_file(file)
-        results = {}
-        results[:name] = file
+class VaspUtils::Potcar
+    attr_reader :elements
 
+    def initialize(elements)
+        @elements = elements
+    end
+
+    def self.load_file(path)
         elements = Array.new
-        File.open( file, "r" ).each do |line|
+        File.open( path, "r" ).each do |line|
             if line =~ /VRHFIN\s*=\s*([A-Za-z]*)/
                 elements << $1
             end
         end
-        results[:elements] = elements
-        results
+        self.new(elements)
     end
 end

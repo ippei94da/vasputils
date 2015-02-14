@@ -170,19 +170,19 @@ class TC_ConditionVarier < Test::Unit::TestCase
 
         vd = VaspUtils::VaspDir.new("test/conditionvarier/encut_400.0,ka_1")
         assert_equal("400.0", vd.incar["ENCUT"])
-        assert_equal([1, 5, 5], vd.kpoints[:mesh])
+        assert_equal([1, 5, 5], vd.kpoints.mesh)
 
         vd = VaspUtils::VaspDir.new("test/conditionvarier/encut_400.0,ka_2")
         assert_equal("400.0", vd.incar["ENCUT"])
-        assert_equal([2, 5, 5], vd.kpoints[:mesh])
+        assert_equal([2, 5, 5], vd.kpoints.mesh)
 
         vd = VaspUtils::VaspDir.new("test/conditionvarier/encut_500.0,ka_1")
         assert_equal("500.0", vd.incar["ENCUT"])
-        assert_equal([1, 5, 5], vd.kpoints[:mesh])
+        assert_equal([1, 5, 5], vd.kpoints.mesh)
 
         vd = VaspUtils::VaspDir.new("test/conditionvarier/encut_500.0,ka_2")
         assert_equal("500.0", vd.incar["ENCUT"])
-        assert_equal([2, 5, 5], vd.kpoints[:mesh])
+        assert_equal([2, 5, 5], vd.kpoints.mesh)
 
         dirs.each do |dir|
             FileUtils.rm_rf(dir)

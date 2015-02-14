@@ -8,20 +8,27 @@ require "vasputils/setting.rb"
 class TC_Potcar < Test::Unit::TestCase
 
     def setup
-        @p0 = VaspUtils::Potcar.load_file("test/potcar/POTCAR"                   )
-        @p1 = VaspUtils::Potcar.load_file("test/potcar/POTCAR.dummy"         )
-        @p2 = VaspUtils::Potcar.load_file("test/potcar/POTCAR.allElement")
+        @p00 = VaspUtils::Potcar.new(%w(Li Ge O))
     end
 
-    def test_get_filename
-        assert_equal("test/potcar/POTCAR"                       , @p0[:name])
-        assert_equal("test/potcar/POTCAR.dummy"         , @p1[:name])
-        assert_equal("test/potcar/POTCAR.allElement", @p2[:name])
+    def test_initialize
+        assert_equal([ "Li", "Ge", "O" ], @p00.elements)
     end
 
-    def test_elements
-        assert_equal([ "Li", "Ge", "O" ], @p0[:elements])
-        assert_equal([ "Li", "Ge", "O" ], @p1[:elements])
+    #def test_get_filename
+    #    assert_equal("test/potcar/POTCAR", @p0.name)
+    #    assert_equal("test/potcar/POTCAR.dummy", @p1.name)
+    #    assert_equal("test/potcar/POTCAR.allElement", @p2.name)
+    #end
+
+    def test_loadfile
+        p10 = VaspUtils::Potcar.load_file("test/potcar/POTCAR"                   )
+        assert_equal([ "Li", "Ge", "O" ], p10.elements)
+
+        p11 = VaspUtils::Potcar.load_file("test/potcar/POTCAR.dummy"         )
+        assert_equal([ "Li", "Ge", "O" ], p11.elements)
+
+        p12 = VaspUtils::Potcar.load_file("test/potcar/POTCAR.allElement")
         correct = [
             "Ac", "Ac", "Ag", "Al", "Al", "Ar", "As", "Au", "B", "B", "B", "Ba",
             "Be", "Be", "Bi", "Bi", "Br", "C", "C", "C", "Ca", "Ca", "Cd", "Ce",
@@ -38,7 +45,7 @@ class TC_Potcar < Test::Unit::TestCase
             "Ta", "Ta", "Tb", "Tc", "Tc", "Te", "Th", "Th", "Ti", "Ti", "Ti",
             "Tl", "Tl", "Tm", "Tm", "U", "U", "V", "V", "V", "W", "W", "X", "Y",
             "Yb", "Yb", "Zn", "Zr", "Zr"]
-        assert_equal( correct, @p2[:elements])
+        assert_equal( correct, p12.elements)
     end
 
 end

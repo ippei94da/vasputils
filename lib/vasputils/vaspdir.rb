@@ -180,7 +180,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
                     #pp calc
                     #pp calc.kpoints
                     #pp e_step
-                    ka, kb, kc = calc.kpoints[:mesh]
+                    ka, kb, kc = calc.kpoints.mesh
                     encut = calc.incar["ENCUT"]
                 rescue
                     toten = i_step = e_step = time = ka = kb = kc = encut = ""
@@ -269,7 +269,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
         VaspUtils::Poscar.load_file("#{@dir}/CONTCAR")
     end
 
-    # 配下の KPOINTS を読み込んだ結果をハッシュにして返す。
+    # 配下の INCAR を表現する Incar クラスインスタンスを返す。
     #
     # 存在しなければ例外 Errno::ENOENT を返す筈だが、
     # vasp dir の判定を incar でやっているので生じる筈がない。
@@ -277,7 +277,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
         VaspUtils::Incar.load_file("#{@dir}/INCAR")
     end
 
-    # 配下の KPOINTS を読み込んだ結果をハッシュにして返す。
+    # 配下の KPOINTS を表現する Kpoints クラスインスタンスを返す。
     def kpoints
         VaspUtils::Kpoints.load_file("#{@dir}/KPOINTS")
     end
@@ -364,28 +364,28 @@ class VaspUtils::VaspDir < Comana::ComputationManager
 
         ##KPOINTS
         new_kpoints = kpoints
-        new_kpoints[:mesh][0] = condition[:ka] if condition[:ka]
-        new_kpoints[:mesh][1] = condition[:kb] if condition[:kb]
-        new_kpoints[:mesh][2] = condition[:kc] if condition[:kc]
+        new_kpoints.mesh[0] = condition[:ka] if condition[:ka]
+        new_kpoints.mesh[1] = condition[:kb] if condition[:kb]
+        new_kpoints.mesh[2] = condition[:kc] if condition[:kc]
         if condition[:kab]
-            new_kpoints[:mesh][0] = condition[:kab]
-            new_kpoints[:mesh][1] = condition[:kab]
+            new_kpoints.mesh[0] = condition[:kab]
+            new_kpoints.mesh[1] = condition[:kab]
         end
         if condition[:kbc]
-            new_kpoints[:mesh][1] = condition[:kbc]
-            new_kpoints[:mesh][2] = condition[:kbc]
+            new_kpoints.mesh[1] = condition[:kbc]
+            new_kpoints.mesh[2] = condition[:kbc]
         end
         if condition[:kca]
-            new_kpoints[:mesh][2] = condition[:kca]
-            new_kpoints[:mesh][0] = condition[:kca]
+            new_kpoints.mesh[2] = condition[:kca]
+            new_kpoints.mesh[0] = condition[:kca]
         end
         if condition[:kabc]
-            new_kpoints[:mesh][0] = condition[:kabc]
-            new_kpoints[:mesh][1] = condition[:kabc]
-            new_kpoints[:mesh][2] = condition[:kabc]
+            new_kpoints.mesh[0] = condition[:kabc]
+            new_kpoints.mesh[1] = condition[:kabc]
+            new_kpoints.mesh[2] = condition[:kabc]
         end
         File.open("#{tgt_name}/KPOINTS", "w") do |io|
-            VaspUtils::Kpoints.dump(new_kpoints, io)
+            new_kpoints.dump(io)
         end
     end
 
