@@ -139,6 +139,8 @@ class VaspUtils::Poscar
             selective_dynamics = true if movable_flags
         end
 
+        selective_dynamics = movable_flags if movable_flags
+
         options = {
             :comment            => cell.comment           ,
             :scale              => 1.0               ,
@@ -152,78 +154,127 @@ class VaspUtils::Poscar
         self.new(options)
     end
 
+    ## POSCAR 形式で書き出す。
+    ## cell は CrystalCell::Cell クラスインスタンスと同等のメソッドを持つもの。
+    ## elems は書き出す元素の順番。
+    ##       elems が cell の持つ元素リストとマッチしなければ
+    ##       例外 Poscar::ElementMismatchError を投げる。
+    ## io は書き出すファイルハンドル。
+    ## 'version' indicates a poscar style for vasp 4 or 5.
+    #def self.dump(cell, elems, io, version = 5)
+    #    unless (Mapping::map?(cell.elements.uniq, elems){ |i, j| i == j })
+    #        raise ElementMismatchError,
+    #        "elems [#{elems.join(",")}] mismatches to cell.elements [#{cell.elements.join(",")}."
+    #    end
+
+    #    io.puts cell.comment
+    #    io.puts "1.0" #scale
+    #    3.times do |i|
+    #        io.printf("  % 18.15f    % 18.15f    % 18.15f\n", cell.axes[i][0], cell.axes[i][1], cell.axes[i][2]
+    #        )
+    #    end
+
+    #    # Element symbols for vasp 5.
+    #    if version >= 5
+    #        io.puts cell.atoms.map {|atom| atom.element}.uniq.join(" ")
+    #    end
+
+    #    # Atom numbers.
+    #    elem_list = Hash.new
+    #    elems.each do |elem|
+    #        elem_list[ elem ] = cell.atoms.select{ |atom| atom.element == elem }
+    #    end
+    #    io.puts(elems.map { |elem| elem_list[elem].size }.join(" "))
+
+    #    # Selective dynamics
+    #    # どれか1つでも getMovableFlag が真であれば Selective dynamics をオンにする
+    #    selective_dynamics = false
+    #    cell.atoms.each do |atom|
+    #        if atom.movable_flags
+    #            selective_dynamics = true
+    #            io.puts "Selective dynamics"
+    #            break
+    #        end
+    #    end
+
+    #    elems.each do |elem|
+    #        elem_list[ elem ].each do |atom|
+    #            if atom.movable_flags
+    #                selective_dynamics = true
+    #                break
+    #            end
+    #        end
+    #        break if selective_dynamics
+    #    end
+
+    #    io.puts "Direct"
+
+    #    # positions of atoms
+    #    elems.each do |elem|
+    #        elem_list[ elem ].each do |atom|
+    #            tmp =    sprintf(
+    #                "    % 18.15f    % 18.15f    % 18.15f",
+    #                * atom.position)
+    #            if selective_dynamics
+    #                if atom.movable_flags == nil
+    #                    tmp += " T T T"
+    #                else
+    #                    atom.movable_flags.each do |mov|
+    #                        (mov == true) ?  tmp += " T" : tmp += " F"
+    #                    end
+    #                end
+    #            end
+    #            io.puts tmp
+    #        end
+    #    end
+    #end
+
     # POSCAR 形式で書き出す。
     # cell は CrystalCell::Cell クラスインスタンスと同等のメソッドを持つもの。
     # elems は書き出す元素の順番。
     #       elems が cell の持つ元素リストとマッチしなければ
     #       例外 Poscar::ElementMismatchError を投げる。
+    #       nil ならば、原子の element でソートした順に出力する。
+    #
     # io は書き出すファイルハンドル。
     # 'version' indicates a poscar style for vasp 4 or 5.
-    def self.dump(cell, elems, io, version = 5)
-        unless (Mapping::map?(cell.elements.uniq, elems){ |i, j| i == j })
-            raise ElementMismatchError,
-            "elems [#{elems.join(",")}] mismatches to cell.elements [#{cell.elements.join(",")}."
-        end
+    #def dump(io, elems = nil, version = 5)
+    def dump(io, version = 5)
+        #elems = @elements.sort unless elems
+        #unless (Mapping::map?(@elements.uniq, elems){ |i, j| i == j })
+        #    raise ElementMismatchError,
+        #    "elems [#{elems.join(",")}] mismatches to cell.elements [#{cell.elements.join(",")}."
+        #end
 
-        io.puts cell.comment
+        io.puts @comment
         io.puts "1.0" #scale
         3.times do |i|
-            io.printf("  % 18.15f    % 18.15f    % 18.15f\n", cell.axes[i][0], cell.axes[i][1], cell.axes[i][2]
+            io.printf("  % 18.15f    % 18.15f    % 18.15f\n", @axes[i][0], @axes[i][1], @axes[i][2]
             )
         end
 
         # Element symbols for vasp 5.
+        #pp @elements
         if version >= 5
-            io.puts cell.atoms.map {|atom| atom.element}.uniq.join(" ")
+            io.puts @elements.join(' ')
         end
 
         # Atom numbers.
-        elem_list = Hash.new
-        elems.each do |elem|
-            elem_list[ elem ] = cell.atoms.select{ |atom| atom.element == elem }
-        end
-        io.puts(elems.map { |elem| elem_list[elem].size }.join(" "))
+        io.puts @nums_elements.join(' ')
 
         # Selective dynamics
-        # どれか1つでも getMovableFlag が真であれば Selective dynamics をオンにする
-        selective_dynamics = false
-        cell.atoms.each do |atom|
-            if atom.movable_flags
-                selective_dynamics = true
-                io.puts "Selective dynamics"
-                break
-            end
-        end
-
-        elems.each do |elem|
-            elem_list[ elem ].each do |atom|
-                if atom.movable_flags
-                    selective_dynamics = true
-                    break
-                end
-            end
-            break if selective_dynamics
-        end
-
+        io.puts "Selective dynamics" if @selective_dynamics
         io.puts "Direct"
 
         # positions of atoms
-        elems.each do |elem|
-            elem_list[ elem ].each do |atom|
-                tmp =    sprintf(
-                    "    % 18.15f    % 18.15f    % 18.15f",
-                    * atom.position)
-                if selective_dynamics
-                    if atom.movable_flags == nil
-                        tmp += " T T T"
-                    else
-                        atom.movable_flags.each do |mov|
-                            (mov == true) ?  tmp += " T" : tmp += " F"
-                        end
-                    end
+        @positions.size.times do |i|
+            str = sprintf("    % 18.15f    % 18.15f    % 18.15f", * @positions[i])
+            if @selective_dynamics
+                @movable_flags[i].each do |flag|
+                    (flag == true) ?  str += " T" : str += " F"
                 end
-                io.puts tmp
             end
+            io.puts str
         end
     end
 

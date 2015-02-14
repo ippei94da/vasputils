@@ -189,35 +189,36 @@ class TC_Poscar < Test::Unit::TestCase
         #
         assert_equal("test", poscar.comment)
         assert_equal(1.0, poscar.scale)
-        assert_equal(
-            [
-                [1.0, 0.0, 0.0 ],
-                [0.0, 1.0, 0.0 ],
-                [0.0, 0.0, 1.0 ],
-            ],
-            poscar.axes
-        )
+        assert_in_delta(1.0, poscar.axes[0][0], $tolerance)
+        assert_in_delta(0.0, poscar.axes[0][1], $tolerance)
+        assert_in_delta(0.0, poscar.axes[0][2], $tolerance)
+        assert_in_delta(0.0, poscar.axes[1][0], $tolerance)
+        assert_in_delta(1.0, poscar.axes[1][1], $tolerance)
+        assert_in_delta(0.0, poscar.axes[1][2], $tolerance)
+        assert_in_delta(0.0, poscar.axes[2][0], $tolerance)
+        assert_in_delta(0.0, poscar.axes[2][1], $tolerance)
+        assert_in_delta(1.0, poscar.axes[2][2], $tolerance)
         assert_equal(%w(Li O), poscar.elements)
         assert_equal([2,1], poscar.nums_elements)
         assert_equal(
             [
                 [false, true , true ], 
-                [false, false, true ], 
                 [false, false, false], 
+                [false, false, true ], 
             ],
             poscar.selective_dynamics
         )
 
         assert_equal(true, poscar.direct)
-        assert_equal(
-            [
-                [0.0,  0.0,  0.0],
-                [0.5,  0.0,  0.0],
-                [0.5,  0.5,  0.0],
-                [0.5,  0.5,  0.5],
-            ],
-            poscar.positions
-        )
+        assert_in_delta(0.1, poscar.positions[0][0], $tolerance)
+        assert_in_delta(0.2, poscar.positions[0][1], $tolerance)
+        assert_in_delta(0.3, poscar.positions[0][2], $tolerance)
+        assert_in_delta(0.3, poscar.positions[1][0], $tolerance)
+        assert_in_delta(0.4, poscar.positions[1][1], $tolerance)
+        assert_in_delta(0.5, poscar.positions[1][2], $tolerance)
+        assert_in_delta(0.2, poscar.positions[2][0], $tolerance)
+        assert_in_delta(0.3, poscar.positions[2][1], $tolerance)
+        assert_in_delta(0.4, poscar.positions[2][2], $tolerance)
     end
 
     def test_dump
@@ -225,7 +226,6 @@ class TC_Poscar < Test::Unit::TestCase
         io = StringIO.new
         @p00.dump(io)
 
-        VaspUtils::Poscar.dump(cell, ["Li", "O"], io, 5)
         io.rewind
         corrects = [
             "p00\n",
@@ -239,6 +239,7 @@ class TC_Poscar < Test::Unit::TestCase
             "     0.000000000000000     0.000000000000000     0.000000000000000\n",
             "     0.500000000000000     0.000000000000000     0.000000000000000\n",
             "     0.500000000000000     0.500000000000000     0.000000000000000\n",
+            "     0.500000000000000     0.500000000000000     0.500000000000000\n",
         ]
         lines = io.readlines
         corrects.each_with_index do |cor, index|
@@ -246,6 +247,33 @@ class TC_Poscar < Test::Unit::TestCase
         end
         assert_equal(corrects.size, lines.size)
     end
+
+    #def test_self_dump
+    #    # vasp 5
+    #    io = StringIO.new
+    #    @p00.dump(io)
+
+    #    VaspUtils::Poscar.dump(cell, ["Li", "O"], io, 5)
+    #    io.rewind
+    #    corrects = [
+    #        "p00\n",
+    #        "1.0\n",
+    #        "   1.000000000000000     0.000000000000000     0.000000000000000\n",
+    #        "   0.000000000000000     1.000000000000000     0.000000000000000\n",
+    #        "   0.000000000000000     0.000000000000000     1.000000000000000\n",
+    #        "Li Ge O\n",
+    #        "1 1 2\n",
+    #        "Direct\n",
+    #        "     0.000000000000000     0.000000000000000     0.000000000000000\n",
+    #        "     0.500000000000000     0.000000000000000     0.000000000000000\n",
+    #        "     0.500000000000000     0.500000000000000     0.000000000000000\n",
+    #    ]
+    #    lines = io.readlines
+    #    corrects.each_with_index do |cor, index|
+    #        assert_equal(cor, lines[index], "line: #{index}")
+    #    end
+    #    assert_equal(corrects.size, lines.size)
+    #end
 
     def test_parse
         #io = StringIO.new
@@ -322,7 +350,5 @@ class TC_Poscar < Test::Unit::TestCase
         ]
         assert_equal(positions, @p00.positions             )
     end
-
-    #undef test_dump
 end
 
