@@ -15,7 +15,8 @@ require "yaml"
 class VaspUtils::VaspDir < Comana::ComputationManager
     MACHINEFILE = "machines"
     INSPECT_DEFAULT_ITEMS = [ :klass_name, :state, :toten, :dir, ]
-    INSPECT_ALL_ITEMS = [ :ka, :kb, :kc, :encut, :i_step, :e_step, :time, ] + INSPECT_DEFAULT_ITEMS
+    #INSPECT_ALL_ITEMS = [ :ka, :kb, :kc, :encut, :i_step, :e_step, :time, ] + INSPECT_DEFAULT_ITEMS
+    INSPECT_ALL_ITEMS = [ :kpoints, :encut, :i_step, :e_step, :time, ] + INSPECT_DEFAULT_ITEMS
 
     # for printf option. minus value indicate left shifted printing.
     INSPECT_WIDTH = {
@@ -23,9 +24,10 @@ class VaspUtils::VaspDir < Comana::ComputationManager
         :e_step      => "3",
         :i_step      => "3",
         :klass_name  => "11",
-        :ka          => "2",
-        :kb          => "2",
-        :kc          => "2",
+        :kpoints     => "8",
+        #:ka          => "2",
+        #:kb          => "2",
+        #:kc          => "2",
         :encut       => "6",
         :state       => "10",
         :time        => "15",
@@ -122,9 +124,10 @@ class VaspUtils::VaspDir < Comana::ComputationManager
         op.on("-i", "--ionic-steps" , "Show ionic steps as I_S."){options[:show_items] << :ionic_steps}
         op.on("-L", "--last-update" , "Show LAST-UPDATE."       ){options[:show_items] << :last_update}
         op.on("-k", "--kpoints" , "Show KPOINTS."               ){
-            options[:show_items] << :ka
-            options[:show_items] << :kb
-            options[:show_items] << :kc
+            options[:show_items] << :kpoints
+            #options[:show_items] << :ka
+            #options[:show_items] << :kb
+            #options[:show_items] << :kc
         }
         op.on("-c", "--encut" , "Show ENCUT."                   ){options[:show_items] << :encut    }
         op.parse!(args)
@@ -147,9 +150,10 @@ class VaspUtils::VaspDir < Comana::ComputationManager
             # show title of items.
             results = {
                 :klass_name => "TYPE",
-                :ka         => "KA",
-                :kb         => "KB",
-                :kc         => "KC",
+                :kpoints    => "KPOINTS",
+                #:ka         => "KA",
+                #:kb         => "KB",
+                #:kc         => "KC",
                 :encut      => "ENCUT",
                 :state      => "STATE",
                 :toten      => "TOTEN",
@@ -176,14 +180,18 @@ class VaspUtils::VaspDir < Comana::ComputationManager
                     #time = calc.latest_modified_time.to_s
                     #time = calc.latest_modified_time.strftime("%Y%m%d-%H%M%S")
                     time = self.form_time(Time.now - calc.latest_modified_time)
-                    #puts "test"
-                    #pp calc
-                    #pp calc.kpoints
-                    #pp e_step
-                    ka, kb, kc = calc.kpoints.mesh
+                    kp = calc.kpoints
+
+                    if kp.scheme == :automatic
+                        k_str = kp.mesh.join("x")
+                    else
+                        k_str = kp.points.size.to_s
+                    end
+
+
                     encut = calc.incar["ENCUT"]
                 rescue
-                    toten = i_step = e_step = time = ka = kb = kc = encut = ""
+                    toten = i_step = e_step = time = k_str = encut = ""
                 end
 
             rescue VaspUtils::VaspDir::InitializeError
@@ -192,9 +200,10 @@ class VaspUtils::VaspDir < Comana::ComputationManager
             end
             results = {
                 :klass_name => klass_name,
-                :ka         => ka,
-                :kb         => kb,
-                :kc         => kc,
+                #:ka         => ka,
+                #:kb         => kb,
+                #:kc         => kc,
+                :kpoints    => k_str,
                 :encut      => encut,
                 :state      => state,
                 :toten      => toten,

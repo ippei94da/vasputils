@@ -93,15 +93,6 @@ class VaspUtils::Kpoints
         self.new(options)
     end
 
-    # Return like '1,2,3', when automatic generation.
-    def size_str
-        if @scheme == :automatic
-            return @mesh.join(",")
-        else
-            return @points.size.to_s
-        end
-    end
-
     # Dump in KPOINTS style.
     # Only automatic generation scheme is supported.
     def dump(io)
