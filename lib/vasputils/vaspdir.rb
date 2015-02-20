@@ -291,6 +291,12 @@ class VaspUtils::VaspDir < Comana::ComputationManager
         VaspUtils::Kpoints.load_file("#{@dir}/KPOINTS")
     end
 
+    # 配下の vasprun.xml を表現する VasprunXml クラスインスタンスを返す。
+    def vasprun_xml
+        VaspUtils::VasprunXml.load_file("#{@dir}/vasprun.xml")
+    end
+
+
     # 正常に終了していれば true を返す。
     # 実行する前や実行中、OUTCAR が完遂していなければ false。
     #

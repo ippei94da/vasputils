@@ -11,6 +11,8 @@ class VaspUtils::VaspCellOptimizer < Comana::ComputationManager
     class InitializeError < Exception; end
 
     PREFIX = "cellopt"
+    STRAIN_YAML = "strain.yaml"
+    THRESHOLD = 1E-1
 
     #
     def initialize(dir)
@@ -39,20 +41,21 @@ class VaspUtils::VaspCellOptimizer < Comana::ComputationManager
         $stdout.puts "Calculate #{latest_dir.dir}"
         $stdout.flush
 
-        TODO
-        cellopt00 に strain.yaml がなければ生成する。
+        #最初の計算ディレクトリだけならば strain.yaml を生成する。
+        if calcdirs.size == 1
+            File.open("#{calcdirs[0]}/#{STRAIN_YAML}", "w") do |io|
+                YAML.dump( [ [1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0] ], io)
+            end
+        end
+
         latest_dir.start
     end
 
+    # vasprun.xml から 最後の応力テンソルを持ってきて、
+    # 成分の最大値が閾値以下なら収束。
     def finished?
-        TODO
-
-        最新2つのディレクトリ。
-        1つしかなければ終了していない。
-
-        応力テンソルの成分の最大値が閾値以下なら収束。
-
-
+        return true if calcdirs[-1].vasprun_xml.stress.flatten.max < THRESHOLD
+        return false
     end
 
     def prepare_next
