@@ -10,5 +10,6 @@ class TC_CellOptimizer < Test::Unit::TestCase
         @c00 = VaspUtils::CellOptimizer.new
     end
 
+
 end
 

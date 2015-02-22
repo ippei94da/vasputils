@@ -59,14 +59,54 @@ class VaspUtils::VaspCellOptimizer < Comana::ComputationManager
     end
 
     def prepare_next
-        TODO
+        new_strain = [
+            [1.0, 1.0, 1.0],
+            [1.0, 1.0, 1.0],
+            [1.0, 1.0, 1.0],
+        ]
+        if calcdirs.size == 1 # 点数が1つ。±1% で歪みテンソルを作る
+            3.times do |i|
+                3.times do |j|
+                    if calcdirs[0].vasprun_xml.stress[i][j] > 0
+                        new_strain[i][j] = 1.01
+                    elsif calcdirs[0].vasprun_xml.stress[i][j] < 0
+                        new_strain[i][j] = 0.99
+                    else #calcdirs[0].stress[i][j] == 0
+                        new_strain[i][j] = 1.00
+                    end
+                end
+            end
+        else # 点数2以上なら、最新2つで線形で近似解を取り、歪みテンソルを作る。
+            strain1 = YAML.load_file "#{calcdirs[-1]}/#{STRAIN_YAML}"
+            strain2 = YAML.load_file "#{calcdirs[-2]}/#{STRAIN_YAML}"
+            stress1 = calcdirs[-1].vasprun_xml.stress
+            stress2 = calcdirs[-2].vasprun_xml.stress
+            3.times do |i|
+                3.times do |j|
+                    a, b = line_through_two_points(
+                        [strain1[i][j], stress1[i][j]],
+                        [strain2[i][j], stress2[i][j]]
+                    )
+                    new_strain[i][j] = 1.0/a
+                end
+            end
+        end
 
-        点数が1つなら、±1% で歪みテンソルを作る
+        #つぎのディレクトリを作る
+        #POTCAR, INCAR, KPOINTS は cellopt00 のをコピー。
+        new_dir = next_name(calcdirs[-1].name)
+        Dir.mkdir new_dir
+        ['INCAR', 'KPOINTS', 'POTCAR'].each do |file|
+            FileUtils.cp("#{calcdirs[0].path}/#{file}",
+                         "#{new_dir}/#{file}")
+        end
 
-        点数2以上なら、最新2つで線形で近似解を取り、
-        歪みテンソルを作る。
+        poscar00 = calcdirs[0].poscar
+        axes = poscar00.axes
+        new_axes = Mageo::Tensor
+        HERE
 
-        歪みテンソルで変形したディレクトリを作る。
+        cellopt00 の POSCAR を取得し、new_strain で変形させた軸で POSCAR を作る。
 
 
 
@@ -109,7 +149,24 @@ class VaspUtils::VaspCellOptimizer < Comana::ComputationManager
         dirs
     end
 
-    #private
+    private
+
+    #point1, point2 is like [0.0, 1.0], [2.0, 3.0]
+    # return [a,b] of 'ax + by = 1'
+    def line_through_two_points(point1, point2)
+        x1 = point1[0]
+        y1 = point1[1]
+        x2 = point2[0]
+        y2 = point2[1]
+
+        matrix = [
+            [(x1 + x2), (y1 + y2)],
+            [(x1 - x2), (y1 - y2)],
+        ]
+        values = [2.0, 0.0]
+
+        Malge::SimultaneousEquation.solve(matrix, values)
+    end
 
 end
 
