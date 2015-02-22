@@ -13,6 +13,7 @@ class VaspUtils::VaspCellOptimizer < Comana::ComputationManager
     PREFIX = "cellopt"
     STRAIN_YAML = "strain.yaml"
     THRESHOLD = 1E-1
+    INITIAL_DIFF = 1E-2
 
     #
     def initialize(dir)
@@ -60,35 +61,30 @@ class VaspUtils::VaspCellOptimizer < Comana::ComputationManager
 
     def prepare_next
         new_strain = [
-            [1.0, 1.0, 1.0],
-            [1.0, 1.0, 1.0],
-            [1.0, 1.0, 1.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0],
         ]
-        if calcdirs.size == 1 # 点数が1つ。±1% で歪みテンソルを作る
-            3.times do |i|
-                3.times do |j|
-                    if calcdirs[0].vasprun_xml.stress[i][j] > 0
-                        new_strain[i][j] = 1.01
-                    elsif calcdirs[0].vasprun_xml.stress[i][j] < 0
-                        new_strain[i][j] = 0.99
-                    else #calcdirs[0].stress[i][j] == 0
-                        new_strain[i][j] = 1.00
+
+        3.times do |i|
+            3.times do |j|
+                if calcdirs.size == 1 # 点数が1つ。±1% で歪みテンソルを作る
+                    component = calcdirs[0].vasprun_xml.stress[i][j]
+                    if component > 0
+                        diff = INITIAL_DIFF
+                    elsif component < 0
+                        diff = - INITIAL_DIFF
+                    else
+                        diff = 0.0
                     end
-                end
-            end
-        else # 点数2以上なら、最新2つで線形で近似解を取り、歪みテンソルを作る。
-            strain1 = YAML.load_file "#{calcdirs[-1]}/#{STRAIN_YAML}"
-            strain2 = YAML.load_file "#{calcdirs[-2]}/#{STRAIN_YAML}"
-            stress1 = calcdirs[-1].vasprun_xml.stress
-            stress2 = calcdirs[-2].vasprun_xml.stress
-            3.times do |i|
-                3.times do |j|
+                else # 点数2以上、最新2つで線形で近似解を取り、歪みテンソルを作る。
                     a, b = line_through_two_points(
                         [strain1[i][j], stress1[i][j]],
                         [strain2[i][j], stress2[i][j]]
                     )
-                    new_strain[i][j] = 1.0/a
+                    diff = 1.0/a
                 end
+                new_strain[i][j] += diff
             end
         end
 
