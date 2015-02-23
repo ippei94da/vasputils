@@ -47,6 +47,3 @@ else
     puts "Unknown command: #{command}"
     show_usage
 end
-
-exit
-

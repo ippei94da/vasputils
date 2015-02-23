@@ -11,10 +11,10 @@ group :development do
   gem "jeweler", "~> 2.0.1"
   gem "simplecov", ">= 0.9.0"
   gem "mageo", ">= 0.0.3"
-  gem "malge", ">= 0.0.8"
+  gem "malge", ">= 0.0.9"
   gem "maset", ">= 0.0.0"
-  gem "comana", ">= 0.0.10"
+  gem "comana", ">= 0.1.0"
   gem "builtinextension", ">= 0.1.2"
-  gem "crystalcell", ">= 0.0.2"
+  gem "crystalcell", ">= 0.0.4"
   #gem "psych", ">= 0"
 end

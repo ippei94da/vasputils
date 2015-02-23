@@ -7,11 +7,13 @@ require "vasputils"
 #require "crystalcell/latticeaxes.rb"
 #require "crystalcell/cell.rb"
 
-puts "           a,              b,              c,  alpha,     beta,    gamma,         volume, file"
+puts "       a,        b,        c,  alpha,   beta,  gamma,     volume, file"
 ARGV.each do |file|
     axes = VaspUtils::Poscar.load_file(file).axes
+    latticeconstants = CrystalCell::LatticeAxes.axes_to_lc(axes)
+
     printf("%8.5f, %8.5f, %8.5f, %6.2f, %6.2f, %6.2f, ",
-        *(axes.get_lattice_constants))
+        *(latticeconstants))
     printf("%10.5f, ", CrystalCell::Cell.new(axes).calc_volume) # show volume
     puts file
 end

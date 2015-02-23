@@ -1,0 +1,41 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+#require "comana"
+#require "fileutils"
+#require "optparse"
+#require "pp"
+#require "rubygems"
+require "vasputils"
+
+
+def show_usage
+  puts <<-HERE
+USAGE
+  vaspcellopt command [option] [path]
+  HERE
+end
+
+command = ARGV.shift
+
+case command
+#when "show"
+#    VaspUtils::VaspCellOptimizer.show_inspect(ARGV)
+#when "latest"
+#    VaspUtils::VaspCellOptimizer.show_latest(ARGV)
+when "run"
+    VaspUtils::VaspCellOptimizer.run(ARGV)
+##when "reset"
+##    VaspUtils::VaspCellOptimizer.reset(ARGV)
+#when "next"
+#    VaspUtils::VaspCellOptimizer.next(ARGV)
+#when "initialize"
+#    VaspUtils::VaspCellOptimizer.reset_initialize(ARGV)
+#when "reincarnate"
+#    VaspUtils::VaspCellOptimizer.reincarnate(ARGV)
+when "--help"
+    show_usage
+else
+    puts "Unknown command: #{command}"
+    show_usage
+end

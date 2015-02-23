@@ -13,9 +13,9 @@ class VaspUtils::Poscar
     class ElementMismatchError < Exception; end
     class ParseError < Exception; end
 
-    attr_reader :comment, :scale, :axes, :elements, :nums_elements,
+    attr_reader :comment, :scale, :elements, :nums_elements,
         :selective_dynamics, :direct, :positions
-
+    attr_accessor :axes
 
     def initialize(hash)
         hash.each do |key,val|

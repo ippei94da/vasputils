@@ -3,6 +3,7 @@ require "rubygems"
 require "malge"
 require "mageo"
 require "comana"
+require "crystalcell"
 
 module VaspUtils; end
 
@@ -15,5 +16,6 @@ require "vasputils/potcar/concatenater.rb"
 require "vasputils/setting.rb"
 require "vasputils/vaspdir.rb"
 require "vasputils/vaspgeometryoptimizer.rb"
+require "vasputils/vaspcelloptimizer.rb"
 require "vasputils/vasprunxml.rb"
 require "vasputils/conditionvarier.rb"
