@@ -14,7 +14,7 @@ class VaspUtils::VaspCellOptimizer < Comana::ComputationManager
     PREFIX = "cellopt"
     STRAIN_YAML = "strain.yaml"
     THRESHOLD = 1E-1
-    INITIAL_DIFF = 1E-2
+    MAX_DIFF = 1E-2
 
     #
     def initialize(dir)
@@ -101,9 +101,9 @@ class VaspUtils::VaspCellOptimizer < Comana::ComputationManager
                 if calcdirs.size == 1 # 点数が1つ。±1% で歪みテンソルを作る
                     component = calcdirs[0].vasprun_xml.stress[i][j]
                     if component > 0
-                        new_strain[i][j] += INITIAL_DIFF
+                        new_strain[i][j] += MAX_DIFF
                     elsif component < 0
-                        new_strain[i][j] -= INITIAL_DIFF
+                        new_strain[i][j] -= MAX_DIFF
                     else
                         #new_strain[i][j] += 0.0
                     end
@@ -118,7 +118,17 @@ class VaspUtils::VaspCellOptimizer < Comana::ComputationManager
                             [strain1[i][j], stress1[i][j]],
                             [strain2[i][j], stress2[i][j]]
                         )
-                        new_strain[i][j] = 1.0/a
+                        component        = 1.0/a
+                        TODO
+                        if new_strain[i][j] = component
+                            if component > 0
+                                new_strain[i][j] += MAX_DIFF
+                            elsif component < 0
+                                new_strain[i][j] -= MAX_DIFF
+                            else
+                                #new_strain[i][j] += 0.0
+                            end
+
                     rescue Malge::SimultaneousEquations::NotRegularError
                         new_strain[i][j] = 0.0
                     end
