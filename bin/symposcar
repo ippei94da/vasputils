@@ -2,7 +2,7 @@
 #       Copyright (C) 2008 Atsushi Togo
 #       togo.atsushi@gmail.com
 #
-#       modified by Ippei Kishida, Last-modified: 2014/12/12 16:53:59.
+#       modified by Ippei Kishida, Last-modified: 2015/02/26 21:06:46.
 # 
 #       This program is free software; you can redistribute it and/or
 #       modify it under the terms of the GNU General Public License
@@ -58,7 +58,7 @@ if shift_string
     pos_shift = []
     shift_string.split.each {|val| pos_shift << val.to_f }
 end
-cell = VaspUtils::Poscar.load_file(ARGV.shift)
+cell = VaspUtils::Poscar.load_file(ARGV.shift).to_cell
 lattice = cell.axes.to_a.transpose
 names = (cell.atoms.collect {|atom| atom.name}).uniq
 position = []
