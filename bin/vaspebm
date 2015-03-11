@@ -4,12 +4,12 @@
 require "pp"
 
 if ((@ARGV < 2) || (3 < @ARGV)){
-    die "USAGE: interpolatePOSCAR2 CONTCAR1 CONTCAR2 [num_images]\n";
+  die "USAGE: interpolatePOSCAR2 CONTCAR1 CONTCAR2 [num_images]\n";
 }
 
 ($poscar1Name, $poscar2Name, $images) = @ARGV;
 if (! $images) {
-    $images = 1;         # INCAR:IMAGES のデフォルト値
+  $images = 1;         # INCAR:IMAGES のデフォルト値
 }
 
 ## 2つの入力ファイルからディレクトリ名を切り出す
@@ -23,9 +23,9 @@ $poscar2Dir =~ s|/[^/]+||;
 ## EBM 初期ファイルを生成するディレクトリ
 $targetDir = "EBM--"."$poscar1Dir"."--"."$poscar2Dir";
 if (-e "$targetDir") {
-    die "$targetDir already exist.\n";
+  die "$targetDir already exist.\n";
 } else {
-    $command = "mkdir $targetDir";
-    system("$command");
-    print "$command\n";
+  $command = "mkdir $targetDir";
+  system("$command");
+  print "$command\n";
 }

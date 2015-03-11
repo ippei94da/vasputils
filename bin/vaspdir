@@ -11,24 +11,24 @@ require "rubygems"
 require "vasputils"
 
 def show_usage
-    puts <<-HERE
+  puts <<-HERE
 USAGE
-    vaspdir command [option] [path]
+  vaspdir command [option] [path]
 
 E.G.,
-    vaspdir show [option] [path]
-    vaspdir run [path]
-    vaspdir clean [path]
-        delete output files of vasp command.
-    vaspdir initialize [path]
-        delete all files except for four input files.
-        (INCAR, KPOINTS, POSCAR, POTCAR.)
+  vaspdir show [option] [path]
+  vaspdir run [path]
+  vaspdir clean [path]
+    delete output files of vasp command.
+  vaspdir initialize [path]
+    delete all files except for four input files.
+    (INCAR, KPOINTS, POSCAR, POTCAR.)
 
-    If [path] is not explicitely indicated, "." would be used.
+  If [path] is not explicitely indicated, "." would be used.
 
-    HERE
+  HERE
 end
-    #Lines from stdin are simply added to end of command line arguments.
+  #Lines from stdin are simply added to end of command line arguments.
 
 #stdin_items = $stdin.readlines.map{|str| str.chomp}
 
@@ -39,21 +39,21 @@ args = ARGV
 
 case command
 when "show"
-    VaspUtils::VaspDir.show_inspect(args)
+  VaspUtils::VaspDir.show_inspect(args)
 when "run"
-    VaspUtils::VaspDir.run(args)
+  VaspUtils::VaspDir.run(args)
 when "clean"
-    VaspUtils::VaspDir.reset_clean(args)
+  VaspUtils::VaspDir.reset_clean(args)
 when "initialize"
-    VaspUtils::VaspDir.reset_initialize(args)
+  VaspUtils::VaspDir.reset_initialize(args)
 #when "poscar"
 #    #VaspUtils::VaspDir.show_inspect(args)
 #    #pp VaspUtils::VaspDir.poscar(args)
 when "--help"
-    show_usage
+  show_usage
 else
-    puts "Unknown command: #{command}"
-    show_usage
+  puts "Unknown command: #{command}"
+  show_usage
 end
 
 exit

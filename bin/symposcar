@@ -55,8 +55,8 @@ opt.on('-d', '--dataset',               'Dataset') {is_dataset = true}
 opt.parse!(ARGV)
 
 if shift_string
-    pos_shift = []
-    shift_string.split.each {|val| pos_shift << val.to_f }
+  pos_shift = []
+  shift_string.split.each {|val| pos_shift << val.to_f }
 end
 cell = VaspUtils::Poscar.load_file(ARGV.shift).to_cell
 lattice = cell.axes.to_a.transpose
@@ -64,100 +64,100 @@ names = (cell.atoms.collect {|atom| atom.name}).uniq
 position = []
 types = []
 names.each_with_index do |name, i|
-    cell.atoms.each do |atom|
-        if atom.name == name
-            apos = atom.position
-            position << [ apos[0]+pos_shift[0],
-                          apos[1]+pos_shift[1],
-                          apos[2]+pos_shift[2] ]
-            types << i+1
-        end
+  cell.atoms.each do |atom|
+    if atom.name == name
+      apos = atom.position
+      position << [ apos[0]+pos_shift[0],
+             apos[1]+pos_shift[1],
+             apos[2]+pos_shift[2] ]
+      types << i+1
     end
+  end
 end
 
 if is_long_output
-    spg, brv_lattice, brv_positions, brv_types, spgnum = 
-        refine_cell(types.size, lattice, position, types, symprec, angle_tolerance)
+  spg, brv_lattice, brv_positions, brv_types, spgnum = 
+    refine_cell(types.size, lattice, position, types, symprec, angle_tolerance)
 end
 
 spgnum, spg, hallnum, hall_symbol, t_mat, o_shift,
 rotations, translations, wyckoffs = get_dataset(lattice,
-                                                position,
-                                                types,
-                                                symprec,
-                                                angle_tolerance)
+                        position,
+                        types,
+                        symprec,
+                        angle_tolerance)
 ptg_symbol, ptg_num, trans_mat = getptg(rotations)
 
 if nonewline
-    print "#{spg.strip} (#{spgnum})"
-    exit
+  print "#{spg.strip} (#{spgnum})"
+  exit
 end
 
 if spgnum > 0
-    if is_strip
-        puts "#{spg.strip} (#{spgnum}) / #{ptg_symbol}/ #{hall_symbol.strip} (#{hallnum})"
+  if is_strip
+    puts "#{spg.strip} (#{spgnum}) / #{ptg_symbol}/ #{hall_symbol.strip} (#{hallnum})"
+  end
+
+  if is_long_output
+    puts "----------- original -----------"
+    lattice.each do |vec|
+      printf("%10.5f %10.5f %10.5f\n", vec[0], vec[1], vec[2]);
     end
 
-    if is_long_output
-        puts "----------- original -----------"
-        lattice.each do |vec|
-            printf("%10.5f %10.5f %10.5f\n", vec[0], vec[1], vec[2]);
-        end
-
-        puts "------------ final -------------"
-        brv_lattice.each do |vec|
-            printf("%10.5f %10.5f %10.5f\n", vec[0], vec[1], vec[2]);
-        end
-
-        brv_types.size.times do |i|
-            printf("%d: %d  %10.5f %10.5f %10.5f\n", i+1, brv_types[i], 
-                         brv_positions[i][0], brv_positions[i][1], brv_positions[i][2]);
-        end
+    puts "------------ final -------------"
+    brv_lattice.each do |vec|
+      printf("%10.5f %10.5f %10.5f\n", vec[0], vec[1], vec[2]);
     end
 
-    if is_dataset
-        puts "------ transformation matrix -----"
-        t_mat.each do |row|
-            printf("%10.5f %10.5f %10.5f\n", row[0], row[1], row[2]);
-        end
-
-        puts "---------- origin shift ----------"
-        printf("%10.5f %10.5f %10.5f\n", o_shift[0], o_shift[1], o_shift[2]);
-        
-        puts "--------- Wyckoff position ----------"
-        wl = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        wyckoffs.each_with_index do |w, i|
-            pos = []
-            3.times do |j|
-                pos.push( position[i][j] - position[i][j].floor )
-            end
-            printf("%4d %2s  %s %8.5f %8.5f %8.5f\n",
-                         i+1, cell.atoms[i].name, wl[w,1], pos[0], pos[1], pos[2])
-        end
+    brv_types.size.times do |i|
+      printf("%d: %d  %10.5f %10.5f %10.5f\n", i+1, brv_types[i], 
+            brv_positions[i][0], brv_positions[i][1], brv_positions[i][2]);
     end
+  end
+
+  if is_dataset
+    puts "------ transformation matrix -----"
+    t_mat.each do |row|
+      printf("%10.5f %10.5f %10.5f\n", row[0], row[1], row[2]);
+    end
+
+    puts "---------- origin shift ----------"
+    printf("%10.5f %10.5f %10.5f\n", o_shift[0], o_shift[1], o_shift[2]);
+    
+    puts "--------- Wyckoff position ----------"
+    wl = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    wyckoffs.each_with_index do |w, i|
+      pos = []
+      3.times do |j|
+        pos.push( position[i][j] - position[i][j].floor )
+      end
+      printf("%4d %2s  %s %8.5f %8.5f %8.5f\n",
+            i+1, cell.atoms[i].name, wl[w,1], pos[0], pos[1], pos[2])
+    end
+  end
 
 end
 
 if is_operations or is_dataset
-    rotations.size.times do |i|
-        print "----", i+1, "----\n"
-        rotations[i].each do |row|
-            printf("%2d %2d %2d\n", row[0], row[1], row[2])
-        end
-        printf("%f %f %f\n", translations[i][0], translations[i][1], translations[i][2])
+  rotations.size.times do |i|
+    print "----", i+1, "----\n"
+    rotations[i].each do |row|
+      printf("%2d %2d %2d\n", row[0], row[1], row[2])
     end
+    printf("%f %f %f\n", translations[i][0], translations[i][1], translations[i][2])
+  end
 end
 
 require 'yaml'
 if is_operations_yaml
-    results = []
-    rotations.size.times do |i|
-        results << {
-            "operation_id" => i,
-            "rotation" => rotations[i],
-            "translation" => translations[i] 
-        }
-    end
-    puts YAML.dump results
+  results = []
+  rotations.size.times do |i|
+    results << {
+      "operation_id" => i,
+      "rotation" => rotations[i],
+      "translation" => translations[i] 
+    }
+  end
+  puts YAML.dump results
 end
 

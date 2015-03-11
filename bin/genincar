@@ -21,8 +21,8 @@ op.parse!(ARGV)
 
 encut = ARGV[0].to_i
 if encut == 0
-    puts "ENCUT must be indicated as an argument."
-    exit
+  puts "ENCUT must be indicated as an argument."
+  exit
 end
 
 setting = VaspUtils::Setting.new

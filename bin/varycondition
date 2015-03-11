@@ -19,8 +19,8 @@ op.on("--encut=list", "List of ENCUT."                ){|v| OPTIONS[:encut] = v}
 op.parse!(ARGV)
 
 unless ARGV.size == 1
-    puts "Only one file is allowed."
-    exit
+  puts "Only one file is allowed."
+  exit
 end
 
 cv = VaspUtils::ConditionVarier.new(ARGV[0], OPTIONS)

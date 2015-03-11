@@ -22,17 +22,17 @@
 ----------------------------------------- Iteration    3(   4)  ---------------------------------------
 ----------------------------------------- Iteration    3(   5)  ---------------------------------------
 
- General timing and accounting informations for this job:
- ========================================================
-  
-                  Total CPU time used (sec):      164.142
-                            User time (sec):      153.842
-                          System time (sec):       10.301
-                         Elapsed time (sec):      164.134
-  
-                   Maximum memory used (kb):       39648.
-                   Average memory used (kb):           0.
-  
-                          Minor page faults:      3744776
-                          Major page faults:            0
-                 Voluntary context switches:            1
+  General timing and accounting informations for this job:
+  ========================================================
+    
+                                    Total CPU time used (sec):      164.142
+                                                        User time (sec):      153.842
+                                                    System time (sec):       10.301
+                                                  Elapsed time (sec):      164.134
+    
+                                      Maximum memory used (kb):       39648.
+                                      Average memory used (kb):           0.
+    
+                                                    Minor page faults:      3744776
+                                                    Major page faults:            0
+                                  Voluntary context switches:            1

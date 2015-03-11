@@ -1,78 +1,78 @@
-  PAW_PBE Li 17Jan2003                   
- 1.00000000000000000
- parameters from PSCTR are:
-   VRHFIN =Li: s1p0
-   LEXCH  = PE
-   EATOM  =     5.3001 eV,     .3895 Ry
+    PAW_PBE Li 17Jan2003                   
+  1.00000000000000000
+  parameters from PSCTR are:
+      VRHFIN =Li: s1p0
+      LEXCH  = PE
+      EATOM  =     5.3001 eV,     .3895 Ry
 
-   TITEL  = PAW_PBE Li 17Jan2003
-   LULTRA =        F    use ultrasoft PP ?
-   IUNSCR =        1    unscreen: 0-lin 1-nonlin 2-no
-   RPACOR =    1.500    partial core radius
-   POMASS =    7.010; ZVAL   =    1.000    mass and valenz
-   RCORE  =    2.050    outmost cutoff radius
-   RWIGS  =    2.600; RWIGS  =    1.376    wigner-seitz radius (au A)
-   ENMAX  =  140.000; ENMIN  =  100.000 eV
-   ICORE  =        2    local potential
-   LCOR   =        T    correct aug charges
-   LPAW   =        T    paw PP
-   EAUG   =  331.638
-   DEXC   =    -.010
-   RMAX   =    4.263    core radius for proj-oper
-   RAUG   =    1.300    factor for augmentation sphere
-   RDEP   =    2.094    radius for radial grids
-   QCUT   =   -2.932; QGAM   =    5.865    optimization parameters
- 
- End of Dataset
- PAW_PBE Ge 05Jan2001
- 4.00000000000000000
- parameters from PSCTR are:
-   VRHFIN =Ge: s2p2
-   LEXCH  = PE
-   EATOM  =   104.9960 eV,    7.7170 Ry
+      TITEL  = PAW_PBE Li 17Jan2003
+      LULTRA =        F    use ultrasoft PP ?
+      IUNSCR =        1    unscreen: 0-lin 1-nonlin 2-no
+      RPACOR =    1.500    partial core radius
+      POMASS =    7.010; ZVAL   =    1.000    mass and valenz
+      RCORE  =    2.050    outmost cutoff radius
+      RWIGS  =    2.600; RWIGS  =    1.376    wigner-seitz radius (au A)
+      ENMAX  =  140.000; ENMIN  =  100.000 eV
+      ICORE  =        2    local potential
+      LCOR   =        T    correct aug charges
+      LPAW   =        T    paw PP
+      EAUG   =  331.638
+      DEXC   =    -.010
+      RMAX   =    4.263    core radius for proj-oper
+      RAUG   =    1.300    factor for augmentation sphere
+      RDEP   =    2.094    radius for radial grids
+      QCUT   =   -2.932; QGAM   =    5.865    optimization parameters
+  
+  End of Dataset
+  PAW_PBE Ge 05Jan2001
+  4.00000000000000000
+  parameters from PSCTR are:
+      VRHFIN =Ge: s2p2
+      LEXCH  = PE
+      EATOM  =   104.9960 eV,    7.7170 Ry
 
-   TITEL  = PAW_PBE Ge 05Jan2001
-   LULTRA =        F    use ultrasoft PP ?
-   IUNSCR =        1    unscreen: 0-lin 1-nonlin 2-no
-   RPACOR =    2.170    partial core radius
-   POMASS =   72.610; ZVAL   =    4.000    mass and valenz
-   RCORE  =    2.300    outmost cutoff radius
-   RWIGS  =    2.300; RWIGS  =    1.217    wigner-seitz radius (au A)
-   ENMAX  =  173.807; ENMIN  =  130.355 eV
-   ICORE  =        3    local potential
-   LCOR   =        T    correct aug charges
-   LPAW   =        T    paw PP
-   EAUG   =  385.843
-   DEXC   =    -.138
-   RMAX   =    3.497    core radius for proj-oper
-   RAUG   =    1.300    factor for augmentation sphere
-   RDEP   =    2.318    radius for radial grids
-   QCUT   =   -3.574; QGAM   =    7.148    optimization parameters
- 
- End of Dataset
- PAW_PBE O_s 07Sep2000
- 6.00000000000000000
- parameters from PSCTR are:
-   VRHFIN =O: s2p4
-   LEXCH  = PE
-   EATOM  =   432.2909 eV,   31.7725 Ry
+      TITEL  = PAW_PBE Ge 05Jan2001
+      LULTRA =        F    use ultrasoft PP ?
+      IUNSCR =        1    unscreen: 0-lin 1-nonlin 2-no
+      RPACOR =    2.170    partial core radius
+      POMASS =   72.610; ZVAL   =    4.000    mass and valenz
+      RCORE  =    2.300    outmost cutoff radius
+      RWIGS  =    2.300; RWIGS  =    1.217    wigner-seitz radius (au A)
+      ENMAX  =  173.807; ENMIN  =  130.355 eV
+      ICORE  =        3    local potential
+      LCOR   =        T    correct aug charges
+      LPAW   =        T    paw PP
+      EAUG   =  385.843
+      DEXC   =    -.138
+      RMAX   =    3.497    core radius for proj-oper
+      RAUG   =    1.300    factor for augmentation sphere
+      RDEP   =    2.318    radius for radial grids
+      QCUT   =   -3.574; QGAM   =    7.148    optimization parameters
+  
+  End of Dataset
+  PAW_PBE O_s 07Sep2000
+  6.00000000000000000
+  parameters from PSCTR are:
+      VRHFIN =O: s2p4
+      LEXCH  = PE
+      EATOM  =   432.2909 eV,   31.7725 Ry
 
-   TITEL  = PAW_PBE O_s 07Sep2000
-   LULTRA =        F    use ultrasoft PP ?
-   IUNSCR =        0    unscreen: 0-lin 1-nonlin 2-no
-   RPACOR =     .000    partial core radius
-   POMASS =   16.000; ZVAL   =    6.000    mass and valenz
-   RCORE  =    1.850    outmost cutoff radius
-   RWIGS  =    1.700; RWIGS  =     .900    wigner-seitz radius (au A)
-   ENMAX  =  282.841; ENMIN  =  212.131 eV
-   RCLOC  =     .804    cutoff for local pot
-   LCOR   =        T    correct aug charges
-   LPAW   =        T    paw PP
-   EAUG   =  412.352
-   DEXC   =     .000
-   RMAX   =    2.742    core radius for proj-oper
-   RAUG   =    1.300    factor for augmentation sphere
-   RDEP   =    1.878    radius for radial grids
-   QCUT   =   -4.559; QGAM   =    9.119    optimization parameters
- 
- End of Dataset
+      TITEL  = PAW_PBE O_s 07Sep2000
+      LULTRA =        F    use ultrasoft PP ?
+      IUNSCR =        0    unscreen: 0-lin 1-nonlin 2-no
+      RPACOR =     .000    partial core radius
+      POMASS =   16.000; ZVAL   =    6.000    mass and valenz
+      RCORE  =    1.850    outmost cutoff radius
+      RWIGS  =    1.700; RWIGS  =     .900    wigner-seitz radius (au A)
+      ENMAX  =  282.841; ENMIN  =  212.131 eV
+      RCLOC  =     .804    cutoff for local pot
+      LCOR   =        T    correct aug charges
+      LPAW   =        T    paw PP
+      EAUG   =  412.352
+      DEXC   =     .000
+      RMAX   =    2.742    core radius for proj-oper
+      RAUG   =    1.300    factor for augmentation sphere
+      RDEP   =    1.878    radius for radial grids
+      QCUT   =   -4.559; QGAM   =    9.119    optimization parameters
+  
+  End of Dataset
