@@ -386,7 +386,31 @@ class TC_Poscar < Test::Unit::TestCase
       :selective_dynamics => true, # always on
       :direct             => true,
       :positions          => [
-        [0.1,  0.2,  0.3],
+        [0.05, 0.10, 0.15],
+        [0.5,  0.05, 0.10],
+        [0.5,  0.5,  0.05],
+        [0.5,  0.5,  0.5],
+      ]
+    }
+    correct = VaspUtils::Poscar.new(hash)
+
+    assert_equal(correct, VaspUtils::Poscar.interpolate(@p00, p01, 0.25))
+    assert_equal(correct, @p00.interpolate, 0.25)
+
+    hash = {
+      :comment => 'p00',
+      :scale   => 1.0,
+      :axes    => [
+        [1.0, 0.0, 0.0 ],
+        [0.0, 1.0, 0.0 ],
+        [0.0, 0.0, 1.0 ],
+      ],
+      :elements           => %w(Li Ge O),
+      :nums_elements      => [1,1,2],
+      :selective_dynamics => true, # always on
+      :direct             => true,
+      :positions          => [
+        [0.1,  0.2,  0.8],
         [0.5,  0.1,  0.2],
         [0.5,  0.5,  0.1],
         [0.5,  0.5,  0.5],
@@ -394,8 +418,8 @@ class TC_Poscar < Test::Unit::TestCase
     }
     correct = VaspUtils::Poscar.new(hash)
 
-    assert_equal(correct, VaspUtils::Poscar.interpolate(@p00, p01))
-    assert_equal(correct, @p00.interpolate)
+    assert_equal(correct, VaspUtils::Poscar.interpolate(@p00, p01, 0.5, true))
+    assert_equal
 
   end
 end
