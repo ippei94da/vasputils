@@ -14,7 +14,7 @@ def show_usage
 USAGE
   vaspgeomopt command [option] [path]
 
-E.G.,
+E.g.,
   vaspgeomopt show  [option] [path] # Show state of vasp geometry optimization.
   vaspgeomopt latest         [path] # Show latest vaspdir.
   vaspgeomopt run   [option] [path] # Run vasp geometry optimization
