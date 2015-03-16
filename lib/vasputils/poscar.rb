@@ -191,12 +191,19 @@ class VaspUtils::Poscar
     io.puts "Selective dynamics" if @selective_dynamics
     io.puts "Direct"
 
+    #pp @selective_dynamics
+
     # positions of atoms
     @positions.size.times do |i|
       str = sprintf("    % 18.15f    % 18.15f    % 18.15f", * @positions[i])
       if @selective_dynamics
-        @movable_flags[i].each do |flag|
-          (flag == true) ?  str += " T" : str += " F"
+        #pp @movable_flags
+        if @movable_flags
+          @movable_flags[i].each do |flag|
+            (flag == true) ?  str += " T" : str += " F"
+          end
+        else
+          str += " T T T"
         end
       end
       io.puts str

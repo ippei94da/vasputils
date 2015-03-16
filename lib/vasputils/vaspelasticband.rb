@@ -7,12 +7,7 @@ require "fileutils"
 
 class VaspUtils::VaspElasticBand < Comana::ComputationManager
   # path0 and path1 for POSCAR's
-  def self.generate(arguments)
-    path0 = arguments.shift
-    path1 = arguments.shift
-    new_dir_name = arguments.shift
-    num_images = arguments.shift
-    num_images ||= 1
+  def self.generate(path0, path1, new_dir_name, num_images, periodic)
 
     poscar0 = VaspUtils::Poscar.load_file(path0)
     poscar1 = VaspUtils::Poscar.load_file(path1)
@@ -20,27 +15,28 @@ class VaspUtils::VaspElasticBand < Comana::ComputationManager
     Dir.mkdir new_dir_name
     (num_images + 2).times do |i|
       subdir_name = new_dir_name + sprintf("/%02d", i)
-      Dir.mkdir subdir_name
       ratio = i.to_f/(num_images + 1).to_f 
-      poscar = VaspUtils::Poscar.interpolate(poscar0, poscar1, ratio)
+      poscar = VaspUtils::Poscar.interpolate(poscar0, poscar1, ratio, periodic)
+      #pp poscar
+      Dir.mkdir subdir_name
       File.open("#{subdir_name}/POSCAR", "w") do |io|
         poscar.dump(io)
       end
     end
 
-    dir0 = File::dirname(path0)
-    dir1 = File::dirname(path1)
-    dir0_p = File::dirname(dir0 + "../")
-    dir1_p = File::dirname(dir1 + "../")
-    path_candidate = [ dir0, dir1, dir0_p, dir1_p]
+    #dir0 = File::dirname(path0)
+    #dir1 = File::dirname(path1)
+    #dir0_p = File::dirname(dir0 + "../")
+    #dir1_p = File::dirname(dir1 + "../")
+    #path_candidate = [ dir0, dir1, dir0_p, dir1_p]
 
-    %w(INCAR KPOINTS POTCAR).each do |file|
-      src_file = path_candidate.find do |dir|
-        File.exist? "#{dir}/#{file}"
-      end
-      FileUtils.cp(src_file, "#{new_dir_name}/#{file}")
-      end
-    end
+    #%w(INCAR KPOINTS POTCAR).each do |file|
+    #  src_file = path_candidate.find do |dir|
+    #    File.exist? "#{dir}/#{file}"
+    #  end
+    #  FileUtils.cp(src_file, "#{new_dir_name}/#{file}")
+    #  end
+    #end
 
 
   end
