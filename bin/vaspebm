@@ -28,24 +28,26 @@ end
 command = ARGV.shift
 
 def vaspebm_generate(arguments)
-  options = {:periodic => true}
+  options = {:periodic => true,
+             :num_images => 1
+  }
   op = OptionParser.new
   op.banner = [
       "Usage: #{File.basename("#{__FILE__}")} generate [options]",
   ].join("\n")
-  op.on("-i val"    , "--images=val"    , "number of images"){|v| options[:images] = v.to_i}
+  op.on("-i val"    , "--images=val"    , "number of images"){|v| options[:num_images] = v.to_i}
   op.on("-P"    , "--no-periodic"    , "Not periodic"){ options[:periodic] = false}
   op.parse!(arguments)
 
   path0 = arguments.shift
   path1 = arguments.shift
   new_dir_name = arguments.shift
-  num_images = arguments.shift
-  num_images ||= 1
+  num_images = options[:num_images]
 
   #pp num_images
   #pp options
   #exit
+  #pp num_images
   VaspUtils::VaspElasticBand.generate(path0, path1, new_dir_name, num_images, options[:periodic])
 end
 
