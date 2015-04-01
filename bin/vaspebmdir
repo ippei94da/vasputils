@@ -48,28 +48,28 @@ def vaspebm_generate(arguments)
   #pp options
   #exit
   #pp num_images
-  VaspUtils::VaspElasticBand.generate(path0, path1, new_dir_name, num_images, options[:periodic])
+  VaspUtils::VaspEbmDir.generate(path0, path1, new_dir_name, num_images, options[:periodic])
 end
 
 case command
 when "generate"
   vaspebm_generate(ARGV)
 #when "interpolate"
-#    VaspUtils::VaspElasticBand.interpolate(ARGV)
+#    VaspUtils::VaspEbmDir.interpolate(ARGV)
 #when "show"
-#    VaspUtils::VaspElasticBand.show_inspect(ARGV)
+#    VaspUtils::VaspEbmDir.show_inspect(ARGV)
 #when "latest"
-#    VaspUtils::VaspElasticBand.show_latest(ARGV)
+#    VaspUtils::VaspEbmDir.show_latest(ARGV)
 #when "run"
-#    VaspUtils::VaspElasticBand.run(ARGV)
+#    VaspUtils::VaspEbmDir.run(ARGV)
 ##when "reset"
-##    VaspUtils::VaspElasticBand.reset(ARGV)
+##    VaspUtils::VaspEbmDir.reset(ARGV)
 #when "next"
-#    VaspUtils::VaspElasticBand.next(ARGV)
+#    VaspUtils::VaspEbmDir.next(ARGV)
 #when "initialize"
-#    VaspUtils::VaspElasticBand.reset_initialize(ARGV)
+#    VaspUtils::VaspEbmDir.reset_initialize(ARGV)
 #when "reincarnate"
-#    VaspUtils::VaspElasticBand.reincarnate(ARGV)
+#    VaspUtils::VaspEbmDir.reincarnate(ARGV)
 #when "--help"
 #    show_usage
 else

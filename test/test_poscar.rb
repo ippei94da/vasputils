@@ -471,6 +471,11 @@ class TC_Poscar < Test::Unit::TestCase
     })
 
     assert_equal(correct, VaspUtils::Poscar.interpolate(@p00, p01, 0.25, true))
+
+
+    TODO
+    selective dynamics で AND をとる。
+    なければ全部 TRUE
   end
 
   def test_equal

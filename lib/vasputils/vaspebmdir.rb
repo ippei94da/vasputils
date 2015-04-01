@@ -5,7 +5,7 @@ require "pp"
 require "fileutils"
 
 
-class VaspUtils::VaspElasticBand < Comana::ComputationManager
+class VaspUtils::VaspEbmDir < Comana::ComputationManager
   # path0 and path1 for POSCAR's
   def self.generate(path0, path1, new_dir_name, num_images, periodic)
 

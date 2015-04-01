@@ -5,7 +5,7 @@ require "helper"
 #require "test/unit"
 #require "pkg/klass.rb"
 
-class TC_VaspElasticBand< Test::Unit::TestCase
+class TC_VaspEbmDir < Test::Unit::TestCase
   #def setup
   #    @veb00 = 
   #end
