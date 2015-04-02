@@ -609,5 +609,9 @@ class TC_Poscar < Test::Unit::TestCase
     results =  VaspUtils::Poscar.periodic_nearest( [0.0, 0.0, 0.0], [0.8, 0.8, 0.8])
     3.times { |i| assert_in_delta(corrects[i], results[i], $tolerance) }
   end
+
+  def test_merge_selective_dynamics
+    TODO
+  end
 end
 
