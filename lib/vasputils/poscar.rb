@@ -321,6 +321,7 @@ class VaspUtils::Poscar
   end
 
   def merge_selective_dynamics(sd0, sd1)
+
   end
 
 end
