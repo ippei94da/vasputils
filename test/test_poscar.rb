@@ -12,6 +12,9 @@ class VaspUtils::Poscar
 end
 
 class TC_Poscar < Test::Unit::TestCase
+  T = true
+  F = false
+
   $tolerance = 10 ** (-10)
   def setup
     @p00 = VaspUtils::Poscar.new({
@@ -611,7 +614,31 @@ class TC_Poscar < Test::Unit::TestCase
   end
 
   def test_merge_selective_dynamics
-    TODO
+    sd0 = [ [T, T, T], [T, T, F], [T, F, F], [F, F, F] ]
+    sd1 = [ [T, T, T], [F, T, T], [F, F, T], [F, F, F] ]
+
+    e01 = [ [T, T, T], [F, T, F], [F, F, F], [F, F, F] ]
+    assert_equal( e01, @p00.merge_selective_dynamics(sd0, sd1))
+    assert_equal( e01, @p00.merge_selective_dynamics(sd1, sd0))
+
+    assert_equal(
+      [ [T, T, T], [T, T, F], [T, F, F], [F, F, F] ],
+      @p00.merge_selective_dynamics(sd0, F)
+    )
+
+    assert_equal(
+      [ [T, T, T], [T, T, F], [T, F, F], [F, F, F] ],
+      @p00.merge_selective_dynamics(F, sd0)
+    )
+
+    #はぬけがあったやつ。
+    assert_equal(
+      [ [F, F, F], [F, F, F], [F, F, T], [T, T, T] ],
+      @p00.merge_selective_dynamics(
+        [ [T, T, T], [T, T, T], [T, T, T], [T, T, T] ],
+        [ [F, F, F], [F, F, F], [F, F] ],
+      )
+    )
   end
 end
 

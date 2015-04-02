@@ -320,11 +320,6 @@ class VaspUtils::Poscar
   end
 
   def merge_selective_dynamics(sd0, sd1)
-    #TODO
-    #  ##selective_dynamics
-    #  いないばあい
-    #  もいっこループ
-    #new_selective_dynamics << (free_axes0 && free_axes1)
   end
 
 end
