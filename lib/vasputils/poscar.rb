@@ -320,8 +320,38 @@ class VaspUtils::Poscar
     ((coord0.to_v3d * (1-ratio) + coord1.to_v3d * ratio)).to_a
   end
 
+  # 各要素の論理積。
+  # ただし、空要素は true とする。
   def merge_selective_dynamics(sd0, sd1)
+    sd0 = fill_true(sd0)
+    sd1 = fill_true(sd1)
 
+    results = []
+    sd0.size.times do |i|
+      xyz = []
+      3.times do |j|
+        xyz << (sd0[i][j] && sd1[i][j])
+      end
+      results << xyz
+    end
+    results
+  end
+
+  # false だったときは全て true で埋める。
+  def fill_true(selective_dynamics)
+    results = []
+    @positions.size.times do |i|
+      results << [true, true, true]
+    end
+
+    return results unless selective_dynamics
+
+    selective_dynamics.size.times do |i|
+      selective_dynamics[i].size.times do |j|
+        results[i][j] = selective_dynamics[i][j]
+      end
+    end
+    results
   end
 
 end

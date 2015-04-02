@@ -8,7 +8,7 @@ require "rubygems"
 require "crystalcell"
 
 class VaspUtils::Poscar
-  public :merge_selective_dynamics, :periodic_nearest
+  public :merge_selective_dynamics, :periodic_nearest, :fill_true
 end
 
 class TC_Poscar < Test::Unit::TestCase
@@ -128,10 +128,10 @@ class TC_Poscar < Test::Unit::TestCase
     assert_equal([1,1,2], poscar.nums_elements)
     assert_equal(
       [
-        [false, false, false],
-        [false, true , false],
-        [true , true , true ],
-        [true , true , true ],
+        [F, F, F],
+        [F, T, F],
+        [T, T, T],
+        [T, T, T],
       ],
       poscar.selective_dynamics
     )
@@ -185,9 +185,9 @@ class TC_Poscar < Test::Unit::TestCase
       [0.0, 0.0, 1.0 ],
       ])
     atoms = [
-      CrystalCell::Atom.new("Li", [0.1, 0.2, 0.3], "atom0", [false, true , true ]),
-      CrystalCell::Atom.new("O" , [0.2, 0.3, 0.4], "atom1", [false, false, true ]),
-      CrystalCell::Atom.new("Li", [0.3, 0.4, 0.5], "atom2", [false, false, false]),
+      CrystalCell::Atom.new("Li", [0.1, 0.2, 0.3], "atom0", [F, T, T]),
+      CrystalCell::Atom.new("O" , [0.2, 0.3, 0.4], "atom1", [F, F, T]),
+      CrystalCell::Atom.new("Li", [0.3, 0.4, 0.5], "atom2", [F, F, F]),
     ]
     cell = CrystalCell::Cell.new(axes, atoms)
     cell.comment = "test"
@@ -207,11 +207,7 @@ class TC_Poscar < Test::Unit::TestCase
     assert_equal(%w(Li O), poscar.elements)
     assert_equal([2,1], poscar.nums_elements)
     assert_equal(
-      [
-        [false, true , true ], 
-        [false, false, false], 
-        [false, false, true ], 
-      ],
+      [ [F, T, T], [F, F, F], [F, F, T], ],
       poscar.selective_dynamics
     )
 
@@ -432,7 +428,7 @@ class TC_Poscar < Test::Unit::TestCase
       ],
       :elements           => %w(Li Ge O),
       :nums_elements      => [1,1,2],
-      :selective_dynamics => true, # always on
+      :selective_dynamics => [ [T, T, T], [T, T, T], [T, T, T], [T, T, T] ],
       :direct             => true,
       :positions          => [
         [0.05, 0.10, 0.15],
@@ -466,7 +462,7 @@ class TC_Poscar < Test::Unit::TestCase
       ],
       :elements           => %w(Li Ge O),
       :nums_elements      => [1,1,2],
-      :selective_dynamics => true, # always on
+      :selective_dynamics => [ [T, T, T], [T, T, T], [T, T, T], [T, T, T] ],
       :direct             => true,
       :positions          => [
         [0.05, 0.10, -0.1], #0 -> 0.6, 0-> -0.4
@@ -484,17 +480,13 @@ class TC_Poscar < Test::Unit::TestCase
       :comment => 'p00',
       :scale   => 1.0,
       :axes    => [
-        [1.0, 0.0, 1.0 ],
+        [1.0, 0.0, 0.0 ],
         [0.0, 1.0, 0.0 ],
         [0.0, 0.0, 1.0 ],
       ],
       :elements           => %w(Li O),
       :nums_elements      => [1,2],
-      :selective_dynamics => [
-        [true , true , true ],
-        [true , true , false],
-        [false, false, false],
-      ],
+      :selective_dynamics => [ [T, T, T], [T, T, F], [F, F, F], ],
       :direct             => true,
       :positions          => [
         [0.0,  0.0,  0.1],
@@ -504,9 +496,9 @@ class TC_Poscar < Test::Unit::TestCase
     }
     p00 = VaspUtils::Poscar.new(hash00)
     hash00[:selective_dynamics] = [
-      [true , true , true ],
-      [false, true , true ],
-      [false, false, false],
+      [T, T, T],
+      [F, T, T],
+      [F, F, F],
     ]
     p01 = VaspUtils::Poscar.new(hash00)
     result = VaspUtils::Poscar.interpolate(p00, p01, 0.5)
@@ -518,13 +510,9 @@ class TC_Poscar < Test::Unit::TestCase
         [0.0, 1.0, 0.0 ],
         [0.0, 0.0, 1.0 ],
       ],
-      :elements           => %w(Li Ge),
+      :elements           => %w(Li O),
       :nums_elements      => [1,2],
-      :selective_dynamics => [
-        [true , true , true ],
-        [false, true , false],
-        [false, false, false],
-      ],
+      :selective_dynamics => [ [T, T, T], [F, T, F], [F, F, F]],
       :direct             => true,
       :positions          => [
         [0.0,  0.0,  0.1],
@@ -638,6 +626,14 @@ class TC_Poscar < Test::Unit::TestCase
         [ [T, T, T], [T, T, T], [T, T, T], [T, T, T] ],
         [ [F, F, F], [F, F, F], [F, F] ],
       )
+    )
+  end
+
+  def test_fill_true
+    e00 = [ [T, T, T], [T, T, T], [T, T, T], [T, T, T] ]
+    assert_equal(e00, @p00.fill_true(false))
+    assert_equal(e00, 
+      @p00.fill_true( [ [T, T, T], [T, T, T], [T, T]])
     )
   end
 end
