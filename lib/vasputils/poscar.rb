@@ -266,7 +266,7 @@ class VaspUtils::Poscar
       ##positions
       coord0 = self.positions[i]
       coord1 = other.positions[i]
-      coord1 = self.periodic_nearest(coord0, coord1) if periodic
+      coord1 = periodic_nearest(coord0, coord1) if periodic
       new_positions << interpolate_coords(
         coord0, coord1, ratio)
     end
@@ -289,16 +289,6 @@ class VaspUtils::Poscar
   end
 
   # 
-  def self.periodic_nearest(coord0, coord1)
-    pcell = CrystalCell::PeriodicCell.new( [
-      [1.0, 0.0, 0.0],
-      [0.0, 1.0, 0.0],
-      [0.0, 0.0, 1.0],
-    ])
-    result = coord1.to_v3di + pcell.nearest_direction( coord0.to_v3di, coord1.to_v3di)
-    result.to_a
-  end
-
   def ==(other)
     result = true
     result = false unless @comment             == other.comment            
@@ -314,6 +304,17 @@ class VaspUtils::Poscar
 
 
   private
+  
+  def periodic_nearest(coord0, coord1)
+    pcell = CrystalCell::PeriodicCell.new( [
+      [1.0, 0.0, 0.0],
+      [0.0, 1.0, 0.0],
+      [0.0, 0.0, 1.0],
+    ])
+    result = coord1.to_v3di + pcell.nearest_direction( coord0.to_v3di, coord1.to_v3di)
+    result.to_a
+  end
+
 
   def interpolate_coords(coord0, coord1, ratio)
     ((coord0.to_v3d * (1-ratio) + coord1.to_v3d * ratio)).to_a

@@ -8,7 +8,7 @@ require "rubygems"
 require "crystalcell"
 
 class VaspUtils::Poscar
-  public :merge_selective_dynamics
+  public :merge_selective_dynamics, :periodic_nearest
 end
 
 class TC_Poscar < Test::Unit::TestCase
@@ -597,19 +597,19 @@ class TC_Poscar < Test::Unit::TestCase
 
   def test_periodic_nearest
     corrects = [0.0, 0.0, -0.2]
-    results =  VaspUtils::Poscar.periodic_nearest( [0.0, 0.0, 0.0], [0.0, 0.0, 0.8])
+    results =  @p00.periodic_nearest( [0.0, 0.0, 0.0], [0.0, 0.0, 0.8])
     3.times { |i| assert_in_delta(corrects[i], results[i], $tolerance) }
 
     corrects = [0.0, 0.0, 1.0]
-    results =  VaspUtils::Poscar.periodic_nearest( [0.0, 0.0, 0.8], [0.0, 0.0, 0.0])
+    results =  @p00.periodic_nearest( [0.0, 0.0, 0.8], [0.0, 0.0, 0.0])
     3.times { |i| assert_in_delta(corrects[i], results[i], $tolerance) }
 
     corrects = [0.0, -0.2, -0.2]
-    results =  VaspUtils::Poscar.periodic_nearest( [0.0, 0.0, 0.0], [0.0, 0.8, 0.8])
+    results =  @p00.periodic_nearest( [0.0, 0.0, 0.0], [0.0, 0.8, 0.8])
     3.times { |i| assert_in_delta(corrects[i], results[i], $tolerance) }
 
     corrects = [-0.2, -0.2, -0.2]
-    results =  VaspUtils::Poscar.periodic_nearest( [0.0, 0.0, 0.0], [0.8, 0.8, 0.8])
+    results =  @p00.periodic_nearest( [0.0, 0.0, 0.0], [0.8, 0.8, 0.8])
     3.times { |i| assert_in_delta(corrects[i], results[i], $tolerance) }
   end
 
