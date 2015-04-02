@@ -238,7 +238,10 @@ class VaspUtils::Poscar
   end
 
   # selective_dynamics は常に on にする。
-  # ratio は poscar1 の比率。0だと poscar0 に、1だとposcar1 となる。
+  # 各要素の真偽値は 2つの POSCAR の論理積。
+  # 指定がなければ true と見做す。
+  # ratio は poscar1 の比率。0だと poscar0 に、
+  # 1だとposcar1 となる。
   # Return Poscar class instance
   def self.interpolate(poscar0, poscar1, ratio, periodic = false)
     axes0 = poscar0.axes
@@ -252,12 +255,21 @@ class VaspUtils::Poscar
     raise PoscarMismatchError unless poscar0.nums_elements == poscar1.nums_elements
 
     new_positions = []
+    new_selective_dynamics = []
     poscar0.positions.size.times do |i|
+      ##positions
       coord0 = poscar0.positions[i]
       coord1 = poscar1.positions[i]
       coord1 = self.periodic_nearest(coord0, coord1) if periodic
       new_positions << self.interpolate_coords(
         coord0, coord1, ratio)
+
+      ##selective_dynamics
+      いないばあい
+      もいっこループ
+      sd0 = poscar0.selective_dynamics[i]
+      sd1 = poscar1.selective_dynamics[i]
+      new_selective_dynamics << (sd0 && sd1)
     end
 
     hash = {
@@ -266,7 +278,7 @@ class VaspUtils::Poscar
       :axes    => new_axes,
       :elements           => poscar0.elements,
       :nums_elements      => poscar0.nums_elements,
-      :selective_dynamics => true, # always on
+      :selective_dynamics => new_selective_dynamics
       :direct             => true,
       :positions          => new_positions
     }
