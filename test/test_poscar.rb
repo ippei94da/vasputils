@@ -7,6 +7,10 @@ require "stringio"
 require "rubygems"
 require "crystalcell"
 
+class VaspUtils::Poscar
+  public :merge_selective_dynamics
+end
+
 class TC_Poscar < Test::Unit::TestCase
   $tolerance = 10 ** (-10)
   def setup
