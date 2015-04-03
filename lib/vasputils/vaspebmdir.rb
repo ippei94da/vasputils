@@ -6,9 +6,16 @@ require "fileutils"
 
 
 class VaspUtils::VaspEbmDir < Comana::ComputationManager
-  # path0 and path1 for POSCAR's
-  def self.generate(path0, path1, new_dir_name, num_images, periodic)
 
+  # path0 and path1 for POSCAR's
+  # INCAR などは以下から検索して最初に見つかった物をベースとする。
+  #   path0 と同じディレクトリ
+  #   path1 と同じディレクトリ
+  #   path0 の親ディレクトリ
+  #   path1 の親ディレクトリ
+  def self.generate(path0, path1, new_dir_name, num_images, periodic)
+    path0 = Pathname.new(path0)
+    path1 = Pathname.new(path0)
     poscar0 = VaspUtils::Poscar.load_file(path0)
     poscar1 = VaspUtils::Poscar.load_file(path1)
 
@@ -24,22 +31,28 @@ class VaspUtils::VaspEbmDir < Comana::ComputationManager
       end
     end
 
-    #dir0 = File::dirname(path0)
-    #dir1 = File::dirname(path1)
-    #dir0_p = File::dirname(dir0 + "../")
-    #dir1_p = File::dirname(dir1 + "../")
-    #path_candidate = [ dir0, dir1, dir0_p, dir1_p]
+    dir0 = path0.dirname
+    dir1 = path1.dirname
+    paths = {}
+    ['INCAR', 'KPOINTS', 'POTCAR'].each do |basename|
+      path = 
+        [dir0, dir1, dir0.parent, dir1.parent].find { |dir|
+          File.exist?(dir + basename)
+        }
+      paths[basename] = path if path
+    end
 
-    #%w(INCAR KPOINTS POTCAR).each do |file|
-    #  src_file = path_candidate.find do |dir|
-    #    File.exist? "#{dir}/#{file}"
-    #  end
-    #  FileUtils.cp(src_file, "#{new_dir_name}/#{file}")
-    #  end
-    #end
-
-
+    paths.each do |path|
+      FileUtils.cp path new_dir_name
+    end
+    if paths["INCAR"] 
+      incar = Incar.load_file paths["INCAR"] 
+      incar.add("IMAGES", num_images)
+      incar.add("SPRING", 0)
+    end
+    incar.dump paths["INCAR"] 
   end
+
 
 end
 

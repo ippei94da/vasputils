@@ -1,6 +1,7 @@
 require "rubygems"
 #gem     "mageo"
 require "malge"
+require "pathname"
 require "mageo"
 require "comana"
 require "crystalcell"
