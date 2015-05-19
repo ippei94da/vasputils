@@ -1,0 +1,45 @@
+#! /usr/bin/env ruby
+
+require "rubygems"
+require "vasputils"
+
+#gem "crystalcell"
+#require "crystalcell/latticeaxes.rb"
+#require "crystalcell/cell.rb"
+
+def lattice_constants(args)
+  puts "      a,       b,       c,  alpha,   beta,  gamma,   volume, file"
+  ARGV.each do |file|
+    axes = VaspUtils::Poscar.load_file(file).axes
+    latticeconstants = CrystalCell::LatticeAxes.axes_to_lc(axes)
+    printf("%7.4f, %7.4f, %7.4f, %6.2f, %6.2f, %6.2f, ",
+      *(latticeconstants))
+    printf("%8.3f, ", CrystalCell::Cell.new(axes).calc_volume) # show volume
+    puts file
+  end
+end
+
+def distance(args)
+  どれとどれ。
+  省略可能？
+
+
+  ARGV.each do |file|
+    poscar = VaspUtils::Poscar.load_file(file)
+    poscar.to_cell
+    pp poscar
+  end
+
+end
+
+command = ARGV.shift 
+#pp command
+#pp ARGV
+
+case command
+when /^l/ #latticeconstants
+  lattice_constants(ARGV)
+when /^d/ #distance
+  distance(ARGV)
+end
+
