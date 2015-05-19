@@ -20,16 +20,36 @@ def lattice_constants(args)
 end
 
 def distance(args)
-  どれとどれ。
-  省略可能？
-
-
-  ARGV.each do |file|
-    poscar = VaspUtils::Poscar.load_file(file)
-    poscar.to_cell
-    pp poscar
+  if args.size > 3
+    puts "USAGE: poscar d[istance] poscar [id1] [id2]"
+    exit
   end
 
+
+  poscar = VaspUtils::Poscar.load_file(args.shift)
+  id = args.shift
+  atom1s = [id.to_i]
+  atom1s = 0...poscar.positions.size if id == nil
+
+  id = args.shift
+  atom2s = [id.to_i]
+  atom2s = 0...poscar.positions.size if id == nil
+
+  printf("atom1, atom2, %8s, %8s\n", "distance", "periodic_distance")
+  atom1s.each do |atom1|
+    atom2s.each do |atom2|
+
+      cell = poscar.to_cell
+      positions = cell.positions
+      d =  cell.distance(positions[atom1], positions[atom2]) #not periodic
+
+      pcell = cell.to_pcell
+      pd = pcell.nearest_distance(positions[atom1], positions[atom2]) #not periodic
+      printf("%5i, %5i, %8.5f, %8.5f\n", atom1, atom2 , d, pd)
+
+      #pp cell.distance
+    end
+  end
 end
 
 command = ARGV.shift 

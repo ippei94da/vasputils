@@ -19,7 +19,9 @@
 # Class to utilize INCAR file of VASP.
 # まず、自分で使う範囲だけ作る。
 # あとで余力があれば精密化する。
-module VaspUtils::Incar
+class VaspUtils::Incar
+
+  attr_accessor :data
   
   # 与えられた IO を読み込み、INCAR として解析したハッシュを返す。
   def self.parse(io)
@@ -35,7 +37,7 @@ module VaspUtils::Incar
         results[key] = val
       end
     end
-    return results
+    self.new( results)
   end
 
   # 与えられた名前のファイルを INCAR として解析したハッシュを返す。
@@ -44,11 +46,16 @@ module VaspUtils::Incar
     return self.parse(io)
   end
 
-  # 与えられたデータ対(ハッシュ)を io に書き出す。
+  def initialize(data)
+    @data = data
+    @data ||= {}
+  end
+
+  # io に書き出す。
   # io が nil の場合は INCAR 形式文字列を返す。
   # (改行文字を埋め込んでおり、配列化していない)
-  def self.dump(pairs, io = nil)
-    result = pairs.map { |key, val|
+  def dump(io = nil)
+    result = @data.map { |key, val|
       "#{key} = #{val}"
     }.join("\n")
 

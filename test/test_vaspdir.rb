@@ -179,7 +179,7 @@ class TC_VaspDir < Test::Unit::TestCase
 
     def test_incar
         t = @vd00.incar
-        assert_equal("400", t["ENCUT"])
+        assert_equal("400", t.data["ENCUT"])
     end
 
     def test_kpoints
@@ -200,7 +200,7 @@ class TC_VaspDir < Test::Unit::TestCase
         @vd00.mutate("test/vaspdir/mutate", conditions)
         new_dir = VaspUtils::VaspDir.new(tmp_dir)
         new_incar = new_dir.incar
-        assert_equal("800.0", new_incar["ENCUT"])
+        assert_equal("800.0", new_incar.data["ENCUT"])
 
         new_kpoints = new_dir.kpoints
         assert_equal([8,8,5], new_kpoints.mesh)

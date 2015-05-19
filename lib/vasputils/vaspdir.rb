@@ -372,9 +372,9 @@ class VaspUtils::VaspDir < Comana::ComputationManager
 
     ##INCAR
     new_incar = incar
-    new_incar["ENCUT"] = condition[:encut] if condition[:encut]
+    new_incar.data["ENCUT"] = condition[:encut] if condition[:encut]
     File.open("#{tgt_name}/INCAR", "w") do |io|
-      VaspUtils::Incar.dump(new_incar, io)
+      new_incar.dump(io)
     end
 
     ##KPOINTS
