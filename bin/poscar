@@ -26,7 +26,7 @@ def distance(args)
     exit
   end
 
-
+  #pp args.shift
   poscar = VaspUtils::Poscar.load_file(args.shift)
   id = args.shift
   atom1s = [id.to_i]
@@ -56,8 +56,19 @@ def distance(args)
 end
 
 command = ARGV.shift 
-#pp command
-#pp ARGV
+
+USAGE =<<HERE
+USAGE: poscar command [arguments]" 
+  command:
+    d[istance]
+    l[atticeconstants]
+HERE
+
+if command == nil
+  puts "
+  puts "
+  exit
+end
 
 case command
 when /^l/ #latticeconstants
