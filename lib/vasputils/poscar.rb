@@ -104,7 +104,7 @@ class VaspUtils::Poscar
       :nums_elements      => nums_elements     ,
       :selective_dynamics => selective_dynamics,
       :direct             => direct            ,
-      :positions              => positions             ,
+      :positions          => positions         ,
     }
     self.new(options)
   end
@@ -163,7 +163,6 @@ class VaspUtils::Poscar
   #
   # io は書き出すファイルハンドル。
   # 'version' indicates a poscar style for vasp 4 or 5.
-  #def dump(io, elems = nil, version = 5)
   def dump(io, version = 5)
     #elems = @elements.sort unless elems
     #unless (Mapping::map?(@elements.uniq, elems){ |i, j| i == j })
@@ -302,8 +301,44 @@ class VaspUtils::Poscar
     result
   end
 
+  def substitute(elem1, elem2)
+    result = Marshal.load(Marshal.dump(self))
+    result.substitute!(elem1, elem2)
+    result
+  end
+
+  def substitute!(elem1, elem2)
+    @elements.map! do |elem|
+      if elem == elem1 
+        elem2
+      else
+        elem
+      end
+    end
+    unite_elements
+  end
 
   private
+
+  def unite_elements
+    elems_positions = {}
+    pos_index = 0
+    @elements.each_with_index do |elem, index|
+      elems_positions[elem] ||= []
+      nums_elements[index].times do
+        elems_positions[elem] << @positions[pos_index]
+        pos_index += 1
+      end
+    end
+    @elements = elems_positions.keys
+    @nums_elements = elems_positions.map {|key, val| val.size}
+    @positions = []
+    elems_positions.each do |key, val|
+      val.each do |pos|
+        @positions << pos
+      end
+    end
+  end
   
   def periodic_nearest(coord0, coord1)
     pcell = CrystalCell::PeriodicCell.new( [

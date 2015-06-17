@@ -26,7 +26,6 @@ def distance(args)
     exit
   end
 
-  #pp args.shift
   poscar = VaspUtils::Poscar.load_file(args.shift)
   id = args.shift
   atom1s = [id.to_i]
@@ -55,6 +54,18 @@ def distance(args)
   end
 end
 
+def substitute(args)
+  unless args.size == 3
+    puts "USAGE: poscar s[ubstitute] poscar elem1 elem2"
+    puts "  E.g., poscar substitute dir/poscar Ti Ni"
+    exit
+  end
+
+  poscar, elem1, elem2 = * args
+  poscar = VaspUtils::Poscar.load_file(poscar)
+  poscar.substitute(elem1, elem2).dump($stdout)
+end
+
 command = ARGV.shift 
 
 USAGE =<<HERE
@@ -62,11 +73,11 @@ USAGE: poscar command [arguments]"
   command:
     d[istance]
     l[atticeconstants]
+    s[ubstitute]
 HERE
 
 if command == nil
-  puts "
-  puts "
+  puts USAGE
   exit
 end
 
@@ -75,5 +86,7 @@ when /^l/ #latticeconstants
   lattice_constants(ARGV)
 when /^d/ #distance
   distance(ARGV)
+when /^s/ #substitute
+  substitute(ARGV)
 end
 

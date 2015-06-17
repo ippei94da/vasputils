@@ -12,10 +12,12 @@
 - bin/vaspgeomopt is made, instead of showvaspdir, etc.
 
 - Poscar, Kpoints, Incar, Potcar modules converted to class.
+- Change interface of poscar.parse and poscar.load_file to return poscar class instance.
+- Add poscar.to_cell
+- Add poscar.load_cell
+- Add bin/poscar
 
-poscar.parse, poscar.load_file が poscar クラスインスタンスを返すようにする。
-poscar.to_cell を作る。
-poscar.load_cell を作る。
+bin/potcar
 
 
 == Version 0.0.12 [2014-08-30] released

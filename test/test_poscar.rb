@@ -8,7 +8,7 @@ require "rubygems"
 require "crystalcell"
 
 class VaspUtils::Poscar
-  public :merge_selective_dynamics, :periodic_nearest, :fill_true
+  public :merge_selective_dynamics, :periodic_nearest, :fill_true, :unite_elements
 end
 
 class TC_Poscar < Test::Unit::TestCase
@@ -583,6 +583,99 @@ class TC_Poscar < Test::Unit::TestCase
     assert_equal(false, @p00 == p00)
   end
 
+  def test_substitute
+    p01 = VaspUtils::Poscar.new({
+      :comment => 'p00',
+      :scale   => 1.0,
+      :axes    => [
+        [1.0, 0.0, 0.0 ],
+        [0.0, 1.0, 0.0 ],
+        [0.0, 0.0, 1.0 ],
+      ],
+      :elements           => %w(Li Si O),
+      :nums_elements      => [1,1,2],
+      :selective_dynamics => false,
+      :direct             => true,
+      :positions          => [
+        [0.0,  0.0,  0.0],
+        [0.5,  0.0,  0.0],
+        [0.5,  0.5,  0.0],
+        [0.5,  0.5,  0.5],
+      ]
+    })
+    result = @p00.substitute('Ge', 'Si')
+    assert_equal(p01, result)
+
+    p02 = VaspUtils::Poscar.new({
+      :comment => 'p00',
+      :scale   => 1.0,
+      :axes    => [
+        [1.0, 0.0, 0.0 ],
+        [0.0, 1.0, 0.0 ],
+        [0.0, 0.0, 1.0 ],
+      ],
+      :elements           => %w(Si O),
+      :nums_elements      => [1,3],
+      :selective_dynamics => false,
+      :direct             => true,
+      :positions          => [
+        [0.5,  0.0,  0.0],
+        [0.0,  0.0,  0.0],
+        [0.5,  0.5,  0.0],
+        [0.5,  0.5,  0.5],
+      ]
+    })
+    result = @p00.substitute('Li', 'O')
+    assert_equal(p02, result)
+  end
+
+  def test_unite_elements
+    tmp = Marshal.load(Marshal.dump(@p00))
+    tmp.unite_elements
+    assert_equal(@p00, tmp)
+
+    p01 = VaspUtils::Poscar.new({
+      :comment => 'p00',
+      :scale   => 1.0,
+      :axes    => [
+        [1.0, 0.0, 0.0 ],
+        [0.0, 1.0, 0.0 ],
+        [0.0, 0.0, 1.0 ],
+      ],
+      :elements           => %w(O Ge O),
+      :nums_elements      => [1,1,2],
+      :selective_dynamics => false,
+      :direct             => true,
+      :positions          => [
+        [0.0,  0.0,  0.0],
+        [0.5,  0.0,  0.0],
+        [0.5,  0.5,  0.0],
+        [0.5,  0.5,  0.5],
+      ]
+    })
+    p02 = VaspUtils::Poscar.new({
+      :comment => 'p00',
+      :scale   => 1.0,
+      :axes    => [
+        [1.0, 0.0, 0.0 ],
+        [0.0, 1.0, 0.0 ],
+        [0.0, 0.0, 1.0 ],
+      ],
+      :elements           => %w(O Ge),
+      :nums_elements      => [3,1],
+      :selective_dynamics => false,
+      :direct             => true,
+      :positions          => [
+        [0.0,  0.0,  0.0],
+        [0.5,  0.5,  0.0],
+        [0.5,  0.5,  0.5],
+        [0.5,  0.0,  0.0],
+      ]
+    })
+    p01.unite_elements
+    assert_equal(p02, p01)
+  end
+
   def test_periodic_nearest
     corrects = [0.0, 0.0, -0.2]
     results =  @p00.periodic_nearest( [0.0, 0.0, 0.0], [0.0, 0.0, 0.8])
@@ -636,5 +729,7 @@ class TC_Poscar < Test::Unit::TestCase
       @p00.fill_true( [ [T, T, T], [T, T, T], [T, T]])
     )
   end
+
+  undef test_substitute
 end
 
