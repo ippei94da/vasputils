@@ -16,9 +16,7 @@
 - Add poscar.to_cell
 - Add poscar.load_cell
 - Add bin/poscar
-
-bin/potcar
-
+- Add bin/potcar
 
 == Version 0.0.12 [2014-08-30] released
 - Update bin/symposcar .
