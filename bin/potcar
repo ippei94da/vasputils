@@ -1,27 +1,36 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
-require "optparse"
-require "rubygems"
+require "thor"
+#require "rubygems"
 gem "vasputils"
-require "vasputils.rb"
+require "vasputils"
 
-# option analysis
-OPTIONS = {}
-op = OptionParser.new
-op.on("-p POSCAR", "--poscar=POSCAR", "Element data from POSCAR. (vasp 5 sytle POSCAR only.)"){|v| OPTIONS[:poscar] = v}
-#op.on("-o", "--output-file", "Output to POTCAR file."){|v| OPTIONS[:poscar] = v}
-op.parse!(ARGV)
+class PotcarCommand < Thor
 
-#cell = VaspUtils::Poscar.load_file ARGV[0]
-#elements = cell.elements.uniq
+  desc 'generate element1 [elemnt2, ...]', 'generate POTCAR of elements'
+  option :poscar, desc: 'Alternatively use of elements in POSCAR',
+    lazy_default: "POSCAR"
+  def generate(*elements)
+    #pp elements
+    #pp options[:poscar]
+    if options[:poscar] && (! elements.empty?)
+      puts "Error. Duplicated indication of elements with argument and --poscar option."
+      exit
+    end
 
-elements = ARGV
+    if options[:poscar]
+      elements = VaspUtils::Poscar.load_file(options[:poscar]).elements
+    end
 
-setting = VaspUtils::Setting.new
+    setting = VaspUtils::Setting.new
 
-vpc = VaspUtils::Potcar::Concatenater.new(
-  setting['potcar_dir'],
-  setting['default_potcar']
-)
-vpc.dump(elements, STDOUT)
+    vpc = VaspUtils::Potcar::Concatenater.new(
+      setting['potcar_dir'],
+      setting['default_potcar']
+    )
+    vpc.dump(elements, STDOUT)
+  end
+end
+
+PotcarCommand.start(ARGV)
