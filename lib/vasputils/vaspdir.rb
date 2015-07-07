@@ -189,7 +189,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
           end
 
 
-          encut = calc.incar["ENCUT"]
+          encut = calc.incar.data["ENCUT"]
         rescue
           toten = i_step = e_step = time = k_str = encut = ""
         end
