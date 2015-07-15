@@ -1,0 +1,30 @@
+#! /usr/bin/env ruby
+
+
+require 'thor'
+require 'vasputils'
+require 'pp'
+
+一点計算の条件を見る。
+
+#### Command template
+#class vaspcond < Thor
+#  desc "light", "Detect the lightest queue."
+#
+#  def lightqueue
+#    qinfo = Comana::QueueManager.new
+#    qinfo.light_queue
+#  end
+#
+#  #def job
+#  #end
+#
+#  def show
+#
+#  end
+#
+#end
+#
+#Queueinfo.start(ARGV)
+#
+#
