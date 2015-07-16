@@ -9,20 +9,9 @@ class VaspUtils::SinglePointCondition
   class ArgumentError < Exception; end
 
   #
-  def initialize(standard_vaspdir, options)
-    @standard_vaspdir = VaspUtils::VaspDir.new(standard_vaspdir)
+  def initialize(options)
     self.class.check_sanity_options(options)
 
-    @options = {}
-    [:ka, :kb, :kc, :kab, :kbc, :kca, :kabc].each do |key|
-      next unless options[key]
-      @options[key] = self.class.integers(options[key])
-    end
-    [:encut].each do |key|
-      next unless options[key]
-      @options[key] = self.class.floats(options[key])
-    end
-    
   end
 
   def self.integers(str)
@@ -116,7 +105,19 @@ class VaspUtils::SinglePointCondition
     result
   end
 
-  def generate_condition_dirs(tgt_dir = ".")
+  def generate_condition_dirs(src_vaspdir)
+    src_vaspdir = VaspUtils::VaspDir.new(src_vaspdir)
+
+    @options = {}
+    [:ka, :kb, :kc, :kab, :kbc, :kca, :kabc].each do |key|
+      next unless options[key]
+      @options[key] = self.class.integers(options[key])
+    end
+    [:encut].each do |key|
+      next unless options[key]
+      @options[key] = self.class.floats(options[key])
+    end
+
     keys = @options.keys.sort
     # as order of 'keys'
 
@@ -143,8 +144,8 @@ class VaspUtils::SinglePointCondition
         puts "#{dirname} is already exist."
         next
       end
-      dirname = tgt_dir + "/" + dirname
-      @standard_vaspdir.mutate(dirname, conditions)
+      #dirname = tgt_dir + "/" + dirname
+      src_vaspdir.mutate(dirname, conditions)
     end
   end
 

@@ -28,9 +28,9 @@ class Vaspspcond < Thor
     #pp options[:kabc]
     #exit
 
-    cv = VaspUtils::SinglePointCondition.new(template_dir, options)
+    spc = VaspUtils::SinglePointCondition.new(options)
 
-    cv.generate_condition_dirs
+    spc.generate_condition_dirs(template_dir)
   end
 
   desc "analyze core_dir", "Analyze error with conditions."
@@ -78,5 +78,3 @@ class Vaspspcond < Thor
 end
 
 Vaspspcond.start(ARGV)
-
-
