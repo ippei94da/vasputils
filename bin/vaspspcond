@@ -4,27 +4,79 @@
 require 'thor'
 require 'vasputils'
 require 'pp'
+require "optparse"
 
-一点計算の条件を見る。
+##一点計算の条件検討を扱う。
 
-#### Command template
-#class vaspcond < Thor
-#  desc "light", "Detect the lightest queue."
-#
-#  def lightqueue
-#    qinfo = Comana::QueueManager.new
-#    qinfo.light_queue
-#  end
-#
-#  #def job
-#  #end
-#
-#  def show
-#
-#  end
-#
-#end
-#
-#Queueinfo.start(ARGV)
-#
-#
+### Command template
+class Vaspspcond < Thor
+
+  # dir = template dir
+  desc 'vary dir options', 'Generate vasp directories of varied condition.'
+  option :encut, desc: "ENCUT values"
+  option :ka,    desc: "ka values"
+  option :kb,    desc: "kb values"
+  option :kc,    desc: "kc values"
+  option :kab,   desc: "kab values"
+  option :kbc,   desc: "kbc values"
+  option :kca,   desc: "kca values"
+  option :kabc,  desc: "kabc values"
+  def vary(* args)
+    template_dir = args.shift
+    #pp template_dir
+    #pp options[:encut]
+    #pp options[:kabc]
+    #exit
+
+    cv = VaspUtils::SinglePointCondition.new(template_dir, options)
+
+    cv.generate_condition_dirs
+  end
+
+  desc "analyze core_dir", "Analyze error with conditions."
+  option :encut, desc: "ENCUT values"
+  option :ka,    desc: "ka values"
+  option :kb,    desc: "kb values"
+  option :kc,    desc: "kc values"
+  option :kab,   desc: "kab values"
+  option :kbc,   desc: "kbc values"
+  option :kca,   desc: "kca values"
+  option :kabc,  desc: "kabc values"
+  def analyze
+    vaspdirs = []
+    Dir.glob("*").each do |dir|
+      begin
+        vaspdirs << VaspUtils::VaspDir.new(dir)
+      rescue VaspUtils::VaspDir::InitializeError
+        next
+      end
+    end
+    #pp vaspdirs
+    data = vaspdirs.map do |dir|
+      {
+        'encut' => dir.incar.data["ENCUT"],
+        'ka' => dir.kpoints.mesh[0],
+        'kb' => dir.kpoints.mesh[1],
+        'kc' => dir.kpoints.mesh[2],
+        'toten' => dir.outcar[:totens][-1],
+      }
+    end
+
+    #pp data
+
+    options.keys.each do |key|
+      conds = Marshal.load(Marshal.dump(options))
+      conds.delete key
+      pp conds
+    end
+    pp options
+
+
+
+  end
+
+end
+
+Vaspspcond.start(ARGV)
+
+

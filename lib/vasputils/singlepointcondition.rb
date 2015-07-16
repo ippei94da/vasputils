@@ -4,7 +4,7 @@
 #
 #
 #
-class VaspUtils::ConditionVarier
+class VaspUtils::SinglePointCondition
   class InvalidOptionError < Exception; end
   class ArgumentError < Exception; end
 
@@ -92,7 +92,6 @@ class VaspUtils::ConditionVarier
       results = Array.new
       variation.times do |i|
         right_ary.each do |ary|
-          #p [i, *ary]
           results.push([i, *ary])
         end
       end
@@ -103,12 +102,17 @@ class VaspUtils::ConditionVarier
   end
 
   def self.hash_to_s(hash)
-    result = []
+    strs = []
+    #pp hash
     hash.keys.sort.each do |key|
-      result.push( key.to_s + "_" + hash[key].to_s)
+      if key == :encut
+        val = sprintf("%06.1f", hash[key])
+      else 
+        val = hash[key].to_s
+      end
+      strs.push( key.to_s + "_" + val)
     end
-    result = result.join(",")
-    #pp result
+    result = strs.join(",")
     result
   end
 
@@ -123,11 +127,6 @@ class VaspUtils::ConditionVarier
 
     mesh_indices = self.class.mesh_points(sizes)
 
-    #p @options
-    #p keys
-    #p sizes
-    #p mesh_indices
-
     conditions_list = []
     mesh_indices.each do |ary|
       conditions = {}
@@ -137,17 +136,13 @@ class VaspUtils::ConditionVarier
       end
       conditions_list << conditions
     end
-    #pp conditions_list
 
     conditions_list.each do |conditions|
       dirname = self.class.hash_to_s(conditions)
-      #pp conditions.to_s
       if File.exist? dirname
         puts "#{dirname} is already exist."
         next
       end
-      #pp conditions
-      #pp dirname
       dirname = tgt_dir + "/" + dirname
       @standard_vaspdir.mutate(dirname, conditions)
     end
