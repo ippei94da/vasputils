@@ -56,38 +56,56 @@ class Vaspspcond < Thor
 
     data = vaspdirs.map do |dir|
       {
-        'encut' => dir.incar.data["ENCUT"].to_f,
-        'ka' => dir.kpoints.mesh[0].to_i,
-        'kb' => dir.kpoints.mesh[1].to_i,
-        'kc' => dir.kpoints.mesh[2].to_i,
-        'toten' => dir.outcar[:totens][-1].to_f,
+        :encut => dir.incar.data["ENCUT"].to_f,
+        :ka => dir.kpoints.mesh[0].to_i,
+        :kb => dir.kpoints.mesh[1].to_i,
+        :kc => dir.kpoints.mesh[2].to_i,
+        :toten => dir.outcar[:totens][-1].to_f,
       }
     end
 
     func = Malge::MultiVariableFunction.new(data)
 
     if kmesh[:kabc]
-      new_func = func.unite_axes(['ka', 'kb', 'kc'], 'kabc')
+      func.unite_axes!([:ka, :kb, :kc], :kabc)
     elsif kmesh[:kab]
-      new_func = func.unite_axes(['ka', 'kb'], 'kab')
+      func.unite_axes!([:ka, :kb], :kab)
     elsif kmesh[:kbc]
-      new_func = func.unite_axes(['kb', 'kc'], 'kbc')
+      func.unite_axes!([:kb, :kc], :kbc)
     elsif kmesh[:kca]
-      new_func = func.unite_axes(['kc', 'ka'], 'kca')
+      func.unite_axes!([:kc, :ka], :kca)
     end
+
+    # ENCUT analysis
+    encut_func = func.abstract(kmesh)
+    kmesh.keys.each {|k| encut_func.delete_axis! k}
+    eff = Malge::ErrorFittedFunction::AExpBX.new(
+      encut_func.data_pairs(:encut, :toten)
+    )
+    #pp eff.fit => 0.5785618306989101
+    #
+    pp eff.summary
+    
+    Mg fcc で 900 のやつが best estimate になる問題。
+
+
+
     #pp func
-    #pp new_func
-    pp kmesh
-    pp encut
+    #pp encut
+
+
+    #pp func
+    #pp func
+    #pp kmesh
     kmesh.each do |key, val|
     end
 
     kmesh.keys.each do |key|
-      #pp new_func
+      #pp func
       conds = Marshal.load(Marshal.dump(options))
       conds.delete key
       #pp conds
-      #pp new_func.abstract(conds)
+      #pp func.abstract(conds)
     end
   end
 

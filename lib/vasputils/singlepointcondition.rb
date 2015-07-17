@@ -121,7 +121,6 @@ class VaspUtils::SinglePointCondition
 
     keys = @options.keys.sort
     # as order of 'keys'
-    #
 
 
     sizes = []

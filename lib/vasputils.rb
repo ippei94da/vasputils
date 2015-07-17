@@ -5,6 +5,7 @@ require "pathname"
 require "mageo"
 require "comana"
 require "crystalcell"
+require "float/equalindelta"
 
 module VaspUtils; end
 
