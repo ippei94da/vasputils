@@ -9,18 +9,14 @@ require "helper"
 #class VaspUtils::SinglePointCondition
 #end
 class VaspUtils::SinglePointCondition
-  attr_accessor :options
+  #attr_accessor :options
   #public :hash_to_s
 end
 
 class TC_SinglePointCondition < Test::Unit::TestCase
   def setup
-    dir = "test/conditionvarier/standard"
-    options = { :ka => "1,2", :kbc => "1,2,4", :encut => "400,500"}
-    @spc00 = VaspUtils::SinglePointCondition.new(options)
-
-    options = { :ka => "1,2", :encut => "400,500"}
-    @spc01 = VaspUtils::SinglePointCondition.new(options)
+    dir = "test/singlepointcondition/template"
+    @spc00 = VaspUtils::SinglePointCondition.new
   end
 
   def test_self_integers
@@ -145,31 +141,37 @@ class TC_SinglePointCondition < Test::Unit::TestCase
   end
 
   def test_generate_condition_dirs
+    #Dir.chdir "test/singlepointcondition"
     dirs = [
-      "test/conditionvarier/encut_0400.0,ka_1",
-      "test/conditionvarier/encut_0400.0,ka_2",
-      "test/conditionvarier/encut_0500.0,ka_1",
-      "test/conditionvarier/encut_0500.0,ka_2",
+      "test/singlepointcondition/encut_0400.0,ka_01",
+      "test/singlepointcondition/encut_0400.0,ka_02",
+      "test/singlepointcondition/encut_0500.0,ka_01",
+      "test/singlepointcondition/encut_0500.0,ka_02",
     ]
     dirs.each do |dir|
       FileUtils.rm_rf(dir)
     end
 
-    @spc01.generate_condition_dirs("test/conditionvarier")
-
-    vd = VaspUtils::VaspDir.new("test/conditionvarier/encut_0400.0,ka_1")
+    @spc00.generate_condition_dirs("test/singlepointcondition/template",
+      { :ka => "1,2", :encut => "400,500"},
+      "test/singlepointcondition"
+      #{ :ka => "1,2", :kbc => "1,2,4", :encut => "400,500"}
+    )
+    #
+    #sleep 10
+    vd = VaspUtils::VaspDir.new("test/singlepointcondition/encut_0400.0,ka_01")
     assert_equal("400.0", vd.incar.data["ENCUT"])
     assert_equal([1, 5, 5], vd.kpoints.mesh)
 
-    vd = VaspUtils::VaspDir.new("test/conditionvarier/encut_0400.0,ka_2")
+    vd = VaspUtils::VaspDir.new("test/singlepointcondition/encut_0400.0,ka_02")
     assert_equal("400.0", vd.incar.data["ENCUT"])
     assert_equal([2, 5, 5], vd.kpoints.mesh)
 
-    vd = VaspUtils::VaspDir.new("test/conditionvarier/encut_0500.0,ka_1")
+    vd = VaspUtils::VaspDir.new("test/singlepointcondition/encut_0500.0,ka_01")
     assert_equal("500.0", vd.incar.data["ENCUT"])
     assert_equal([1, 5, 5], vd.kpoints.mesh)
 
-    vd = VaspUtils::VaspDir.new("test/conditionvarier/encut_0500.0,ka_2")
+    vd = VaspUtils::VaspDir.new("test/singlepointcondition/encut_0500.0,ka_02")
     assert_equal("500.0", vd.incar.data["ENCUT"])
     assert_equal([2, 5, 5], vd.kpoints.mesh)
 
@@ -177,17 +179,16 @@ class TC_SinglePointCondition < Test::Unit::TestCase
       FileUtils.rm_rf(dir)
     end
 
-    #standard_vaspdir が VaspDir でなかったら例外。
+    #template_vaspdir が VaspDir でなかったら例外。
     assert_raise(VaspUtils::VaspDir::InitializeError){
-      @spc01.generate_condition_dirs("", [])
+      @spc00.generate_condition_dirs("", { :ka => "1,2", :encut => "400,500"})
     }
-
   end
 
   def test_self_hash_to_s
     hash = {:encut=>400.0, :ka=>1, :kbc=>2}
     result = VaspUtils::SinglePointCondition.hash_to_s(hash)
-    correct = "encut_0400.0,ka_1,kbc_2"
+    correct = "encut_0400.0,ka_01,kbc_02"
     assert_equal(correct, result)
   end
 

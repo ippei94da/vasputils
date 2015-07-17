@@ -9,9 +9,7 @@ class VaspUtils::SinglePointCondition
   class ArgumentError < Exception; end
 
   #
-  def initialize(options)
-    self.class.check_sanity_options(options)
-
+  def initialize
   end
 
   def self.integers(str)
@@ -96,8 +94,9 @@ class VaspUtils::SinglePointCondition
     hash.keys.sort.each do |key|
       if key == :encut
         val = sprintf("%06.1f", hash[key])
-      else 
-        val = hash[key].to_s
+      else # k*
+        val = sprintf("%02d", hash[key])
+        #val = hash[key].to_s
       end
       strs.push( key.to_s + "_" + val)
     end
@@ -105,8 +104,10 @@ class VaspUtils::SinglePointCondition
     result
   end
 
-  def generate_condition_dirs(src_vaspdir)
-    src_vaspdir = VaspUtils::VaspDir.new(src_vaspdir)
+  # src_vaspdir : template VaspDir
+  # tgt_dir : target directory to include new VaspDir's.
+  def generate_condition_dirs(src_vaspdir, options, tgt_dir = ".")
+    self.class.check_sanity_options(options)
 
     @options = {}
     [:ka, :kb, :kc, :kab, :kbc, :kca, :kabc].each do |key|
@@ -120,6 +121,8 @@ class VaspUtils::SinglePointCondition
 
     keys = @options.keys.sort
     # as order of 'keys'
+    #
+
 
     sizes = []
     keys.each do |key|
@@ -138,13 +141,14 @@ class VaspUtils::SinglePointCondition
       conditions_list << conditions
     end
 
+    src_vaspdir = VaspUtils::VaspDir.new(src_vaspdir)
     conditions_list.each do |conditions|
       dirname = self.class.hash_to_s(conditions)
       if File.exist? dirname
         puts "#{dirname} is already exist."
         next
       end
-      #dirname = tgt_dir + "/" + dirname
+      dirname = tgt_dir + "/" + dirname
       src_vaspdir.mutate(dirname, conditions)
     end
   end

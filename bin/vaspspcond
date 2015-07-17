@@ -2,6 +2,7 @@
 
 
 require 'thor'
+require 'malge'
 require 'vasputils'
 require 'pp'
 require "optparse"
@@ -23,26 +24,27 @@ class Vaspspcond < Thor
   option :kabc,  desc: "kabc values"
   def vary(* args)
     template_dir = args.shift
-    #pp template_dir
-    #pp options[:encut]
-    #pp options[:kabc]
-    #exit
-
-    spc = VaspUtils::SinglePointCondition.new(options)
-
-    spc.generate_condition_dirs(template_dir)
+    spc = VaspUtils::SinglePointCondition.new
+    spc.generate_condition_dirs(template_dir, options)
   end
 
   desc "analyze core_dir", "Analyze error with conditions."
-  option :encut, desc: "ENCUT values"
-  option :ka,    desc: "ka values"
-  option :kb,    desc: "kb values"
-  option :kc,    desc: "kc values"
-  option :kab,   desc: "kab values"
-  option :kbc,   desc: "kbc values"
-  option :kca,   desc: "kca values"
-  option :kabc,  desc: "kabc values"
+  option :encut, desc: "ENCUT value"
+  option :ka,    desc: "ka"
+  option :kb,    desc: "kb"
+  option :kc,    desc: "kc"
+  option :kab,   desc: "kab; ka and kb"
+  option :kbc,   desc: "kbc; kb and kc"
+  option :kca,   desc: "kca; kc and ka"
+  option :kabc,  desc: "kabc; ka, kb, and kc"
   def analyze
+    #type convert options
+    encut = options[:encut].to_f if options[:encut]
+    kmesh = {}
+    [:ka,  :kb,  :kc,  :kab, :kbc, :kca, :kabc].each do |key|
+      kmesh[key] = options[key].to_i if options[key]
+    end
+
     vaspdirs = []
     Dir.glob("*").each do |dir|
       begin
@@ -51,28 +53,42 @@ class Vaspspcond < Thor
         next
       end
     end
-    #pp vaspdirs
+
     data = vaspdirs.map do |dir|
       {
-        'encut' => dir.incar.data["ENCUT"],
-        'ka' => dir.kpoints.mesh[0],
-        'kb' => dir.kpoints.mesh[1],
-        'kc' => dir.kpoints.mesh[2],
-        'toten' => dir.outcar[:totens][-1],
+        'encut' => dir.incar.data["ENCUT"].to_f,
+        'ka' => dir.kpoints.mesh[0].to_i,
+        'kb' => dir.kpoints.mesh[1].to_i,
+        'kc' => dir.kpoints.mesh[2].to_i,
+        'toten' => dir.outcar[:totens][-1].to_f,
       }
     end
 
-    #pp data
+    func = Malge::MultiVariableFunction.new(data)
 
-    options.keys.each do |key|
+    if kmesh[:kabc]
+      new_func = func.unite_axes(['ka', 'kb', 'kc'], 'kabc')
+    elsif kmesh[:kab]
+      new_func = func.unite_axes(['ka', 'kb'], 'kab')
+    elsif kmesh[:kbc]
+      new_func = func.unite_axes(['kb', 'kc'], 'kbc')
+    elsif kmesh[:kca]
+      new_func = func.unite_axes(['kc', 'ka'], 'kca')
+    end
+    #pp func
+    #pp new_func
+    pp kmesh
+    pp encut
+    kmesh.each do |key, val|
+    end
+
+    kmesh.keys.each do |key|
+      #pp new_func
       conds = Marshal.load(Marshal.dump(options))
       conds.delete key
-      pp conds
+      #pp conds
+      #pp new_func.abstract(conds)
     end
-    pp options
-
-
-
   end
 
 end
