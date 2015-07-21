@@ -77,35 +77,30 @@ class Vaspspcond < Thor
     end
 
     # ENCUT analysis
+    puts "#### Fitting on ENCUT"
     encut_func = func.abstract(kmesh)
+    #pp encut_func
+    #pp encut_func.data_pairs(:encut, :toten)
     kmesh.keys.each {|k| encut_func.delete_axis! k}
     eff = Malge::ErrorFittedFunction::AExpBX.new(
-      encut_func.data_pairs(:encut, :toten)
+      encut_func.data_pairs(:encut, :toten).uniq
     )
-    #pp eff.fit => 0.5785618306989101
-    #
-    pp eff.summary
-    
-    #Mg fcc で 900 のやつが best estimate になる問題。
+    #pp eff
+    puts eff.summary
 
-
-
+    # k-mesh analysis
     #pp func
-    #pp encut
-
-
-    #pp func
-    #pp func
-    #pp kmesh
     kmesh.each do |key, val|
-    end
-
-    kmesh.keys.each do |key|
-      #pp func
-      conds = Marshal.load(Marshal.dump(options))
+      puts "#### Fitting on #{key}"
+      #pp key, val
+      conds = Marshal.load(Marshal.dump(kmesh))
       conds.delete key
-      #pp conds
-      #pp func.abstract(conds)
+      conds[:encut] = encut
+      k_func = func.abstract(conds)
+      eff = Malge::ErrorFittedFunction::AXInv2.new(
+        k_func.data_pairs(key, :toten).uniq
+      )
+      puts eff.summary
     end
   end
 
