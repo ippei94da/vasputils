@@ -86,7 +86,7 @@ class Vaspspcond < Thor
     #
     pp eff.summary
     
-    Mg fcc で 900 のやつが best estimate になる問題。
+    #Mg fcc で 900 のやつが best estimate になる問題。
 
 
 
