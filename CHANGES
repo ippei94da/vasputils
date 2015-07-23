@@ -18,6 +18,8 @@
 - Add bin/poscar
 - Add bin/potcar
 - Add vaspspcond including subcommand 'vary', instead of varycondition.
+- Add VaspUtils::Vasprun_xml
+- Add bin/geomoptposcar
 
 == Version 0.0.12 [2014-08-30] released
 - Update bin/symposcar .
