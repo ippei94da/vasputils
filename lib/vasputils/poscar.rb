@@ -209,7 +209,9 @@ class VaspUtils::Poscar
     end
   end
 
-  def to_cell
+  # Generate CrystalCell::Cell class.
+  # If klass is argued, try to generate the class.
+  def to_cell(klass = CrystalCell::Cell)
     axes = CrystalCell::LatticeAxes.new( @axes)
 
     atoms = []
@@ -233,7 +235,7 @@ class VaspUtils::Poscar
       end
     end
 
-    cell = CrystalCell::Cell.new(axes, atoms)
+    cell = klass.new(axes, atoms)
   end
 
   # selective_dynamics は常に on にする。

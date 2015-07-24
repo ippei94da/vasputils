@@ -374,6 +374,27 @@ class TC_Poscar < Test::Unit::TestCase
     assert_equal(correct.atoms[2], result.atoms[2])
     assert_equal(correct.atoms[3], result.atoms[3])
     assert_equal(correct.atoms.size, result.atoms.size)
+
+    result = @p00.to_cell(CrystalCell::Povray::Cell)
+    assert_equal(CrystalCell::Povray::Cell, result.class)
+    axes = CrystalCell::LatticeAxes.new( [
+      [1.0, 0.0, 0.0 ],
+      [0.0, 1.0, 0.0 ],
+      [0.0, 0.0, 1.0 ],
+      ])
+    atoms = [
+      CrystalCell::Atom.new("Li", [0.0, 0.0, 0.0], nil, nil),
+      CrystalCell::Atom.new("Ge", [0.5, 0.0, 0.0], nil, nil),
+      CrystalCell::Atom.new("O" , [0.5, 0.5, 0.0], nil, nil),
+      CrystalCell::Atom.new("O" , [0.5, 0.5, 0.5], nil, nil),
+    ]
+    correct = CrystalCell::Cell.new(axes, atoms)
+    assert_equal(correct.axes, result.axes)
+    assert_equal(correct.atoms[0], result.atoms[0])
+    assert_equal(correct.atoms[1], result.atoms[1])
+    assert_equal(correct.atoms[2], result.atoms[2])
+    assert_equal(correct.atoms[3], result.atoms[3])
+    assert_equal(correct.atoms.size, result.atoms.size)
   end
 
   def test_accessor #reader
