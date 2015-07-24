@@ -1,5 +1,7 @@
-background{color rgb <1,1,1>}
+#include "shapes.inc"
 
+// Camera
+background{color rgb <1,1,1>}
 #default{ texture{ finish{
   ambient 0.4
   phong 0.6
@@ -8,7 +10,7 @@ background{color rgb <1,1,1>}
 
 camera{
   perspective // orthographic //or
-  location <10.0000,10.0000,10.0000 >
+  location <13.0000,13.0000,13.0000 >
   right    <-1.0000, 0.0000, 0.0000 >
   up       < 0.0000, 1.0000, 0.0000 >
   sky      < 0.0000, 0.0000, 1.0000 >
@@ -20,3 +22,5 @@ light_source {< 0.0000,-1.0000, 1.0000 >
   parallel
   point_at < 0.0000, 0.0000, 0.0000 >
 }
+
+#include "cell.inc"
