@@ -109,7 +109,7 @@ class VaspUtils::Poscar
     self.new(options)
   end
 
-  # file で与えられた名前のファイルを読み込んで CrystalCell::Cell クラスインスタンスを返す。
+  # file で与えられた名前のファイルを読み込んで self クラスインスタンスを返す。
   # 構文解析できなければ例外 Poscar::ParseError を投げる。
   def self.load_file(file)
     io = File.open(file, "r")
