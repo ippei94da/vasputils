@@ -1,6 +1,8 @@
 = vasputils changelog
 
-== Master (for 1.0.0)
+== Master (for 1.0.1)
+
+== Version 1.0.0 [2014-08-30] released
 - Small revision of output of 'showvaspdir' to show zero at the tail of toten.
 - LAST_UPDATE in 'showvaspdir -a' is changed to be "time ago".
 - Small revision of output of 'symposcar' to include 'operation_id'
@@ -21,6 +23,7 @@
 - Add VaspUtils::Vasprun_xml
 - Add bin/geomoptposcar
 - Add subcommand `povray' to bin/poscar
+- Add element order to Poscar.dump
 
 == Version 0.0.12 [2014-08-30] released
 - Update bin/symposcar .

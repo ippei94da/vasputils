@@ -156,19 +156,21 @@ class VaspUtils::Poscar
 
   # POSCAR 形式で書き出す。
   # cell は CrystalCell::Cell クラスインスタンスと同等のメソッドを持つもの。
-  # elems は書き出す元素の順番。
-  #       elems が cell の持つ元素リストとマッチしなければ
-  #       例外 Poscar::ElementMismatchError を投げる。
-  #       nil ならば、原子の element でソートした順に出力する。
+  # elements は書き出す元素の順番。
+  #   elems が cell の持つ元素リストとマッチしなければ
+  #   例外 Poscar::ElementMismatchError を投げる。
+  #   nil ならば、原子の element でソートした順に出力する。
   #
   # io は書き出すファイルハンドル。
   # 'version' indicates a poscar style for vasp 4 or 5.
+  #def dump(io, elements = nil, version = 5)
   def dump(io, version = 5)
-    #elems = @elements.sort unless elems
-    #unless (Mapping::map?(@elements.uniq, elems){ |i, j| i == j })
-    #    raise ElementMismatchError,
-    #    "elems [#{elems.join(",")}] mismatches to cell.elements [#{cell.elements.join(",")}."
-    #end
+    elements = @elements unless elements
+    elem_indices = elements.map {|elem| @elements.find_index(elem)}
+    unless (Mapping::map?(@elements.uniq, elements){ |i, j| i == j })
+        raise ElementMismatchError,
+        "elements [#{elements.join(",")}] mismatches to cell.elements [#{cell.elements.join(",")}."
+    end
 
     io.puts @comment
     io.puts "1.0" #scale
@@ -178,34 +180,19 @@ class VaspUtils::Poscar
     end
 
     # Element symbols for vasp 5.
-    #pp @elements
     if version >= 5
-      io.puts @elements.join(' ')
+      io.puts elem_indices.map{|i| @elements[i]}.join(' ')
     end
 
     # Atom numbers.
-    io.puts @nums_elements.join(' ')
+    io.puts elem_indices.map{|i| @nums_elements[i]}.join(' ')
 
     # Selective dynamics
     io.puts "Selective dynamics" if @selective_dynamics
     io.puts "Direct"
 
-    #pp @selective_dynamics
-
-    # positions of atoms
     @positions.size.times do |i|
-      str = sprintf("    % 18.15f    % 18.15f    % 18.15f", * @positions[i])
-      if @selective_dynamics
-        #pp @movable_flags
-        if @movable_flags
-          @movable_flags[i].each do |flag|
-            (flag == true) ?  str += " T" : str += " F"
-          end
-        else
-          str += " T T T"
-        end
-      end
-      io.puts str
+      io.puts sprint_position(i)
     end
   end
 
@@ -389,6 +376,20 @@ class VaspUtils::Poscar
       end
     end
     results
+  end
+
+  def sprint_position(i)
+    str = sprintf("    % 18.15f    % 18.15f    % 18.15f", * @positions[i])
+    if @selective_dynamics
+      if @movable_flags
+        @movable_flags[i].each do |flag|
+          (flag == true) ?  str += " T" : str += " F"
+        end
+      else
+        str += " T T T"
+      end
+    end
+    str
   end
 
 end

@@ -269,9 +269,7 @@ class TC_Poscar < Test::Unit::TestCase
       ]
     })
     p01.dump(io)
-    #pp p01
     io.rewind
-    #pp io.re
     corrects = [
       "p00\n",
       "1.0\n",
@@ -292,6 +290,31 @@ class TC_Poscar < Test::Unit::TestCase
       assert_equal(cor, lines[index], "line: #{index}")
     end
     assert_equal(corrects.size, lines.size)
+
+    ## element order
+    #io = StringIO.new
+    #@p00.dump(io, %w(Ge O Li))
+    #io.rewind
+    #corrects = [
+    #  "p00\n",
+    #  "1.0\n",
+    #  "   1.000000000000000     0.000000000000000     0.000000000000000\n",
+    #  "   0.000000000000000     1.000000000000000     0.000000000000000\n",
+    #  "   0.000000000000000     0.000000000000000     1.000000000000000\n",
+    #  "Ge O Li\n",
+    #  "1 2 1\n",
+    #  "Direct\n",
+    #  "     0.500000000000000     0.000000000000000     0.000000000000000\n",
+    #  "     0.500000000000000     0.500000000000000     0.000000000000000\n",
+    #  "     0.500000000000000     0.500000000000000     0.500000000000000\n",
+    #  "     0.000000000000000     0.000000000000000     0.000000000000000\n",
+    #]
+    #lines = io.readlines
+    #corrects.each_with_index do |cor, index|
+    #  assert_equal(cor, lines[index], "line: #{index}")
+    #end
+    #assert_equal(corrects.size, lines.size)
+
 
   end
 
