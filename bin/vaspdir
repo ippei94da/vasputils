@@ -42,6 +42,8 @@ when "show"
   VaspUtils::VaspDir.show_inspect(args)
 when "run"
   VaspUtils::VaspDir.run(args)
+when "submit"
+  VaspUtils::VaspDir.submit(args)
 when "clean"
   VaspUtils::VaspDir.reset_clean(args)
 when "initialize"

@@ -258,8 +258,6 @@ class VaspUtils::VaspDir < Comana::ComputationManager
     return result
   end
 
-
-
   # 配下の OUTCAR を Outcar インスタンスにして返す。
   # 存在しなければ例外 Errno::ENOENT を返す。
   def outcar
