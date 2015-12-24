@@ -445,7 +445,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
     #pp "#{info["mpi"]} -machinefile #{MACHINEFILE} -np #{nslots} #{info["vasp"]}"
     command = "cd #{@dir};"
     command += "#{info["mpi"]} -machinefile #{MACHINEFILE} -np #{nslots} #{info["vasp"]}"
-    command += "> stdout"
+    command += "| tee stdout"
 
     io = File.open("#{@dir}/runvasp.log", "w")
     io.puts command
