@@ -1,0 +1,304 @@
+#! /usr/bin/env ruby
+# coding: utf-8
+
+#
+# procar2dos.rb :  write gnuplot type pdos data using PROCAR
+# Atsushi Togo
+# Time-stamp: <2006-05-25 21:41:31 togo>
+# $Id: procar2dos.rb 405 2006-05-25 12:57:12Z  $
+
+#require '~/tanaka-share/trunk/ruby/parseProcar.rb'
+#require '~/tanaka-share/trunk/ruby/cBroadning.rb'
+#require 'tanakalab/ParseProcar.rb'
+#require 'tanakalab/cBroadning.rb'
+#require "getopts"
+require "vasputils"
+require "optparse"
+require "pp"
+
+## option analysis
+OPTIONS = {}
+op = OptionParser.new
+op.banner = <<HERE
+usage: procar2dos.rb [OPTION] [PROCAR_file]
+    -i [NUMBER]  solo ion number  like 1
+    -s ["NUMBER, NUMBER..."] sum up multi-numbers of ions like "1..3 5"
+    --all    sum all ions
+    -f [FERMI ENERGY]
+    -c       whether include occupancy or not
+    --forb   consider f orbital
+    --sigma  [SIGMA] set standard deviation for broadning (default 0.1)
+    --check  just show number of ions and number of eigenvalues
+    -t [TICK] (default 0.01)
+    -p       show precise orbitals, but heavy
+    --total  total DOS
+
+    default value of PROCAR_file is 'PROCAR'
+HERE
+#    -l [WEIGHT FILE]  lap over PROCAR's
+#op.on("-a"    , "--aho"    , "descriptionA"){    OPTIONS[:aho] = true}
+#op.on("-b val", "--bak=val", "descriptionB"){|v| OPTIONS[:bak] = v}
+op.on('-i num', '--ion=num', 'solo ion number  like 1'){ |v|
+  OPTIONS[:ion] = v
+}
+op.on("-s 'num num...'", '--sum-ions=nums', "sum up multi-numbers of ions like '1..3 5'"){ |v|
+  OPTIONS[:sum_ions] = v
+}
+op.on('--all', 'sum all ions'){
+  OPTIONS[:all] = true
+}
+op.on('-f energy', '--fermi=energy', 'FERMI ENERGY'){ |v|
+  OPTIONS[:fermi] = v
+}
+op.on('-c', '--occupancy', 'whether include occupancy or not'){
+  OPTIONS[:occupancy] = true
+}
+op.on('--forb', 'consider f orbital'){
+  OPTIONS[:forb] = true
+}
+op.on('--sigma=val', 'set standard deviation for broadning (default 0.1)'){ |v|
+  OPTIONS[:sigma] = v
+}
+op.on('--check', 'just show number of ions and number of eigenvalues'){
+  OPTIONS[:check] = true
+}
+#op.on('-l WEIGHT_FILE', "lap over PROCAR's"){ |v|
+#  OPTIONS[:weight_file] = v
+#}
+op.on('-t TICK', '--tick=num' 'tick value (default 0.01)'){ |v|
+  OPTIONS[:tick] = v
+}
+op.on('-p', '--precise', 'show precise orbitals, but heavy'){
+  OPTIONS[:precise] = true
+}
+op.on('--total', 'total DOS'){
+  OPTIONS[:total] = true
+}
+op.parse!(ARGV)
+
+procar_file = ARGV[0] || 'PROCAR'
+
+
+fermi_level = OPTIONS[:fermi].to_f
+tick = 0.01
+tick = OPTIONS[:tick].to_f if OPTIONS[:tick]
+sigma = 0.1
+sigma = OPTIONS[:sigma].to_f if OPTIONS[:sigma]
+
+
+#  if OPTIONS[:forb]
+#    @fOrbital = true
+#  else
+#    @fOrbital = false
+#  end
+#
+#  if OPTIONS[:weight_file]
+#    @projection = Array.new
+#    layover
+#  else
+#    @projection = eachProcar(ARGV.shift)
+#  end
+#end
+
+def gaussFunction(deviation,sigma)
+  1/sigma/Math.sqrt(2*Math::PI)*Math.exp(-deviation**2/(2*sigma**2))
+end
+
+def broadning(array, dE, sigma = 0.1)
+  dos = Array.new
+  (((array[-1][0] - array[0][0]) / dE).to_i + 2).times do |i|
+    sumArray = Array.new(array[0].size-1, 0)
+    energy = array[0][0] + i*dE
+    STDERR.print("#{energy}\n")
+    array.each do |state|
+
+      gauss = gaussFunction(energy-state[0], sigma)
+      sumArray.size.times do |j|
+        sumArray[j] += state[j+1] * gauss
+      end
+    end
+    dos << [energy]+sumArray
+  end
+  dos
+end
+
+procar = VaspUtils::Procar.load_file(procar_file)
+
+if OPTIONS[:total]
+  energy = procar.energies
+  occupancy = procar.occupancies
+  weight = procar.weights
+  states = Array.new
+  energy.size.times do |i|
+    tmparray = Array.new
+    energy[0].size.times do |j|
+      tmparray << [energy[i][j], 2*weight[i], occupancy[i][j]*weight[i]]
+    end
+    states += tmparray
+  end
+  projection = states.sort
+
+  dos = broadning(projection, tick, sigma)
+
+  # for index 0
+  printf("#%12s  %12s\n", "eigenvalue", "total", "total with occ")
+  dos.each do |a|
+    printf("%13.8f  %12.8f  %12.8f\n", a[0]-fermi_level, a[1], a[2])
+  end
+  print "\n\n"
+  # for index 1, impluse
+  printf("#%-12s  %-12s  %-12s\n", "eigenvalue", "states", "with occ")
+  projection.each do |x|
+    printf("%13.8f  %12.8f  %12.8f\n", x[0], x[1], x[2])
+  end
+  exit
+end
+
+# うまく動かない。
+#if OPTIONS[:precise]
+#  dos = broadning(projection, tick, sigma )
+#  pp projection
+#  if @fOrbital
+#    printf("#%12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s\n",
+#           "eigenvalue", "s", "py", "pz", "px", "dxy", "dyz", "dz2", "dxz", "dx2", "f-3", "f-2", "f-1", "f0", "f1", "f2", "f3", "raw total")
+#    dos.each do |a|
+#      printf("%13.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f\n",
+#             a[0]-fermi_level, a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15], a[16], a[17])
+#    end
+#  else
+#    printf("#%12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s\n",
+#           "eigenvalue", "s", "py", "pz", "px", "dxy", "dyz", "dz2", "dxz", "dx2", "raw total")
+#    dos.each do |a|
+#      #pp a; exit
+#      printf("%13.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f\n",
+#             a[0]-fermi_level, a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10])
+#    end
+#  end
+#  exit
+#end
+
+## not total nor precise
+dos = PostProcessProcar.new(procar.states, procar.weights, procar.energies, procar.occupancies)
+case
+when OPTIONS[:all]
+  states = dos.getAll(OPTIONS[:occupancy])
+when OPTIONS[:sum_ions]
+  ionNumbers = collect_ions(OPTIONS[:sum_ions])
+  states = dos.getSum_ions(ionNumbers, OPTIONS[:occupancy])
+when OPTIONS[:ion]
+  ionNumbers = [OPTIONS[:ion].to_i]
+  states = dos.getSum_ions(ionNumbers, OPTIONS[:occupancy])
+else
+  STDERR.print("-s, -i, or --all options are required.\n")
+  exit(1)
+end
+projection = states
+
+states = Array.new
+projection.each do |a|
+  p = a[2] + a[3] + a[4]
+  d = a[5] + a[6] + a[7] + a[8] + a[9]
+  f = a[10] + a[11] + a[12] + a[13] + a[14] + a[15] + a[16] if @fOrbital
+  if @fOrbital
+    states << [a[0], a[1], p, d, f, a[10]] if @fOrbital
+  else
+    states << [a[0], a[1], p, d, a[10]]
+  end
+end
+dos = broadning(states)
+
+if @fOrbital
+  printf("#%12s  %12s  %12s  %12s  %12s  %12s\n", "eigenvalue", "s", "p", "d", "f", "raw total")
+  dos.getDos.each do |a|
+    printf("%13.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f\n", a[0]-fermi_level, a[1], a[2], a[3], a[4], a[5])
+  end
+else
+  printf("#%12s  %12s  %12s  %12s  %12s\n", "eigenvalue", "s", "p", "d", "raw total")
+  dos.getDos.each do |a|
+    printf("%13.8f  %12.8f  %12.8f  %12.8f  %12.8f\n", a[0]-fermi_level, a[1], a[2], a[3], a[4])
+  end
+end
+
+  
+
+exit
+
+class Procar2dos
+
+  def printGnuplot
+    if OPTIONS[:total]
+    else
+      if OPTIONS[:precise]
+        #printPhaseGnuplot
+      else
+        #printPartialGnuplot
+      end
+    end
+  end
+
+  private
+
+  def collect_ions(option)
+    array = Array.new
+    option.strip.gsub(/,/," ").gsub(/-/,"..").split(/\s+/).each do |x|
+      if /\.\./ =~ x || /-/ =~ x
+        i = x.split(/\.\./)
+        i[0].to_i.upto(i[1].to_i) {|j| array << j}
+      else
+        array << x.to_i
+      end
+    end
+    ions = ""
+    array.each {|i| ions << sprintf("%d,", i)}
+    STDERR.print("#{ions.chop}\n")
+    array
+  end
+
+  def eachProcar(filename)
+    procar = VaspUtils::Procar.load_file(filename)
+    if OPTIONS[:total]
+    else
+      states = eachProcarPartial(procar)
+    end
+    states
+  end
+
+#  def layover
+#    weightArray = Array.new
+#    sumWeight = 0
+#
+#    File.open(OPTIONS[:weight_file]) do |file|   # read weight file
+#      while line = file.gets
+#        next if (weight = line.strip.to_f) == 0
+#        weightArray << weight
+#        sumWeight += weight
+#      end
+#    end
+#
+#    weightArray.each do |weight|
+#      filename = ARGV.shift
+#      STDERR.print("#{filename}    weight:#{weight}     sum of weight:#{sumWeight}\n")
+#      array = eachProcar(filename)
+#      array.size.times do |i|
+#        (1..array[0].size-1).each {|j| array[i][j] = array[i][j] * weight / sumWeight}
+#      end
+#      projection += array
+#    end
+#    @projection.sort!
+#  end
+
+
+end
+
+
+
+if OPTIONS[:check]
+  procar = VaspUtils::Procar.load_file(procar_file)
+  num_ions = procar.num_ions
+  num_energies = procar.energies.size
+  print "number of ions: #{num_ions}\nnumber of eigenvalues: #{num_energies}\n"
+  exit(1)
+end
+
+dos = Procar2dos.new
+dos.printGnuplot
