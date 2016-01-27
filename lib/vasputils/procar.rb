@@ -129,7 +129,7 @@ class VaspUtils::Procar
     results.sort
   end
 
-  def getAll(occupy = false)
+  def get_all(occupy = false)
     ion_indices = Array.new
     @states[0][0].size.times {|i| ion_indices << i+1}
     sum_ions(ion_indices, occupy)
