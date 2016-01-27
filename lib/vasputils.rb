@@ -12,6 +12,7 @@ module VaspUtils; end
 require "vasputils/incar.rb"
 require "vasputils/kpoints.rb"
 require "vasputils/outcar.rb"
+require "vasputils/procar.rb"
 require "vasputils/poscar.rb"
 require "vasputils/potcar.rb"
 require "vasputils/potcar/concatenater.rb"
