@@ -48,7 +48,7 @@ op.on('--all', 'sum all ions'){
 op.on('-f energy', '--fermi=energy', 'FERMI ENERGY'){ |v|
   OPTIONS[:fermi] = v
 }
-op.on('-c', '--occupancy', 'whether include occupancy or not'){
+op.on('-c', '--occupancy', 'Use occupancy, instead of number of orbitals.'){
   OPTIONS[:occupancy] = true
 }
 op.on('--f-orb', 'consider f orbital'){
@@ -122,6 +122,7 @@ end
 
 procar = VaspUtils::Procar.load_file(procar_file)
 
+#'1 3..5' => [1,3,4,5]
 def collect_ions(option)
   results = Array.new
   option.strip.gsub(/,/," ").gsub(/-/,"..").split(/\s+/).each do |x|
@@ -137,7 +138,6 @@ def collect_ions(option)
   STDERR.print("#{ions.chop}\n")
   results
 end
-
 #pp collect_ions('1 3..5')
 #exit
 

@@ -103,26 +103,34 @@ class VaspUtils::Procar
 
   def sum_ions(ion_indices, occupy = false)
     results = Array.new
+    #pp ion_indices
     #for_spin
+    #pp @states
     #pp @states[0]
-    @states[0].size.times do |i|         # for band
-      @states.size.times do |j|          # for kpoints
+
+    @states[0][0].size.times do |i|         # for band
+      @states[0].size.times do |j|          # for kpoints
         num_items = 9
         num_items = 16 if @fOrbital
         sumState = Array.new(num_items, 0)
 
         ion_indices.each do |k|
-          (num_items).times {|l| sumState[l] += @states[j][i][k-1][l]}
+          (num_items).times {|l| sumState[l] += @states[0][j][i][k-1][l]}
         end
 
         if occupy == true
           (num_items).times {|l| sumState[l] *= @occupancies[j][i] * @weights[j]}
           total = @occupancies[j][i] * @weights[j]
         else
+          #pp @weights[j]
           (num_items).times {|l| sumState[l] *= @weights[j] * 2}
           total = @weights[j] * 2
         end
         
+        #pp @energies[j][i]
+        #pp sumState
+        #pp [total]
+        #exit
         results << [@energies[j][i]] + sumState + [total]
       end
     end
