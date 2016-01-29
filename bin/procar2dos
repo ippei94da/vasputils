@@ -143,18 +143,26 @@ end
 
 
 if OPTIONS[:total]
-  energy = procar.energies
-  occupancy = procar.occupancies
-  weight = procar.weights
+  energies = procar.energies
+  weights = procar.weights
   states = Array.new
-  energy.size.times do |i|
+  #pp energies; exit
+  #pp weights; exit
+  energies.size.times do |i|
     tmparray = Array.new
-    energy[0].size.times do |j|
-      tmparray << [energy[i][j], 2*weight[i], occupancy[i][j]*weight[i]]
+    energies[0].size.times do |j|
+      tmparray << [energies[i][j], 2*weights[i], procar.occupancies[i][j]*weights[i]]
+      #pp tmparray; exit
+      #HERE
     end
     states += tmparray
   end
   projection = states.sort
+
+  pp projection
+  pp tick
+  pp sigma
+  exit
 
   dos = broadning(projection, tick, sigma)
 
