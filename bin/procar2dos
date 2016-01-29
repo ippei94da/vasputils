@@ -102,12 +102,14 @@ def gaussFunction(deviation,sigma)
   1/sigma/Math.sqrt(2*Math::PI)*Math.exp(-deviation**2/(2*sigma**2))
 end
 
+# dE : tick
+# HERE
 def broadning(array, dE, sigma = 0.1)
-  dos = Array.new
+  results = Array.new
   (((array[-1][0] - array[0][0]) / dE).to_i + 2).times do |i|
     sumArray = Array.new(array[0].size-1, 0)
     energy = array[0][0] + i*dE
-    STDERR.print("#{energy}\n")
+    #STDERR.print("#{energy}\n")
     array.each do |state|
 
       gauss = gaussFunction(energy-state[0], sigma)
@@ -115,9 +117,9 @@ def broadning(array, dE, sigma = 0.1)
         sumArray[j] += state[j+1] * gauss
       end
     end
-    dos << [energy]+sumArray
+    results << [energy]+sumArray
   end
-  dos
+  results
 end
 
 procar = VaspUtils::Procar.load_file(procar_file)
@@ -159,15 +161,17 @@ if OPTIONS[:total]
   end
   projection = states.sort
 
-  pp projection
-  pp tick
-  pp sigma
-  exit
+  #pp projection
+  #pp tick
+  #pp sigma
+  #exit
 
   dos = broadning(projection, tick, sigma)
+  #pp projection; exit
+  #pp dos; exit
 
   # for index 0
-  printf("#%12s  %12s\n", "eigenvalue", "total", "total with occ")
+  printf("#%12s  %12s  %12s\n", "eigenvalue", "total", "total with occ")
   dos.each do |a|
     printf("%13.8f  %12.8f  %12.8f\n", a[0]-fermi_level, a[1], a[2])
   end
