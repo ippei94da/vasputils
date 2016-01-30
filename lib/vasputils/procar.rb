@@ -115,7 +115,14 @@ class VaspUtils::Procar
         sumState = Array.new(num_items, 0)
 
         ion_indices.each do |k|
-          (num_items).times {|l| sumState[l] += @states[0][j][i][k-1][l]}
+          #pp j
+          #pp i
+          #pp k-1
+          #pp @states
+          (num_items).times do |l|
+            pp @states[0][j][i][k-1][l]
+            sumState[l] += @states[0][j][i][k-1][l]
+          end
         end
 
         if occupy == true
