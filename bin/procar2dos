@@ -104,13 +104,16 @@ end
 
 # dE : tick
 # HERE
-def broadning(array, dE, sigma = 0.1)
+def broadning(projection, dE, sigma = 0.1)
   results = Array.new
-  (((array[-1][0] - array[0][0]) / dE).to_i + 2).times do |i|
-    sumArray = Array.new(array[0].size-1, 0)
-    energy = array[0][0] + i*dE
+  #pp projection;exit
+  (((projection[-1][0] - projection[0][0]) / dE).to_i + 2).times do |i|
+    sumArray = Array.new(projection[0].size-1, 0) #each orbital
+    #pp sumArray;exit
+    energy = projection[0][0] + i*dE
     #STDERR.print("#{energy}\n")
-    array.each do |state|
+    projection.each do |state|
+      #pp state; exit
 
       gauss = gaussFunction(energy-state[0], sigma)
       sumArray.size.times do |j|
@@ -119,6 +122,7 @@ def broadning(array, dE, sigma = 0.1)
     end
     results << [energy]+sumArray
   end
+  #pp results; exit
   results
 end
 
@@ -249,9 +253,6 @@ else
   end
 end
 
-  
-
-exit
 
 class Procar2dos
 
