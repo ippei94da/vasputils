@@ -166,7 +166,9 @@ class VaspUtils::Procar
         results << [@energies[j][i]] + sumState + [total]
       end
     end
-    results.sort
+    results.sort!
+    pp results
+    results
   end
 
 
