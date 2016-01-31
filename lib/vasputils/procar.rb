@@ -13,6 +13,15 @@ class VaspUtils::Procar
   attr_reader :energies, :num_bands, :num_ions,
     :num_kpoints, :occupancies, :states, :weights
 
+  PROCAR_LABELS = [
+    :ion,
+    :s,
+    :py, :pz, :px,
+    :dxy, :dyz, :dz2, :dxz, :dx2,
+    :f_3, :f_2, :f_1, :f0, :f1, :f2, :f3, # :f-3, :f-2, :f-1, :f0, :f1, :f2, :f3,
+    :tot
+  ]
+
   def initialize( energies, num_bands, num_ions, num_kpoints, occupancies, states, weights)
     @energies    = energies
     @num_bands   = num_bands
@@ -101,18 +110,27 @@ class VaspUtils::Procar
     result
   end
 
-  def get_all(occupy = false)
-    ion_indices = Array.new
-    @states[0][0].size.times {|i| ion_indices << i+1}
-    projection(ion_indices, occupy)
-  end
+  #def get_all(occupy = false)
+  #  ion_indices = Array.new
+  #  @states[0][0].size.times {|i| ion_indices << i+1}
+  #  projection(ion_indices, occupy)
+  #end
 
   def header
     sprintf("# k-points: #{@states.size}  bands: #{@states[0].size}  ions: #{@states[0][0].size}\n")
   end
 
-  def density_of_states(ion_indices, tick, sigma)
+  def density_of_states(ion_indices, tick, sigma, occupy = false)
     proj = projection(ion_indices)
+
+    TODO occupy
+    if occupy == true
+      (num_orbitals).times {|l| sumState[l] *= @weights[j]} * @occupancies[j][i]
+      total = @weights[j] * @occupancies[j][i]
+    else
+      (num_orbitals).times {|l| sumState[l] *= @weights[j] * 2}
+      total = @weights[j] * 2
+    end
 
     states = Array.new
     proj.each do |a|
@@ -140,36 +158,36 @@ class VaspUtils::Procar
   # outer array is all bands of all k-points.
   # inner array is all orbitals.
   #of each orbital component for ions in 'ion_indices' 
-  #def sum_ions(ion_indices, occupy = false)
-  def projection(ion_indices, occupy = false)
+  def projection(ion_indices) #old name: sum_ions()
     results = Array.new
-    @states[0][0].size.times do |i|         # for band
-      @states[0].size.times do |j|          # for kpoints
+    #pp @states[0][0][0][0] ;exit
+    num_orbitals = @states[0][0][0][0].size
+
+    @states[0].size.times do |j|          # for kpoints
+      @states[0][0].size.times do |i|         # for band
+        #pp j;exit
+
+        # initialize
         projected_orbitals = {}
+        projected_orbitals[:energy] = @energies[j][i]
+        projected_orbitals[:weight] = @weights[j]
+        num_orbitals.times do |k|
+          projected_orbitals[PROCAR_LABELS[k+1]] = 0.0
+        end
 
-        #num_items = 9
-        #num_items = 16 if @fOrbital
-        #sumState = Array.new(num_items, 0)
-
+        # each orbitals
+        #pp @states[0][j][i]
         ion_indices.each do |k|
-          projected_orbitals[:energy] = @energies[j][i]
-          (num_items).times do |l|
-            sumState[l] += @states[0][j][i][k-1][l]
+          num_orbitals.times do |l|
+            #pp PROCAR_LABELS[i]
+            #pp @states[0][j][i][k-1][l]
+            projected_orbitals[PROCAR_LABELS[l+1]] += @states[0][j][i][k-1][l]
           end
         end
-
-        if occupy == true
-          (num_items).times {|l| sumState[l] *= @occupancies[j][i] * @weights[j]}
-          total = @occupancies[j][i] * @weights[j]
-        else
-          (num_items).times {|l| sumState[l] *= @weights[j] * 2}
-          total = @weights[j] * 2
-        end
-        results << [@energies[j][i]] + sumState + [total]
+        #results << [@energies[j][i]] + sumState + [total]
+        results << projected_orbitals
       end
     end
-    results.sort!
-    pp results
     results
   end
 
@@ -179,15 +197,16 @@ class VaspUtils::Procar
   end
 
   # dE : tick
-  def broadning(projection, dE, sigma = 0.1)
+  # proj : projection
+  def broadning(proj, dE, sigma = 0.1)
     results = Array.new
-    #pp projection;exit
-    (((projection[-1][0] - projection[0][0]) / dE).to_i + 2).times do |i|
-      sumArray = Array.new(projection[0].size-1, 0) #each orbital
+    #pp proj;exit
+    (((proj[-1][0] - proj[0][0]) / dE).to_i + 2).times do |i|
+      sumArray = Array.new(proj[0].size-1, 0) #each orbital
       #pp sumArray;exit
-      energy = projection[0][0] + i*dE
+      energy = proj[0][0] + i*dE
       #STDERR.print("#{energy}\n")
-      projection.each do |state|
+      proj.each do |state|
         #pp state; exit
 
         gauss = gaussFunction(energy-state[0], sigma)

@@ -7,7 +7,7 @@
 # Time-stamp: <2006-05-25 21:41:31 togo>
 # $Id: procar2dos.rb 405 2006-05-25 12:57:12Z  $
 # Modified by Ippei Kishida.
-# Last-modified: 2016/01/31 19:17:52.
+# Last-modified: 2016/01/31 23:16:29.
 
 USAGE = <<HERE
 usage: procar2dos.rb [OPTION] [ion_indices]
@@ -58,6 +58,9 @@ op.on('-t TICK', '--tick=num', 'tick value (default 0.01)'){ |v|
 op.on('-p', '--precise', 'show precise orbitals. E.g., s, py, pz, px, dxy, dyz, dz2, dxz, dx2, etc.'){
   options[:precise] = true
 }
+op.on('-o', '--occupancy', 'Use occupancy, in spite of 2 electrons in a orbital.'){
+  options[:occupancy] = true
+}
 op.on('-P file', '--PROCAR=file', 'Indicate PROCAR file. Default is "PROCAR"'){ |v|
   options[:procar] = v
 }
@@ -86,7 +89,7 @@ ion_indices.map! {|i| i.to_i}
 #pp ion_indices
 
 #projection = procar.projection(ion_indices)
-dos = procar.density_of_states(ion_indices, tick, sigma)
+dos = procar.density_of_states(ion_indices, tick, sigma, options[:occupancy])
 #states = procar.sum_ions
 
 #pp dos
