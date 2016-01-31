@@ -145,13 +145,15 @@ class VaspUtils::Procar
     results = Array.new
     @states[0][0].size.times do |i|         # for band
       @states[0].size.times do |j|          # for kpoints
-        num_items = 9
-        num_items = 16 if @fOrbital
-        sumState = Array.new(num_items, 0)
+        projected_orbitals = {}
+
+        #num_items = 9
+        #num_items = 16 if @fOrbital
+        #sumState = Array.new(num_items, 0)
 
         ion_indices.each do |k|
+          projected_orbitals[:energy] = @energies[j][i]
           (num_items).times do |l|
-            #pp @states[0][j][i][k-1][l]
             sumState[l] += @states[0][j][i][k-1][l]
           end
         end
