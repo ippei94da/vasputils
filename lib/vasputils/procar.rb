@@ -101,13 +101,48 @@ class VaspUtils::Procar
     result
   end
 
-  def sum_ions(ion_indices, occupy = false)
-    results = Array.new
-    #pp ion_indices
-    #for_spin
-    #pp @states
-    #pp @states[0]
+  def get_all(occupy = false)
+    ion_indices = Array.new
+    @states[0][0].size.times {|i| ion_indices << i+1}
+    projection(ion_indices, occupy)
+  end
 
+  def header
+    sprintf("# k-points: #{@states.size}  bands: #{@states[0].size}  ions: #{@states[0][0].size}\n")
+  end
+
+  def density_of_states(ion_indices, tick, sigma)
+    proj = projection(ion_indices)
+
+    states = Array.new
+    proj.each do |a|
+      p = a[2] + a[3] + a[4]
+      d = a[5] + a[6] + a[7] + a[8] + a[9]
+      f = a[10] + a[11] + a[12] + a[13] + a[14] + a[15] + a[16] if @f_orbital
+      if @f_orbital
+        states << [a[0], a[1], p, d, f, a[10]] if @f_orbital
+      else
+        states << [a[0], a[1], p, d, a[10]]
+      end
+    end
+    #pp proj
+    #pp states
+    exit
+    dos = broadning(states, tick, sigma)
+
+  end
+
+  private
+
+  #Sum up each orbital component for ions in 'ion_indices' 
+  #for all k-points and bands.
+  #Return an duplex array;
+  # outer array is all bands of all k-points.
+  # inner array is all orbitals.
+  #of each orbital component for ions in 'ion_indices' 
+  #def sum_ions(ion_indices, occupy = false)
+  def projection(ion_indices, occupy = false)
+    results = Array.new
     @states[0][0].size.times do |i|         # for band
       @states[0].size.times do |j|          # for kpoints
         num_items = 9
@@ -115,12 +150,8 @@ class VaspUtils::Procar
         sumState = Array.new(num_items, 0)
 
         ion_indices.each do |k|
-          #pp j
-          #pp i
-          #pp k-1
-          #pp @states
           (num_items).times do |l|
-            pp @states[0][j][i][k-1][l]
+            #pp @states[0][j][i][k-1][l]
             sumState[l] += @states[0][j][i][k-1][l]
           end
         end
@@ -129,33 +160,15 @@ class VaspUtils::Procar
           (num_items).times {|l| sumState[l] *= @occupancies[j][i] * @weights[j]}
           total = @occupancies[j][i] * @weights[j]
         else
-          #pp @weights[j]
           (num_items).times {|l| sumState[l] *= @weights[j] * 2}
           total = @weights[j] * 2
         end
-        
-        #pp @energies[j][i]
-        #pp sumState
-        #pp [total]
-        #exit
         results << [@energies[j][i]] + sumState + [total]
       end
     end
     results.sort
   end
 
-  def get_all(occupy = false)
-    ion_indices = Array.new
-    @states[0][0].size.times {|i| ion_indices << i+1}
-    sum_ions(ion_indices, occupy)
-  end
-
-  def header
-    sprintf("# k-points: #{@states.size}  bands: #{@states[0].size}  ions: #{@states[0][0].size}\n")
-  end
-
-  private
-  HERE
 
   def gaussFunction(deviation,sigma)
     1/sigma/Math.sqrt(2*Math::PI)*Math.exp(-deviation**2/(2*sigma**2))
