@@ -154,5 +154,36 @@ class VaspUtils::Procar
     sprintf("# k-points: #{@states.size}  bands: #{@states[0].size}  ions: #{@states[0][0].size}\n")
   end
 
+  private
+  HERE
+
+  def gaussFunction(deviation,sigma)
+    1/sigma/Math.sqrt(2*Math::PI)*Math.exp(-deviation**2/(2*sigma**2))
+  end
+
+  # dE : tick
+  def broadning(projection, dE, sigma = 0.1)
+    results = Array.new
+    #pp projection;exit
+    (((projection[-1][0] - projection[0][0]) / dE).to_i + 2).times do |i|
+      sumArray = Array.new(projection[0].size-1, 0) #each orbital
+      #pp sumArray;exit
+      energy = projection[0][0] + i*dE
+      #STDERR.print("#{energy}\n")
+      projection.each do |state|
+        #pp state; exit
+
+        gauss = gaussFunction(energy-state[0], sigma)
+        sumArray.size.times do |j|
+          sumArray[j] += state[j+1] * gauss
+        end
+      end
+      results << [energy]+sumArray
+    end
+    #pp results; exit
+    results
+  end
+
+
 end
 

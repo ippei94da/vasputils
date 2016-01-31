@@ -6,23 +6,23 @@
 # Atsushi Togo
 # Time-stamp: <2006-05-25 21:41:31 togo>
 # $Id: procar2dos.rb 405 2006-05-25 12:57:12Z  $
+# Modified by Ippei Kishida.
+# Last-modified: 2016/01/31 16:04:40.
 
-#require '~/tanaka-share/trunk/ruby/parseProcar.rb'
-#require '~/tanaka-share/trunk/ruby/cBroadning.rb'
-#require 'tanakalab/ParseProcar.rb'
-#require 'tanakalab/cBroadning.rb'
-#require "getopts"
+USAGE = <<HERE
+usage: procar2dos.rb [OPTION] [ion_indices]
+    If 'ion_indices' is empty, use all ions.
+HERE
+
+
 require "vasputils"
 require "optparse"
 require "pp"
 
 ## option analysis
-OPTIONS = {}
+options = {}
 op = OptionParser.new
-op.banner = <<HERE
-usage: procar2dos.rb [OPTION] [PROCAR_file]
-    default value of PROCAR_file is 'PROCAR'
-HERE
+op.banner = USAGE
 #    -s ["NUMBER, NUMBER..."] sum up multi-numbers of ions like "1..3 5"
 #    -f [FERMI ENERGY]
 #    -c       whether include occupancy or not
@@ -35,136 +35,60 @@ HERE
 #
 #    -l [WEIGHT FILE]  lap over PROCAR's
 op.on("-s 'num num...'", '--select-ions=nums', "sum up selected ions like '1..3 5'"){ |v|
-  OPTIONS[:select_ions] = v
+  options[:select_ions] = v
 }
 op.on('-f energy', '--fermi=energy', 'FERMI ENERGY'){ |v|
-  OPTIONS[:fermi] = v
-}
-op.on('-c', '--occupancy', 'Use occupancy, instead of number of orbitals.'){
-  OPTIONS[:occupancy] = true
+  options[:fermi] = v
 }
 op.on('--f-orb', 'consider f orbital'){
-  OPTIONS[:f_orb] = true
+  options[:f_orb] = true
 }
 op.on('--sigma=val', 'set standard deviation for broadning (default 0.1)'){ |v|
-  OPTIONS[:sigma] = v
+  options[:sigma] = v
 }
 op.on('--check', 'just show number of ions and number of eigenvalues'){
-  OPTIONS[:check] = true
+  options[:check] = true
 }
 #op.on('-l WEIGHT_FILE', "lap over PROCAR's"){ |v|
-#  OPTIONS[:weight_file] = v
+#  options[:weight_file] = v
 #}
 op.on('-t TICK', '--tick=num', 'tick value (default 0.01)'){ |v|
-  OPTIONS[:tick] = v
+  options[:tick] = v
 }
 op.on('-p', '--precise', 'show precise orbitals, but heavy'){
-  OPTIONS[:precise] = true
+  options[:precise] = true
+}
+op.on('-P file', '--PROCAR=file', 'Indicate PROCAR file. Default is "PROCAR"'){ |v|
+  options[:procar] = v
 }
 op.on('--total', 'total DOS'){
-  OPTIONS[:total] = true
+  options[:total] = true
 }
 op.parse!(ARGV)
 
-procar_file = ARGV[0] || 'PROCAR'
-
-
-fermi_level = OPTIONS[:fermi].to_f
+procar_file = options[:procar] || 'PROCAR'
+fermi_level = options[:fermi].to_f
 tick = 0.01
-tick = OPTIONS[:tick].to_f if OPTIONS[:tick]
+tick = options[:tick].to_f if options[:tick]
 sigma = 0.1
-sigma = OPTIONS[:sigma].to_f if OPTIONS[:sigma]
-
-
-#  if OPTIONS[:f_orb]
-#    @f_orbital = true
-#  else
-#    @f_orbital = false
-#  end
-#
-#  if OPTIONS[:weight_file]
-#    @projection = Array.new
-#    layover
-#  else
-#    @projection = eachProcar(ARGV.shift)
-#  end
-#end
-
-def gaussFunction(deviation,sigma)
-  1/sigma/Math.sqrt(2*Math::PI)*Math.exp(-deviation**2/(2*sigma**2))
-end
-
-# dE : tick
-# HERE
-def broadning(projection, dE, sigma = 0.1)
-  results = Array.new
-  #pp projection;exit
-  (((projection[-1][0] - projection[0][0]) / dE).to_i + 2).times do |i|
-    sumArray = Array.new(projection[0].size-1, 0) #each orbital
-    #pp sumArray;exit
-    energy = projection[0][0] + i*dE
-    #STDERR.print("#{energy}\n")
-    projection.each do |state|
-      #pp state; exit
-
-      gauss = gaussFunction(energy-state[0], sigma)
-      sumArray.size.times do |j|
-        sumArray[j] += state[j+1] * gauss
-      end
-    end
-    results << [energy]+sumArray
-  end
-  #pp results; exit
-  results
-end
+sigma = options[:sigma].to_f if options[:sigma]
 
 procar = VaspUtils::Procar.load_file(procar_file)
 
-#'1 3..5' => [1,3,4,5]
-def collect_ions(option)
-  results = Array.new
-  option.strip.gsub(/,/," ").gsub(/-/,"..").split(/\s+/).each do |x|
-    if /\.\./ =~ x || /-/ =~ x
-      i = x.split(/\.\./)
-      i[0].to_i.upto(i[1].to_i) {|j| results << j}
-    else
-      results << x.to_i
-    end
-  end
-  ions = ""
-  results.each {|i| ions << sprintf("%d,", i)}
-  STDERR.print("#{ions.chop}\n")
-  results
-end
-#pp collect_ions('1 3..5')
-#exit
-
-
-if OPTIONS[:total]
+if options[:total]
   energies = procar.energies
   weights = procar.weights
   states = Array.new
-  #pp energies; exit
-  #pp weights; exit
   energies.size.times do |i|
     tmparray = Array.new
     energies[0].size.times do |j|
       tmparray << [energies[i][j], 2*weights[i], procar.occupancies[i][j]*weights[i]]
-      #pp tmparray; exit
-      #HERE
     end
     states += tmparray
   end
   projection = states.sort
 
-  #pp projection
-  #pp tick
-  #pp sigma
-  #exit
-
   dos = broadning(projection, tick, sigma)
-  #pp projection; exit
-  #pp dos; exit
 
   # for index 0
   printf("#%12s  %12s  %12s\n", "eigenvalue", "total", "total with occ")
@@ -181,7 +105,7 @@ if OPTIONS[:total]
 end
 
 # うまく動かない。
-#if OPTIONS[:precise]
+#if options[:precise]
 #  dos = broadning(projection, tick, sigma )
 #  pp projection
 #  if @f_orbital
@@ -205,13 +129,14 @@ end
 
 ## not total nor precise
 #dos = PostProcessProcar.new(procar.states, procar.weights, procar.energies, procar.occupancies)
-#pp procar.get_all(OPTIONS[:occupancy])
+#pp procar.get_all(options[:occupancy])
 #exit
-if OPTIONS[:select_ions]
-  ionNumbers = collect_ions(OPTIONS[:select_ions])
-  states = procar.sum_ions(ionNumbers, OPTIONS[:occupancy])
+if options[:select_ions]
+  ionNumbers = collect_ions(options[:select_ions])
+  #states = procar.sum_ions(ionNumbers, options[:occupancy])
+  states = procar.sum_ions(ionNumbers)
 else
-  states = procar.get_all(OPTIONS[:occupancy])
+  states = procar.get_all
 end
 projection = states
 
@@ -244,9 +169,9 @@ end
 class Procar2dos
 
   def printGnuplot
-    if OPTIONS[:total]
+    if options[:total]
     else
-      if OPTIONS[:precise]
+      if options[:precise]
         #printPhaseGnuplot
       else
         #printPartialGnuplot
@@ -258,7 +183,7 @@ class Procar2dos
 
   def eachProcar(filename)
     procar = VaspUtils::Procar.load_file(filename)
-    if OPTIONS[:total]
+    if options[:total]
     else
       states = eachProcarPartial(procar)
     end
@@ -269,7 +194,7 @@ class Procar2dos
 #    weightArray = Array.new
 #    sumWeight = 0
 #
-#    File.open(OPTIONS[:weight_file]) do |file|   # read weight file
+#    File.open(options[:weight_file]) do |file|   # read weight file
 #      while line = file.gets
 #        next if (weight = line.strip.to_f) == 0
 #        weightArray << weight
@@ -294,7 +219,7 @@ end
 
 
 
-if OPTIONS[:check]
+if options[:check]
   procar = VaspUtils::Procar.load_file(procar_file)
   num_ions = procar.num_ions
   num_energies = procar.energies.size
