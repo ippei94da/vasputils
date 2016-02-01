@@ -132,13 +132,9 @@ class VaspUtils::Procar
   def density_of_states(ion_indices, tick, sigma, occupy = false)
     proj = project_onto_energy(ion_indices)
 
-    TODO occupy
     if occupy == true
-      (num_orbitals).times {|l| sumState[l] *= @weights[j]} * @occupancies[j][i]
-      total = @weights[j] * @occupancies[j][i]
-    else
-      (num_orbitals).times {|l| sumState[l] *= @weights[j] * 2}
-      total = @weights[j] * 2
+      (num_orbitals).times {|l| proj[:orbitals][l] *= @occupancies[j][i] / 2.0 }
+      #total = @weights[j] * @occupancies[j][i] /2.0
     end
 
     states = Array.new
@@ -188,7 +184,7 @@ class VaspUtils::Procar
         # initialize
         projected_orbitals = {}
         projected_orbitals[:energy] = @energies[k][band]
-        projected_orbitals[:weight] = @weights[k]
+        #projected_orbitals[:weight] = @weights[k]
         projected_orbitals[:orbitals] = Array.new(num_orbitals).fill(0.0)
 
         ion_indices.each do |ion|
@@ -196,6 +192,9 @@ class VaspUtils::Procar
             projected_orbitals[:orbitals][orb] += @states[0][k][band][ion-1][orb]
           end
         end
+
+        (num_orbitals).times {|orb| projected_orbitals[:orbitals][orb] *= @weights[k] * 2.0}
+        #projected_orbitals[:total] = @weights[k] * 2.0 何に使う？
         results << projected_orbitals
       end
     end
