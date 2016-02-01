@@ -32,6 +32,13 @@ class VaspUtils::Procar
     @weights      = weights
   end
 
+  # PROCAR 形式ファイルから読み込む。
+  # states は5重の配列になっている。外側から、
+  # - spin    (item number is ISPIN in INCAR.)
+  # - k-point (item number is a number of irreducible k-points.)
+  # - band    (item number is NBAND in INCAR.)
+  # - ion     (item number is an ion number in POSCAR.)
+  # - orbital (item number is count of s, py, pz, px, ....)
   def self.load_file(filename)
     states = Array.new           # [kpoints][bands][ions][orbitals]
     energies = Array.new         # [kpoinst][bands]
