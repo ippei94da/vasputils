@@ -22,11 +22,9 @@ class VaspUtils::Procar
     :tot
   ]
 
-  def initialize( energies, num_bands, num_ions, num_kpoints, occupancies, states, weights)
+  #def initialize( energies, num_bands, num_ions, num_kpoints, occupancies, states, weights)
+  def initialize(states, energies, occupancies, weights)
     @energies    = energies
-    @num_bands   = num_bands
-    @num_ions    = num_ions
-    @num_kpoints = num_kpoints
     @occupancies = occupancies
     @states      = states
     @weights      = weights
@@ -94,20 +92,30 @@ class VaspUtils::Procar
         states_for_spin << states_for_bands
       end
       states << states_for_spin
-      #pp occupancies
-      #pp energies
-      #pp states
-      #pp self.new(energies, num_bands, num_ions, num_kpoints, occupancies, states, weights)
-      #pp io.gets
       io.gets
     end
     io.close
-    #pp self.new(energies, num_bands, num_ions, num_kpoints, occupancies, states, weights)
-    self.new(energies, num_bands, num_ions, num_kpoints, occupancies, states, weights)
+    self.new(states, energies, occupancies, weights)
   end
 
-  def getNumEnergies
-    @energies.size * @energies[0].size
+  def num_spins
+    @states.size
+  end
+
+  def num_kpoints
+    @states[0].size
+  end
+
+  def num_bands
+    @states[0][0].size
+  end
+
+  def num_ions
+    @states[0][0][0].size
+  end
+
+  def num_orbitals
+    @states[0][0][0][0].size
   end
 
   def f_orbital?
@@ -116,12 +124,6 @@ class VaspUtils::Procar
     result = true if 16 == @states[0][0][0][0].size
     result
   end
-
-  #def get_all(occupy = false)
-  #  ion_indices = Array.new
-  #  @states[0][0].size.times {|i| ion_indices << i+1}
-  #  projection(ion_indices, occupy)
-  #end
 
   def header
     sprintf("# k-points: #{@states.size}  bands: #{@states[0].size}  ions: #{@states[0][0].size}\n")
@@ -157,15 +159,15 @@ class VaspUtils::Procar
 
   end
 
-  def each_band(&block)
-    HERE
-    @num_kpoints.times do |k|
-      @num_bands.times do |b|
-
-      end
-    end
-
-  end
+  #def each_band(&block)
+  #  num_spins.times do |s|
+  #    num_kpoints.times do |k|
+  #      num_bands.times do |b|
+  #        yield @states[s][k][b]
+  #      end
+  #    end
+  #  end
+  #end
 
   private
 
@@ -177,8 +179,6 @@ class VaspUtils::Procar
   #of each orbital component for ions in 'ion_indices' 
   def projection(ion_indices) #old name: sum_ions()
     results = Array.new
-    #pp @states[0][0][0][0] ;exit
-    num_orbitals = @states[0][0][0][0].size
 
     @states[0].size.times do |j|          # for kpoints
       @states[0][0].size.times do |i|         # for band

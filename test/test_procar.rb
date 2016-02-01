@@ -52,6 +52,11 @@ class TC_Procar < Test::Unit::TestCase
     assert_equal(2, @p00.num_ions)
   end
 
+  def test_num_orbitals
+    assert_equal( 9, @p00.num_orbitals)
+    assert_equal(16, @p01.num_orbitals)
+  end
+
   def test_weights
     assert_equal([0.25, 0.75, 0.25, 0.75], @p00.weights)
   end
@@ -61,11 +66,11 @@ class TC_Procar < Test::Unit::TestCase
     assert_equal(true , @p01.f_orbital?)
   end
 
-  def test_each_band
-    @p00.each_band do |i|
-      p i
-    end
-  end
+  #def test_each_band
+  #  @p00.each_band do |i|
+  #    p i
+  #  end
+  #end
 
   #def test_projection
   #  corrects = [ 
