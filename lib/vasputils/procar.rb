@@ -13,14 +13,14 @@ class VaspUtils::Procar
   attr_reader :energies, :num_bands, :num_ions,
     :num_kpoints, :occupancies, :states, :weights
 
-  PROCAR_LABELS = [
-    :ion,
-    :s,
-    :py, :pz, :px,
-    :dxy, :dyz, :dz2, :dxz, :dx2,
-    :f_3, :f_2, :f_1, :f0, :f1, :f2, :f3, # :f-3, :f-2, :f-1, :f0, :f1, :f2, :f3,
-    :tot
-  ]
+  #PROCAR_LABELS = [
+  #  :ion,
+  #  :s,
+  #  :py, :pz, :px,
+  #  :dxy, :dyz, :dz2, :dxz, :dx2,
+  #  :f_3, :f_2, :f_1, :f0, :f1, :f2, :f3, # :f-3, :f-2, :f-1, :f0, :f1, :f2, :f3,
+  #  :tot
+  #]
 
   #def initialize( energies, num_bands, num_ions, num_kpoints, occupancies, states, weights)
   def initialize(states, energies, occupancies, weights)
@@ -130,7 +130,7 @@ class VaspUtils::Procar
   end
 
   def density_of_states(ion_indices, tick, sigma, occupy = false)
-    proj = projection(ion_indices)
+    proj = project_onto_energy(ion_indices)
 
     TODO occupy
     if occupy == true
@@ -173,39 +173,34 @@ class VaspUtils::Procar
 
   #Sum up each orbital component for ions in 'ion_indices' 
   #for all k-points and bands.
-  #Return an duplex array;
+  #Return an array of hashes;
   # outer array is all bands of all k-points.
   # inner array is all orbitals.
   #of each orbital component for ions in 'ion_indices' 
-  def projection(ion_indices) #old name: sum_ions()
+  def project_onto_energy(ion_indices) #old name: sum_ions()
     results = Array.new
 
-    @states[0].size.times do |j|          # for kpoints
-      @states[0][0].size.times do |i|         # for band
-        #pp j;exit
+    # sum up orbitals for ions
+    @states[0].size.times do |k|          # for kpoints
+      @states[0][0].size.times do |band|         # for band
+        #pp k;exit
 
         # initialize
         projected_orbitals = {}
-        projected_orbitals[:energy] = @energies[j][i]
-        projected_orbitals[:weight] = @weights[j]
-        num_orbitals.times do |k|
-          projected_orbitals[PROCAR_LABELS[k+1]] = 0.0
-        end
+        projected_orbitals[:energy] = @energies[k][band]
+        projected_orbitals[:weight] = @weights[k]
+        projected_orbitals[:orbitals] = Array.new(num_orbitals).fill(0.0)
 
-        # each orbitals
-        #pp @states[0][j][i]
-        ion_indices.each do |k|
-          num_orbitals.times do |l|
-            #pp PROCAR_LABELS[i]
-            #pp @states[0][j][i][k-1][l]
-            projected_orbitals[PROCAR_LABELS[l+1]] += @states[0][j][i][k-1][l]
+        ion_indices.each do |ion|
+          num_orbitals.times do |orb|
+            projected_orbitals[:orbitals][orb] += @states[0][k][band][ion-1][orb]
           end
         end
-        #results << [@energies[j][i]] + sumState + [total]
         results << projected_orbitals
       end
     end
-    results
+
+    results.sort_by{|i| i[:energy]}
   end
 
 
