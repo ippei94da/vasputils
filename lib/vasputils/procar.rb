@@ -24,10 +24,10 @@ class VaspUtils::Procar
 
   #def initialize( energies, num_bands, num_ions, num_kpoints, occupancies, states, weights)
   def initialize(states, energies, occupancies, weights)
+    @states      = states
     @energies    = energies
     @occupancies = occupancies
-    @states      = states
-    @weights      = weights
+    @weights     = weights
   end
 
   # PROCAR 形式ファイルから読み込む。
