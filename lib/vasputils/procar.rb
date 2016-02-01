@@ -157,6 +157,16 @@ class VaspUtils::Procar
 
   end
 
+  def each_band(&block)
+    HERE
+    @num_kpoints.times do |k|
+      @num_bands.times do |b|
+
+      end
+    end
+
+  end
+
   private
 
   #Sum up each orbital component for ions in 'ion_indices' 
@@ -226,7 +236,6 @@ class VaspUtils::Procar
     #pp results; exit
     results
   end
-
 
 end
 
