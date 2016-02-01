@@ -8,6 +8,8 @@
 
 
 #require 'tanakalab/broadning.rb' つかってなさそう。
+#raw_total というのはたぶん、PROCAR に出てくる tot とは関係なく、
+#k点の重みとバンドエネルギーだけで出せる DOS だと思う。
 
 class VaspUtils::Procar
   attr_reader :energies, :num_bands, :num_ions,
@@ -82,7 +84,7 @@ class VaspUtils::Procar
           end
           io.gets if num_ions > 1
           io.gets
-          #io.gets if @fOrbital
+          #io.gets if f_orbital?
           (num_ions * 2).times {io.gets}
           io.gets
           states_for_bands << states_for_ions
@@ -134,24 +136,27 @@ class VaspUtils::Procar
 
     if occupy == true
       (num_orbitals).times {|l| proj[:orbitals][l] *= @occupancies[j][i] / 2.0 }
-      #total = @weights[j] * @occupancies[j][i] /2.0
+      proj[:raw_total] = @weights[j] * @occupancies[j][i] /2.0
     end
 
     states = Array.new
-    proj.each do |a|
-      p = a[2] + a[3] + a[4]
-      d = a[5] + a[6] + a[7] + a[8] + a[9]
-      f = a[10] + a[11] + a[12] + a[13] + a[14] + a[15] + a[16] if @f_orbital
-      if @f_orbital
-        states << [a[0], a[1], p, d, f, a[10]] if @f_orbital
-      else
-        states << [a[0], a[1], p, d, a[10]]
+    proj.each do |b| #band
+      o = band[:orbitals]
+
+      s = o[0]
+      p = o[1] + o[2] + o[3]
+      d = o[4] + o[5] + o[6] + o[7] + o[8]
+      f = o[9] + o[10] + o[11] + o[12] + o[13] + o[14] + o[15] if f_orbital?
+      if f_orbital?
+        states << [band[:energy], s, p, d, f, o[10]]
+      else         band[:energy]
+        states << [band[:energy], s, p, d, o[10]]
       end
     end
     #pp proj
     #pp states
     exit
-    dos = broadning(states, tick, sigma)
+    dos = broadening(states, tick, sigma)
 
   end
 
@@ -194,7 +199,7 @@ class VaspUtils::Procar
         end
 
         (num_orbitals).times {|orb| projected_orbitals[:orbitals][orb] *= @weights[k] * 2.0}
-        #projected_orbitals[:total] = @weights[k] * 2.0 何に使う？
+        projected_orbitals[:raw_total] = @weights[k] * 2.0
         results << projected_orbitals
       end
     end
@@ -209,7 +214,8 @@ class VaspUtils::Procar
 
   # dE : tick
   # proj : projection
-  def broadning(proj, dE, sigma = 0.1)
+  # Energy を 
+  def broadening(proj, dE, sigma = 0.1)
     results = Array.new
     #pp proj;exit
     (((proj[-1][0] - proj[0][0]) / dE).to_i + 2).times do |i|
@@ -227,6 +233,8 @@ class VaspUtils::Procar
       end
       results << [energy]+sumArray
     end
+
+    proj[:raw_total] もやる。
     #pp results; exit
     results
   end
