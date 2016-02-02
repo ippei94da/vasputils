@@ -136,16 +136,11 @@ class VaspUtils::Procar
     sprintf("# k-points: #{@states.size}  bands: #{@states[0].size}  ions: #{@states[0][0].size}\n")
   end
 
+  # TODO description
   #def density_of_states(ion_indices, tick, sigma, occupy = false)
   def density_of_states(ion_indices, options)
-    tick       = options[:tick]
-    sigma      = options[:sigma]
-    occupy     = options[:occupy]
-    min_energy = options[:min_energy]
-    max_energy = options[:max_energy]
-
     proj = project_onto_energy(ion_indices)
-    if occupy == true
+    if options[:occupy] == true
       (num_orbitals).times {|l| proj[:orbitals][l] *= @occupancies[j][i] / 2.0 }
       proj[:raw_total] = @weights[j] * @occupancies[j][i] /2.0
     end
@@ -172,35 +167,7 @@ class VaspUtils::Procar
     end
     #pp proj ; exit
 
-    ## min and max of energy in DOS.
-    flat_energies = @energies.flatten.sort
-    min_energy ||= left_foot_gaussian(flat_energies[0], sigma, tick)
-    max_energy ||= right_foot_gaussian(flat_energies[-1], sigma, tick)
-
-
-
-    division_x = ((max_energy - min_energy) / tick).round
-
-    intensities = Array.new(division_x + 1).fill(0.0)
-
-
-    proj.each do |i|
-      p i
-    end
-    #pp proj
-    #exit
-
-    #HERE
-    dos = broadening(proj, tick, sigma)
-
-    if options[:precise]
-    [ "s",
-      "py", "pz", "px",
-      "dxy", "dyz", "dz2", "dxz", "dx2",
-      "f-3", "f-2", "f-1", "f0", "f1", "f2", "f3"]
-    end
-
-
+    broadening(proj, options)
   end
 
   #def each_band(&block)
@@ -275,23 +242,53 @@ class VaspUtils::Procar
   # dE : tick
   # proj : projection
   # Energy を 
-  def broadening(proj, dE, sigma = 0.1)
-    results = Array.new
-    (((proj[-1][0] - proj[0][0]) / dE).to_i + 2).times do |i|
-      sumArray = Array.new(proj[0].size-1, 0) #each orbital
-      energy = proj[0][0] + i*dE
-      #STDERR.print("#{energy}\n")
-      proj.each do |state|
-        gauss = self.class.gauss_function(sigma, energy-state[0])
-        sumArray.size.times do |j|
-          sumArray[j] += state[j+1] * gauss
-        end
-      end
-      results << [energy]+sumArray
-    end
+  def broadening(proj, options)
 
+    tick       = options[:tick]
+    sigma      = options[:sigma]
+    #occupy     = options[:occupy]
+    #min_energy = options[:min_energy]
+    #max_energy = options[:max_energy]
+
+    ### min and max of energy in DOS.
+    flat_energies = @energies.flatten.sort
+    min_energy ||= left_foot_gaussian(flat_energies[0], sigma, tick)
+    max_energy ||= right_foot_gaussian(flat_energies[-1], sigma, tick)
+
+    division_x = ((max_energy - min_energy) / tick).round
+
+    intensities = Array.new(division_x + 1).fill(0.0)
+
+    proj.each do |i|
+      p i;exit
+    end
+    #pp proj
+    #exit
+
+    #HERE
+
+    if options[:precise]
+    [ "s",
+      "py", "pz", "px",
+      "dxy", "dyz", "dz2", "dxz", "dx2",
+      "f-3", "f-2", "f-1", "f0", "f1", "f2", "f3"]
+    end
     #proj[:raw_total] もやる。
-    results
+
+    ## old version
+    #results = Array.new
+    #(((proj[-1][:energy] - proj[0][:energy]) / tick).to_i + 2).times do |i|
+    #  sumArray = Array.new(proj[0][:orbitals].size).fill(0.0) #each orbital
+    #  energy = proj[0][:energy] + i * tick
+    #  proj.each do |state|
+    #    gauss = self.class.gauss_function(sigma, energy - state[:energy])
+    #    sumArray.size.times do |j|
+    #      sumArray[j] += state[:orbitals][j] * gauss
+    #    end
+    #  end
+    #  results << [energy]+sumArray
+    #end
+    #results
   end
 
 end
