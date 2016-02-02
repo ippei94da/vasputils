@@ -7,7 +7,7 @@ require "helper"
 #require "pkg/klass.rb"
 #
 class VaspUtils::Procar
-  public :project_onto_energy
+  public :project_onto_energy, :left_foot_gaussian, :right_foot_gaussian
 end
 
 class TC_Procar < Test::Unit::TestCase
@@ -136,24 +136,39 @@ class TC_Procar < Test::Unit::TestCase
   
   def test_density_of_states
     ion_indices = [1]
-    tick = 1.0
+    options = {
+      :tick   => 1.0,
+      :sigma  => 0.1,
+      :occupy => false
+    }
+
+    @p00.density_of_states(ion_indices, options)
+  end
+
+  def test_left_foot_gaussian
     sigma = 0.1
-    occupy = false
+    tick = 0.01
+    min = @p00.left_foot_gaussian(@p00.energies[0][0], sigma, tick)
+    assert_in_delta(-6.73, min, TOLERANCE)
+  end
 
-    #@p00.density_of_states(ion_indices, tick, sigma, occupy)
-
+  def test_right_foot_gaussian
+    sigma = 0.1
+    tick = 0.01
+    max = @p00.right_foot_gaussian(@p00.energies[2][7], sigma, tick)
+    assert_in_delta(14.02, max, TOLERANCE)
+    
   end
 
   def test_gauss_function
-    #pp VaspUtils::Procar.gauss_function(0.0, 0.0)
     assert_in_delta(0.24197072451914337  , VaspUtils::Procar.gauss_function(1.0, 1.0), TOLERANCE)
-    assert_in_delta(0.05399096651318806  , VaspUtils::Procar.gauss_function(2.0, 1.0), TOLERANCE)
-    assert_in_delta(0.0044318484119380075, VaspUtils::Procar.gauss_function(3.0, 1.0), TOLERANCE)
-    assert_in_delta(0.17603266338214976  , VaspUtils::Procar.gauss_function(1.0, 2.0), TOLERANCE)
+    assert_in_delta(0.05399096651318806  , VaspUtils::Procar.gauss_function(1.0, 2.0), TOLERANCE)
+    assert_in_delta(0.0044318484119380075, VaspUtils::Procar.gauss_function(1.0, 3.0), TOLERANCE)
+    assert_in_delta(0.17603266338214976  , VaspUtils::Procar.gauss_function(2.0, 1.0), TOLERANCE)
     assert_in_delta(0.12098536225957168  , VaspUtils::Procar.gauss_function(2.0, 2.0), TOLERANCE)
-    assert_in_delta(0.06475879783294587  , VaspUtils::Procar.gauss_function(3.0, 2.0), TOLERANCE)
-    assert_in_delta(0.12579440923099774  , VaspUtils::Procar.gauss_function(1.0, 3.0), TOLERANCE)
-    assert_in_delta(0.10648266850745075  , VaspUtils::Procar.gauss_function(2.0, 3.0), TOLERANCE)
+    assert_in_delta(0.06475879783294587  , VaspUtils::Procar.gauss_function(2.0, 3.0), TOLERANCE)
+    assert_in_delta(0.12579440923099774  , VaspUtils::Procar.gauss_function(3.0, 1.0), TOLERANCE)
+    assert_in_delta(0.10648266850745075  , VaspUtils::Procar.gauss_function(3.0, 2.0), TOLERANCE)
     assert_in_delta(0.0806569081730478   , VaspUtils::Procar.gauss_function(3.0, 3.0), TOLERANCE)
   end
 

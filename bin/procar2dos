@@ -7,7 +7,7 @@
 # Time-stamp: <2006-05-25 21:41:31 togo>
 # $Id: procar2dos.rb 405 2006-05-25 12:57:12Z  $
 # Modified by Ippei Kishida.
-# Last-modified: 2016/02/02 09:52:07.
+# Last-modified: 2016/02/02 12:36:39.
 
 
 USAGE = <<HERE
@@ -27,38 +27,28 @@ require "pp"
 options = {}
 op = OptionParser.new
 op.banner = USAGE
-#    -s ["NUMBER, NUMBER..."] sum up multi-numbers of ions like "1..3 5"
-#    -f [FERMI ENERGY]
-#    -c       whether include occupancy or not
-#    --f-orb   consider f orbital
-#    --sigma  [SIGMA] set standard deviation for broadning (default 0.1)
-#    --check  just show number of ions and number of eigenvalues
-#    -t [TICK] (default 0.01)
-#    -p       show precise orbitals, but heavy
-#
-#    -l [WEIGHT FILE]  lap over PROCAR's
 ##op.on("-i 'num num...'", '--ion-indices=nums', "sum up selected ions like '1..3 5'"){ |v|
 #  options[:select_ions] = v
 #}
-op.on('-f energy', '--fermi=energy', 'FERMI ENERGY'){ |v|
-  options[:fermi] = v
-}
-op.on('--f-orb', 'consider f orbital'){
-  options[:f_orb] = true
-}
-op.on('--sigma=val', 'set standard deviation for broadning (default 0.1)'){ |v|
-  options[:sigma] = v
-}
-op.on('--check', 'just show number of ions and number of eigenvalues'){
-  options[:check] = true
-}
+#op.on('--f-orb', 'consider f orbital'){
+#  options[:f_orb] = true
+#}
 #op.on('-l WEIGHT_FILE', "lap over PROCAR's"){ |v|
 #  options[:weight_file] = v
 #}
-op.on('-t TICK', '--tick=num', 'tick value (default 0.01)'){ |v|
+op.on('--check', 'Just show number of ions and number of eigenvalues'){
+  options[:check] = true
+}
+op.on('-f energy', '--fermi=energy', Float, 'FERMI ENERGY'){ |v|
+  options[:fermi] = v
+}
+op.on('-s val', '--sigma=val', Float, 'Set standard deviation for broadning (default 0.1)'){ |v|
+  options[:sigma] = v
+}
+op.on('-t TICK', '--tick=num', Float, 'Tick value (default 0.01)'){ |v|
   options[:tick] = v
 }
-op.on('-p', '--precise', 'show precise orbitals. E.g., py, pz, px'){
+op.on('-p', '--precise', 'Show precise orbitals. E.g., py, pz, px'){
   options[:precise] = true
 }
 op.on('-o', '--occupancy', 'Use occupancy, in spite of 2 electrons in a orbital.'){
@@ -70,7 +60,7 @@ op.on('-P file', '--PROCAR=file', 'Indicate PROCAR file. Default is "PROCAR"'){ 
 op.on('--min=energy', 'Minimum value of energy range.'){ |v|
   options[:min_energy] = v
 }
-op.on('--max=energy', 'maximum value of energy range.'){ |v|
+op.on('--max=energy', 'Maximum value of energy range.'){ |v|
   options[:max_energy] = v
 }
 #op.on('--total', 'total DOS'){
@@ -78,27 +68,37 @@ op.on('--max=energy', 'maximum value of energy range.'){ |v|
 #}
 op.parse!(ARGV)
 
+options[:fermi] ||= 0.0
+options[:tick]  ||= 0.01
+options[:sigma] ||= 0.1
+#pp options; exit
+
 procar_file = options[:procar] || 'PROCAR'
 unless File.exist? procar_file
   puts "Not found #{procar_file}"
   exit
 end
-
-fermi_level = options[:fermi].to_f
-tick = 0.01
-tick = options[:tick].to_f if options[:tick]
-sigma = 0.1
-sigma = options[:sigma].to_f if options[:sigma]
-
 procar = VaspUtils::Procar.load_file(procar_file)
 
 ion_indices = ARGV
 ion_indices = (1..(procar.num_ions)).to_a if ARGV.empty?
 ion_indices.map! {|i| i.to_i}
-#pp ion_indices
 
+if options[:check]
+  procar = vasputils::procar.load_file(procar_file)
+  num_ions = procar.num_ions
+  num_energies = procar.energies.size
+  print "number of ions: #{num_ions}\nnumber of eigenvalues: #{num_energies}\n"
+  exit(1)
+end
+
+options.delete(:procar)
+options.delete(:check)
+
+pp options; exit
 #projection = procar.projection(ion_indices)
-dos = procar.density_of_states(ion_indices, tick, sigma, options[:occupancy])
+#dos = procar.density_of_states(ion_indices, options[:tick], options[:sigma], options[:occupancy])
+dos = procar.density_of_states(ion_indices, options)
 #states = procar.sum_ions
 
 #pp dos
@@ -224,15 +224,6 @@ class Procar2dos
 
 end
 
-
-
-if options[:check]
-  procar = vasputils::procar.load_file(procar_file)
-  num_ions = procar.num_ions
-  num_energies = procar.energies.size
-  print "number of ions: #{num_ions}\nnumber of eigenvalues: #{num_energies}\n"
-  exit(1)
-end
 
 dos = Procar2dos.new
 dos.printGnuplot

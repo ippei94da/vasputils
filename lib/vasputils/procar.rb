@@ -102,8 +102,9 @@ class VaspUtils::Procar
 
   # Gauss function, x=0 centered.
   # Return scalar value (of y).
-  def self.gauss_function(deviation, sigma)
-    Math.exp(-deviation**2/(2*sigma**2)) /(sigma * Math.sqrt(2 * Math::PI))
+  def self.gauss_function(sigma, deviation)
+    Math.exp(-deviation**(2.0)/(2.0 * (sigma**2.0))) /
+      (sigma * Math.sqrt(2 * Math::PI))
   end
 
   def num_spins
@@ -137,32 +138,53 @@ class VaspUtils::Procar
     sprintf("# k-points: #{@states.size}  bands: #{@states[0].size}  ions: #{@states[0][0].size}\n")
   end
 
-  def density_of_states(ion_indices, tick, sigma, occupy = false)
-    proj = project_onto_energy(ion_indices)
+  #def density_of_states(ion_indices, tick, sigma, occupy = false)
+  def density_of_states(ion_indices, options)
+    tick       = options[:tick]
+    sigma      = options[:sigma]
+    occupy     = options[:occupy]
+    min_energy = options[:min_energy]
+    max_energy = options[:max_energy]
 
+    proj = project_onto_energy(ion_indices)
     if occupy == true
       (num_orbitals).times {|l| proj[:orbitals][l] *= @occupancies[j][i] / 2.0 }
       proj[:raw_total] = @weights[j] * @occupancies[j][i] /2.0
     end
 
-    states = Array.new
-    proj.each do |band| #band
-      o = band[:orbitals]
-
-      s = o[0]
-      p = o[1] + o[2] + o[3]
-      d = o[4] + o[5] + o[6] + o[7] + o[8]
-      f = o[9] + o[10] + o[11] + o[12] + o[13] + o[14] + o[15] if f_orbital?
-      if f_orbital?
-        states << [band[:energy], s, p, d, f, o[10]]
-      else         band[:energy]
-        states << [band[:energy], s, p, d, o[10]]
+    unless options[:precise]
+      ## sum up orbitals; e.g, py + pz + px = p
+      orbital_sums = Array.new
+      proj.each do |band| #band
+        o = band[:orbitals]
+        HERE
+        s = o[0]
+        p = o[1] + o[2] + o[3]
+        d = o[4] + o[5] + o[6] + o[7] + o[8]
+        f = o[9] + o[10] + o[11] + o[12] + o[13] + o[14] + o[15] if f_orbital?
+        if f_orbital?
+          orbital_sums << [band[:energy], s, p, d, f, band[:raw_total]]
+        else
+          orbital_sums << [band[:energy], s, p, d, band[:raw_total]]
+        end
       end
     end
+    pp orbital_sums; exit
+
+    flat_energies = @energies.flatten.sort
+
+    min_energy ||= left_foot_gaussian(flat_energies[0], sigma, tick)
+    max_energy ||= right_foot_gaussian(flat_energies[-1], sigma, tick)
+
+    division_x = ((max_energy - min_energy) / tick).round
+    intensities = Array.new(division_x + 1).fill(0.0)
+
+    proj.each do |i|
+      p i 
+    end
     #pp proj
-    #pp states
     #exit
-    dos = broadening(states, tick, sigma)
+    dos = broadening(orbital_sums, tick, sigma)
 
   end
 
@@ -177,6 +199,28 @@ class VaspUtils::Procar
   #end
 
   private
+
+  # Return minimum value on energy axis.
+  # 'mu' is center of Gauss function.
+  # 'sigma' is standard_deviation.
+  # Choose left neighbor tick of the calculated foot.
+  def left_foot_gaussian(mu, sigma, tick)
+    min = mu - sigma * 10.0
+    min = (min / tick).floor * tick
+    return min
+  end
+
+  # Return maximum value on energy axis.
+  # 'mu' is center of Gauss function.
+  # 'sigma' is standard_deviation.
+  # Choose right neighbor tick of the calculated foot.
+  def right_foot_gaussian(mu, sigma, tick)
+    max = mu + sigma * 10.0
+    max = (max / tick).ceil * tick
+    return max
+  end
+
+
 
   #Sum up each orbital component for ions in 'ion_indices' 
   #for all k-points and bands.
@@ -228,7 +272,7 @@ class VaspUtils::Procar
       proj.each do |state|
         #pp state; exit
 
-        gauss = self.class.gauss_function(energy-state[0], sigma)
+        gauss = self.class.gauss_function(sigma, energy-state[0])
         sumArray.size.times do |j|
           sumArray[j] += state[j+1] * gauss
         end
