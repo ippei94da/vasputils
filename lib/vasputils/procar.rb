@@ -177,7 +177,10 @@ class VaspUtils::Procar
     min_energy ||= left_foot_gaussian(flat_energies[0], sigma, tick)
     max_energy ||= right_foot_gaussian(flat_energies[-1], sigma, tick)
 
+
+
     division_x = ((max_energy - min_energy) / tick).round
+
     intensities = Array.new(division_x + 1).fill(0.0)
 
 
