@@ -139,8 +139,22 @@ class TC_Procar < Test::Unit::TestCase
     tick = 1.0
     sigma = 0.1
     occupy = false
-    @p00.density_of_states(ion_indices, tick, sigma, occupy)
 
+    #@p00.density_of_states(ion_indices, tick, sigma, occupy)
+
+  end
+
+  def test_gauss_function
+    #pp VaspUtils::Procar.gauss_function(0.0, 0.0)
+    assert_in_delta(0.24197072451914337  , VaspUtils::Procar.gauss_function(1.0, 1.0), TOLERANCE)
+    assert_in_delta(0.05399096651318806  , VaspUtils::Procar.gauss_function(2.0, 1.0), TOLERANCE)
+    assert_in_delta(0.0044318484119380075, VaspUtils::Procar.gauss_function(3.0, 1.0), TOLERANCE)
+    assert_in_delta(0.17603266338214976  , VaspUtils::Procar.gauss_function(1.0, 2.0), TOLERANCE)
+    assert_in_delta(0.12098536225957168  , VaspUtils::Procar.gauss_function(2.0, 2.0), TOLERANCE)
+    assert_in_delta(0.06475879783294587  , VaspUtils::Procar.gauss_function(3.0, 2.0), TOLERANCE)
+    assert_in_delta(0.12579440923099774  , VaspUtils::Procar.gauss_function(1.0, 3.0), TOLERANCE)
+    assert_in_delta(0.10648266850745075  , VaspUtils::Procar.gauss_function(2.0, 3.0), TOLERANCE)
+    assert_in_delta(0.0806569081730478   , VaspUtils::Procar.gauss_function(3.0, 3.0), TOLERANCE)
   end
 
   def test_states

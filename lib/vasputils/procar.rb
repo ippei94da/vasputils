@@ -100,6 +100,12 @@ class VaspUtils::Procar
     self.new(states, energies, occupancies, weights)
   end
 
+  # Gauss function, x=0 centered.
+  # Return scalar value (of y).
+  def self.gauss_function(deviation, sigma)
+    Math.exp(-deviation**2/(2*sigma**2)) /(sigma * Math.sqrt(2 * Math::PI))
+  end
+
   def num_spins
     @states.size
   end
@@ -140,7 +146,7 @@ class VaspUtils::Procar
     end
 
     states = Array.new
-    proj.each do |b| #band
+    proj.each do |band| #band
       o = band[:orbitals]
 
       s = o[0]
@@ -155,7 +161,7 @@ class VaspUtils::Procar
     end
     #pp proj
     #pp states
-    exit
+    #exit
     dos = broadening(states, tick, sigma)
 
   end
@@ -208,10 +214,6 @@ class VaspUtils::Procar
   end
 
 
-  def gaussFunction(deviation,sigma)
-    1/sigma/Math.sqrt(2*Math::PI)*Math.exp(-deviation**2/(2*sigma**2))
-  end
-
   # dE : tick
   # proj : projection
   # Energy を 
@@ -226,7 +228,7 @@ class VaspUtils::Procar
       proj.each do |state|
         #pp state; exit
 
-        gauss = gaussFunction(energy-state[0], sigma)
+        gauss = self.class.gauss_function(energy-state[0], sigma)
         sumArray.size.times do |j|
           sumArray[j] += state[j+1] * gauss
         end
@@ -234,7 +236,7 @@ class VaspUtils::Procar
       results << [energy]+sumArray
     end
 
-    proj[:raw_total] もやる。
+    #proj[:raw_total] もやる。
     #pp results; exit
     results
   end
