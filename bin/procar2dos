@@ -7,7 +7,7 @@
 # Time-stamp: <2006-05-25 21:41:31 togo>
 # $Id: procar2dos.rb 405 2006-05-25 12:57:12Z  $
 # Modified by Ippei Kishida.
-# Last-modified: 2016/02/03 12:59:21.
+# Last-modified: 2016/02/03 13:53:50.
 
 
 USAGE = <<HERE
@@ -57,16 +57,35 @@ op.on('-o', '--occupancy', 'Use occupancy, in spite of 2 electrons in a orbital.
 op.on('-P file', '--PROCAR=file', 'Indicate PROCAR file. Default is "PROCAR"'){ |v|
   options[:procar] = v
 }
-op.on('--min=energy', 'Minimum value of energy range.'){ |v|
+op.on('--min=energy', Float, 'Minimum value of energy range.'){ |v|
   options[:min_energy] = v
 }
-op.on('--max=energy', 'Maximum value of energy range.'){ |v|
+op.on('--max=energy', Float, 'Maximum value of energy range.'){ |v|
   options[:max_energy] = v
 }
 #op.on('--total', 'total DOS'){
 #  options[:total] = true
 #}
 op.parse!(ARGV)
+
+procar_file = options[:procar] || 'PROCAR'
+unless File.exist? procar_file
+  puts "Not found #{procar_file}"
+  exit
+end
+procar = VaspUtils::Procar.load_file(procar_file)
+
+if options[:check]
+  procar = VaspUtils::Procar.load_file(procar_file)
+  #pp procar;exit
+  puts "number of spins:       #{procar.num_spins}"
+  puts "number of kpoints:     #{procar.num_kpoints}"
+  puts "number of bands:       #{procar.num_bands}"
+  puts "number of ions:        #{procar.num_ions}"
+  #puts "number of eigenvalues: #{procar.energies.size}"
+  exit(1)
+end
+
 
 options[:fermi] ||= 0.0
 options[:tick]  ||= 0.01
@@ -82,12 +101,6 @@ if options[:sigma] == 0.0
   exit
 end
 
-procar_file = options[:procar] || 'PROCAR'
-unless File.exist? procar_file
-  puts "Not found #{procar_file}"
-  exit
-end
-procar = VaspUtils::Procar.load_file(procar_file)
 
 ion_indices = ARGV.map{|i| i.to_i}
 ion_indices = (1..(procar.num_ions)).to_a if ARGV.empty?
@@ -97,14 +110,6 @@ if ion_indices.include?( 0 )
   exit
 end
 ion_indices.map! {|i| i.to_i}
-
-if options[:check]
-  procar = vasputils::procar.load_file(procar_file)
-  num_ions = procar.num_ions
-  num_energies = procar.energies.size
-  print "number of ions: #{num_ions}\nnumber of eigenvalues: #{num_energies}\n"
-  exit(1)
-end
 
 options.delete(:procar)
 options.delete(:check)

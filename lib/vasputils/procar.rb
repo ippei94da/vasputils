@@ -35,6 +35,7 @@ class VaspUtils::Procar
     @energies    = energies
     @occupancies = occupancies
     @weights     = weights
+    #pp @energies;
   end
 
   # PROCAR 形式ファイルから読み込む。
@@ -97,7 +98,7 @@ class VaspUtils::Procar
         energies << energies_for_bands
         states_for_spin << states_for_bands
       end
-      states << states_for_spin
+      states << states_for_spin unless states_for_spin.empty?
       io.gets
     end
     io.close
@@ -147,9 +148,13 @@ class VaspUtils::Procar
   #   Inner: [energy, orbital1, orbital2, ..., raw_total]
   # If options[:precise] is true, then precise orbitals (py, pz, px, etc) are
   # dividedly outputed.
+  # If options[:occupancy] is true, each band component is substituted to occupation.
   def density_of_states(ion_indices, options)
     proj = project_onto_energy(ion_indices)
-    if options[:occupy] == true
+    if options[:occupancy] == true
+      pp proj;
+      pp @occupancies
+      exit
       (num_orbitals).times {|l| proj[:orbitals][l] *= @occupancies[j][i] / 2.0 }
       proj[:raw_total] = @weights[j] * @occupancies[j][i] /2.0
     end
@@ -233,11 +238,6 @@ class VaspUtils::Procar
     return max
   end
 
-  #def significant_gaussian?
-  #  HERE
-  #end
-
-
 
   #Sum up each orbital component for ions in 'ion_indices' 
   #for all k-points and bands.
@@ -280,9 +280,8 @@ class VaspUtils::Procar
   def broadening(proj, options)
     tick       = options[:tick]
     sigma      = options[:sigma]
-    #occupy     = options[:occupy]
-    #min_energy = options[:min_energy]
-    #max_energy = options[:max_energy]
+    min_energy = options[:min_energy]
+    max_energy = options[:max_energy]
 
     ### min and max of energy in DOS.
     flat_energies = proj.map {|i| i[:energy]}.sort
