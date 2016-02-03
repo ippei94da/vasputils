@@ -2,12 +2,9 @@
 
 # class for parsing PROCAR
 #
-# First written by Atsushi Togo
-#   Time-stamp: <2006-07-31 22:54:10 togo>
+# First written by Atsushi Togo, <2006-07-31 22:54:10 togo>
 # Modified by Ippei Kishdia 
 
-
-#require 'tanakalab/broadning.rb' つかってなさそう。
 #raw_total というのはたぶん、PROCAR に出てくる tot とは関係なく、
 #k点の重みとバンドエネルギーだけで出せる DOS だと思う。
 #
@@ -20,16 +17,6 @@ class VaspUtils::Procar
   ## factor of sigma to ignore small value of foot of Gauss function. 
   GAUSS_WIDTH_FACTOR = 10.0
 
-  #PROCAR_LABELS = [
-  #  :ion,
-  #  :s,
-  #  :py, :pz, :px,
-  #  :dxy, :dyz, :dz2, :dxz, :dx2,
-  #  :f_3, :f_2, :f_1, :f0, :f1, :f2, :f3, # :f-3, :f-2, :f-1, :f0, :f1, :f2, :f3,
-  #  :tot
-  #]
-
-  #def initialize( energies, num_bands, num_ions, num_kpoints, occupancies, states, weights)
   def initialize(states, energies, occupancies, weights)
     @states      = states
     @energies    = energies
@@ -138,10 +125,6 @@ class VaspUtils::Procar
     result
   end
 
-  #def header
-  #  sprintf("# k-points: #{@states.size}  bands: #{@states[0].size}  ions: #{@states[0][0].size}\n")
-  #end
-
   # Return an array of Density of States(DOS) data.
   # The array is a duplex array.
   #   Outer: every energy points of tick.
@@ -150,19 +133,36 @@ class VaspUtils::Procar
   # dividedly outputed.
   # If options[:occupancy] is true, each band component is substituted to occupation.
   def density_of_states(ion_indices, options)
-    projections = Array.new(num_spin)
-    @States.size.times do |spin_index|
-      projections[spin_index] = project_onto_energy(spin_index, ion_indices)
+    doses = Array.new(num_spins)
+    @states.size.times do |spin_index|
+      doses[spin_index] = dos_for_spin(ion_indices, options, spin_index)
     end
+    
+    if num_spins
 
+    options[:down]
+
+
+  end
+
+  def dos_for_spin(ion_indices, options, spin_index)
+    proj = project_onto_energy(spin_index, ion_indices)
+
+    ## spin==1, occupancy==true :   
+    ## spin==2, occupancy==true :   
+    ## spin==1, occupancy==false:   
+    ## spin==2, occupancy==false:   
+    #
     if options[:occupancy] == true
       TODO
       #pp projections;
       #pp @occupancies
       #exit
-      (num_orbitals).times {|l| proj[:orbitals][l] *= @occupancies[j][i] / 2.0 }
-      proj[:raw_total] = @weights[j] * @occupancies[j][i] /2.0
+      (num_orbitals).times {|l| proj[:orbitals][l] *= @occupancies[j][i] }
+      proj[:raw_total] = @weights[j] * @occupancies[j][i]
     end
+    if num_spins
+      (num_orbitals).times {|l| proj[:orbitals][l] *=  2.0 }
     #pp proj; puts
 
     unless options[:precise]
@@ -210,16 +210,6 @@ class VaspUtils::Procar
     results << 'raw_total'
     results.flatten
   end
-
-  #def each_band(&block)
-  #  num_spins.times do |s|
-  #    num_kpoints.times do |k|
-  #      num_bands.times do |b|
-  #        yield @states[s][k][b]
-  #      end
-  #    end
-  #  end
-  #end
 
   private
 
@@ -269,8 +259,9 @@ class VaspUtils::Procar
           end
         end
 
-        (num_orbitals).times {|orb| proj_orbs[:orbitals][orb] *= @weights[k] * 2.0}
-        proj_orbs[:raw_total] = @weights[k] * 2.0
+        ## not multiply 2.0 here.
+        (num_orbitals).times {|orb| proj_orbs[:orbitals][orb] *= @weights[k]}
+        proj_orbs[:raw_total] = @weights[k]
         results << proj_orbs
       end
     end
