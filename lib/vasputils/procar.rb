@@ -10,10 +10,15 @@
 #require 'tanakalab/broadning.rb' つかってなさそう。
 #raw_total というのはたぶん、PROCAR に出てくる tot とは関係なく、
 #k点の重みとバンドエネルギーだけで出せる DOS だと思う。
+#
+
 
 class VaspUtils::Procar
   attr_reader :energies, :num_bands, :num_ions,
     :num_kpoints, :occupancies, :states, :weights
+
+  ## factor of sigma to ignore small value of foot of Gauss function. 
+  GAUSS_WIDTH_FACTOR = 10.0
 
   #PROCAR_LABELS = [
   #  :ion,
@@ -136,8 +141,12 @@ class VaspUtils::Procar
     sprintf("# k-points: #{@states.size}  bands: #{@states[0].size}  ions: #{@states[0][0].size}\n")
   end
 
-  # TODO description
-  #def density_of_states(ion_indices, tick, sigma, occupy = false)
+  # Return an array of Density of States(DOS) data.
+  # The array is a duplex array.
+  #   Outer: every energy points of tick.
+  #   Inner: [energy, orbital1, orbital2, ..., raw_total]
+  # If options[:precise] is true, then precise orbitals (py, pz, px, etc) are
+  # dividedly outputed.
   def density_of_states(ion_indices, options)
     proj = project_onto_energy(ion_indices)
     if options[:occupy] == true
@@ -170,6 +179,28 @@ class VaspUtils::Procar
     broadening(proj, options)
   end
 
+  def dos_labels(options)
+    results = []
+    results << 'eigenvalue'
+
+    if options[:precise]
+      s = ['s']
+      p = ['py', 'pz', 'px']
+      d = ['dxy', 'dyz', 'dz2', 'dxz', 'dx2']
+      f = ['f-3', 'f-2', 'f-1', 'f0', 'f1', 'f2', 'f3']
+    else
+      s = ['s']
+      p = ['p']
+      d = ['d']
+      f = ['f']
+    end
+
+    results << s + p + d
+    results << f if f_orbital?
+    results << 'raw_total'
+    results.flatten
+  end
+
   #def each_band(&block)
   #  num_spins.times do |s|
   #    num_kpoints.times do |k|
@@ -187,7 +218,7 @@ class VaspUtils::Procar
   # 'sigma' is standard_deviation.
   # Choose left neighbor tick of the calculated foot.
   def left_foot_gaussian(mu, sigma, tick)
-    min = mu - sigma * 10.0
+    min = mu - sigma * GAUSS_WIDTH_FACTOR
     min = (min / tick).floor * tick
     return min
   end
@@ -197,10 +228,14 @@ class VaspUtils::Procar
   # 'sigma' is standard_deviation.
   # Choose right neighbor tick of the calculated foot.
   def right_foot_gaussian(mu, sigma, tick)
-    max = mu + sigma * 10.0
+    max = mu + sigma * GAUSS_WIDTH_FACTOR
     max = (max / tick).ceil * tick
     return max
   end
+
+  #def significant_gaussian?
+  #  HERE
+  #end
 
 
 
@@ -250,39 +285,34 @@ class VaspUtils::Procar
     #max_energy = options[:max_energy]
 
     ### min and max of energy in DOS.
-    flat_energies = @energies.flatten.sort
+    flat_energies = proj.map {|i| i[:energy]}.sort
+
     min_energy ||= left_foot_gaussian(flat_energies[0], sigma, tick)
     max_energy ||= right_foot_gaussian(flat_energies[-1], sigma, tick)
     energy_width = max_energy - min_energy
     division_x = (energy_width / tick).round
     num_points = division_x + 1 #for energy points
+    num_orb = proj[0][:orbitals].size
 
-    results = Array.new(num_pointsd)
-
-    HERE
-
+    results = Array.new(num_points)
     (num_points).times do |i|
       cur_energy = min_energy + energy_width * (i.to_f / division_x.to_f)
 
-      sumArray = Array.new(proj[0][:orbitals].size).fill(0.0) #each orbital
-      energy = proj[0][:energy] + i * tick
-      proj.each do |state|
-        gauss = self.class.gauss_function(sigma, energy - state[:energy])
-        sumArray.size.times do |j|
-          sumArray[j] += state[:orbitals][j] * gauss
+      orbital_sums = Array.new(num_orb).fill(0.0) #each orbital
+      raw_total_sum = 0.0
+      proj.each do |band|
+        next if (cur_energy - band[:energy]).abs > sigma * GAUSS_WIDTH_FACTOR
+          ## To speed up.
+
+        gauss = self.class.gauss_function(sigma, cur_energy - band[:energy])
+        band[:orbitals].size.times do |j|
+          orbital_sums[j] += band[:orbitals][j] * gauss
         end
+        raw_total_sum += band[:raw_total] * gauss
       end
-      results[i] = [energy] + sumArray
+      results[i] = [cur_energy] + orbital_sums + [raw_total_sum]
     end
     results
-
-    if options[:precise]
-    [ "s",
-      "py", "pz", "px",
-      "dxy", "dyz", "dz2", "dxz", "dx2",
-      "f-3", "f-2", "f-1", "f0", "f1", "f2", "f3"]
-    end
-    #proj[:raw_total] もやる。
 
   end
 

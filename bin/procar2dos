@@ -7,7 +7,7 @@
 # Time-stamp: <2006-05-25 21:41:31 togo>
 # $Id: procar2dos.rb 405 2006-05-25 12:57:12Z  $
 # Modified by Ippei Kishida.
-# Last-modified: 2016/02/02 12:36:39.
+# Last-modified: 2016/02/03 12:59:21.
 
 
 USAGE = <<HERE
@@ -42,7 +42,7 @@ op.on('--check', 'Just show number of ions and number of eigenvalues'){
 op.on('-f energy', '--fermi=energy', Float, 'FERMI ENERGY'){ |v|
   options[:fermi] = v
 }
-op.on('-s val', '--sigma=val', Float, 'Set standard deviation for broadning (default 0.1)'){ |v|
+op.on('-s val', '--sigma=val', Float, 'Set standard deviation for broadning (required, example --sigma=0.1).)'){ |v|
   options[:sigma] = v
 }
 op.on('-t TICK', '--tick=num', Float, 'Tick value (default 0.01)'){ |v|
@@ -70,8 +70,17 @@ op.parse!(ARGV)
 
 options[:fermi] ||= 0.0
 options[:tick]  ||= 0.01
-options[:sigma] ||= 0.1
+#options[:sigma] ||= 0.1
 #pp options; exit
+
+unless options[:sigma]
+  puts '--sigma option must be indicated.'
+  exit
+end
+if options[:sigma] == 0.0
+  puts '--sigma cannot be indicated to be zero'.
+  exit
+end
 
 procar_file = options[:procar] || 'PROCAR'
 unless File.exist? procar_file
@@ -80,8 +89,13 @@ unless File.exist? procar_file
 end
 procar = VaspUtils::Procar.load_file(procar_file)
 
-ion_indices = ARGV
+ion_indices = ARGV.map{|i| i.to_i}
 ion_indices = (1..(procar.num_ions)).to_a if ARGV.empty?
+if ion_indices.include?( 0 )
+  puts "Ion index must be indicated by PROCAR style, starting from 1."
+  puts USAGE
+  exit
+end
 ion_indices.map! {|i| i.to_i}
 
 if options[:check]
@@ -95,83 +109,25 @@ end
 options.delete(:procar)
 options.delete(:check)
 
-pp options; exit
-#projection = procar.projection(ion_indices)
-#dos = procar.density_of_states(ion_indices, options[:tick], options[:sigma], options[:occupancy])
 dos = procar.density_of_states(ion_indices, options)
-#states = procar.sum_ions
 
-#pp dos
+## output
+### labels
+labels = procar.dos_labels(options)
+print "#"
+labels.size.times { |i| printf(" %12s", labels[i]) }
+puts
 
-#if @f_orbital
-#  printf("#%12s  %12s  %12s  %12s  %12s  %12s\n", "eigenvalue", "s", "p", "d", "f", "raw total")
-#  dos.each do |a|
-#    printf("%13.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f\n", a[0]-fermi_level, a[1], a[2], a[3], a[4], a[5])
-#  end
-#else
-#  printf("#%12s  %12s  %12s  %12s  %12s\n", "eigenvalue", "s", "p", "d", "raw total")
-#  dos.each do |a|
-#    printf("%13.8f  %12.8f  %12.8f  %12.8f  %12.8f\n", a[0]-fermi_level, a[1], a[2], a[3], a[4])
-#  end
-#end
-
+### data
+dos.each do |values|
+  print ' '
+  values.each do |value|
+    printf(" %12.8f", value)
+  end
+  puts
+end
 
 exit
-
-#if options[:total]
-#  energies = procar.energies
-#  weights = procar.weights
-#  states = Array.new
-#  energies.size.times do |i|
-#    tmparray = Array.new
-#    energies[0].size.times do |j|
-#      tmparray << [energies[i][j], 2*weights[i], procar.occupancies[i][j]*weights[i]]
-#    end
-#    states += tmparray
-#  end
-#  projection = states.sort
-#
-#  dos = broadning(projection, tick, sigma)
-#
-#  # for index 0
-#  printf("#%12s  %12s  %12s\n", "eigenvalue", "total", "total with occ")
-#  dos.each do |a|
-#    printf("%13.8f  %12.8f  %12.8f\n", a[0]-fermi_level, a[1], a[2])
-#  end
-#  print "\n\n"
-#  # for index 1, impluse
-#  printf("#%-12s  %-12s  %-12s\n", "eigenvalue", "states", "with occ")
-#  projection.each do |x|
-#    printf("%13.8f  %12.8f  %12.8f\n", x[0], x[1], x[2])
-#  end
-#  exit
-#end
-
-# うまく動かない。
-#if options[:precise]
-#  dos = broadning(projection, tick, sigma )
-#  pp projection
-#  if @f_orbital
-#    printf("#%12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s\n",
-#           "eigenvalue", "s", "py", "pz", "px", "dxy", "dyz", "dz2", "dxz", "dx2", "f-3", "f-2", "f-1", "f0", "f1", "f2", "f3", "raw total")
-#    dos.each do |a|
-#      printf("%13.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f\n",
-#             a[0]-fermi_level, a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15], a[16], a[17])
-#    end
-#  else
-#    printf("#%12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s\n",
-#           "eigenvalue", "s", "py", "pz", "px", "dxy", "dyz", "dz2", "dxz", "dx2", "raw total")
-#    dos.each do |a|
-#      #pp a; exit
-#      printf("%13.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f  %12.8f\n",
-#             a[0]-fermi_level, a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10])
-#    end
-#  end
-#  exit
-#end
-
-## not total nor precise
-#dos = PostProcessProcar.new(procar.states, procar.weights, procar.energies, procar.occupancies)
 
 class Procar2dos
 

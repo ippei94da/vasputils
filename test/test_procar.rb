@@ -201,8 +201,12 @@ class TC_Procar < Test::Unit::TestCase
         [ 10.0, 1.0279773571668917e-18 , 2.0559547143337833e-18 , 1.0279773571668917e-18 ],
         [ 11.0, 7.69459862670642e-23   , 1.538919725341284e-22  , 7.69459862670642e-23   ],
       ]
-      assert_equal(corrects, results)
-
+      assert_equal(corrects.size, results.size)
+      corrects.size.times do |i|
+        assert_in_delta(results[i][1] / corrects[i][1], 1.0, TOLERANCE)
+        assert_in_delta(results[i][2] / corrects[i][2], 1.0, TOLERANCE)
+        assert_in_delta(results[i][3] / corrects[i][3], 1.0, TOLERANCE)
+      end
 
       #p      2.0 * 7.69459862670642e-23
       #p      2.0 * 1.0279773571668917e-18
@@ -227,6 +231,25 @@ class TC_Procar < Test::Unit::TestCase
       #p      2.0 * 7.69459862670642e-23     + 1.0 * 5.052271083536893e-15  
       #p                                       1.0 * 1.0279773571668917e-18 
       #p                                       1.0 * 7.69459862670642e-23   
+  end
+
+  def test_dos_labels
+    options = {}
+    assert_equal(['eigenvalue', 's', 'p', 'd', 'raw_total'],
+                 @p00.dos_labels(options))
+    assert_equal(['eigenvalue', 's', 'p', 'd', 'f', 'raw_total'],
+                 @p01.dos_labels(options))
+
+    options = { :precise     => true, }
+    assert_equal(
+      ['eigenvalue', "s", "py", "pz", "px", "dxy", "dyz", "dz2", "dxz", "dx2", 'raw_total'],
+      @p00.dos_labels(options)
+    )
+    assert_equal(
+      ['eigenvalue', "s", "py", "pz", "px", "dxy", "dyz", "dz2", "dxz", "dx2",
+        "f-3", "f-2", "f-1", "f0", "f1", "f2", "f3", 'raw_total'],
+        @p01.dos_labels(options)
+    )
   end
 
   #def test_density_of_states
