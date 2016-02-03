@@ -313,6 +313,14 @@ class TC_Procar < Test::Unit::TestCase
         "f-3", "f-2", "f-1", "f0", "f1", "f2", "f3", 'raw_total'],
         @p01.dos_labels(options)
     )
+
+    options = { :down => true}
+    assert_equal(['eigenvalue', 's_up', 'p_up', 'd_up',
+                  's_down', 'p_down', 'd_down', 'raw_total'],
+                 @p00.dos_labels(options))
+    assert_equal(['eigenvalue', 's_up', 'p_up', 'd_up', 'f_up',
+                  's_down', 'p_down', 'd_down', 'f_down', 'raw_total'],
+                 @p01.dos_labels(options))
   end
 
   def test_density_of_states

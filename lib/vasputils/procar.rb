@@ -141,6 +141,8 @@ class VaspUtils::Procar
     @states.size.times do |spin_index|
       doses[spin_index] = dos_for_spin(ion_indices, options, spin_index)
     end
+
+
     
     pp doses
     HERE
@@ -149,9 +151,6 @@ class VaspUtils::Procar
   end
 
   def dos_labels(options)
-    results = []
-    results << 'eigenvalue'
-
     if options[:precise]
       s = ['s']
       p = ['py', 'pz', 'px']
@@ -164,8 +163,18 @@ class VaspUtils::Procar
       f = ['f']
     end
 
-    results << s + p + d
-    results << f if f_orbital?
+    orbitals = s + p + d
+    orbitals += f if f_orbital?
+
+    if options[:down]
+      up   = orbitals.map {|i| i.sub(/$/, '_up')}
+      down = orbitals.map {|i| i.sub(/$/, '_down')}
+      orbitals = up + down
+    end
+
+    results = []
+    results << 'eigenvalue'
+    results << orbitals
     results << 'raw_total'
     results.flatten
   end
