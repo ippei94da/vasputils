@@ -7,7 +7,7 @@
 # Time-stamp: <2006-05-25 21:41:31 togo>
 # $Id: procar2dos.rb 405 2006-05-25 12:57:12Z  $
 # Modified by Ippei Kishida.
-# Last-modified: 2016/02/03 21:03:59.
+# Last-modified: 2016/02/04 01:22:50.
 
 
 USAGE = <<HERE
@@ -54,9 +54,9 @@ op.on('-d', '--downspin-minus', 'Multiply (-1) to down spin.'){
 op.on('-p', '--precise', 'Show precise orbitals. E.g., py, pz, px'){
   options[:precise] = true
 }
-op.on('-o', '--occupancy', 'Use occupancy(0<=x<=1), in spite of 2 electrons in a orbital.'){
-  options[:occupancy] = true
-}
+#op.on('-o', '--occupancy', 'Use occupancy(0<=x<=1), in spite of 2 electrons in a orbital.'){
+#  options[:occupancy] = true
+#}
 op.on('-P file', '--PROCAR=file', 'Indicate PROCAR file. Default is "PROCAR"'){ |v|
   options[:procar] = v
 }
