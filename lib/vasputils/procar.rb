@@ -243,7 +243,6 @@ class VaspUtils::Procar
   # proj : projection
   # Energy を 
   def broadening(proj, options)
-
     tick       = options[:tick]
     sigma      = options[:sigma]
     #occupy     = options[:occupy]
@@ -254,18 +253,28 @@ class VaspUtils::Procar
     flat_energies = @energies.flatten.sort
     min_energy ||= left_foot_gaussian(flat_energies[0], sigma, tick)
     max_energy ||= right_foot_gaussian(flat_energies[-1], sigma, tick)
+    energy_width = max_energy - min_energy
+    division_x = (energy_width / tick).round
+    num_points = division_x + 1 #for energy points
 
-    division_x = ((max_energy - min_energy) / tick).round
+    results = Array.new(num_pointsd)
 
-    intensities = Array.new(division_x + 1).fill(0.0)
+    HERE
 
-    proj.each do |i|
-      p i;exit
+    (num_points).times do |i|
+      cur_energy = min_energy + energy_width * (i.to_f / division_x.to_f)
+
+      sumArray = Array.new(proj[0][:orbitals].size).fill(0.0) #each orbital
+      energy = proj[0][:energy] + i * tick
+      proj.each do |state|
+        gauss = self.class.gauss_function(sigma, energy - state[:energy])
+        sumArray.size.times do |j|
+          sumArray[j] += state[:orbitals][j] * gauss
+        end
+      end
+      results[i] = [energy] + sumArray
     end
-    #pp proj
-    #exit
-
-    #HERE
+    results
 
     if options[:precise]
     [ "s",
@@ -275,20 +284,6 @@ class VaspUtils::Procar
     end
     #proj[:raw_total] もやる。
 
-    ## old version
-    #results = Array.new
-    #(((proj[-1][:energy] - proj[0][:energy]) / tick).to_i + 2).times do |i|
-    #  sumArray = Array.new(proj[0][:orbitals].size).fill(0.0) #each orbital
-    #  energy = proj[0][:energy] + i * tick
-    #  proj.each do |state|
-    #    gauss = self.class.gauss_function(sigma, energy - state[:energy])
-    #    sumArray.size.times do |j|
-    #      sumArray[j] += state[:orbitals][j] * gauss
-    #    end
-    #  end
-    #  results << [energy]+sumArray
-    #end
-    #results
   end
 
 end
