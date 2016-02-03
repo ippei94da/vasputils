@@ -94,7 +94,7 @@ class TC_Procar < Test::Unit::TestCase
       {:energy=>11.13140386, :orbitals=>[0.0000, 0.0300, 0.0615, 0.0000, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.75, 
       {:energy=>11.94041316, :orbitals=>[0.0295, 0.0095, 0.0045, 0.0280, 0.0, 0.0, 0.0, 0.0, 0.0]}  #:weight=>0.25, 
     ]
-    results = @p00.project_onto_energy([2])
+    results = @p00.project_onto_energy(0, [2])
     assert_equal(corrects.size, results.size)
     corrects.size.times do |i|
       assert_equal(corrects[i][:energy], results[i][:energy])
@@ -123,7 +123,7 @@ class TC_Procar < Test::Unit::TestCase
       {:energy=>11.13140386, :weight=>0.75, :orbitals=>[0.000, 0.060, 0.123, 0.000, 0.0, 0.0, 0.0, 0.0, 0.0]},
       {:energy=>11.94041316, :weight=>0.25, :orbitals=>[0.059, 0.019, 0.009, 0.056, 0.0, 0.0, 0.0, 0.0, 0.0]}
     ]
-    results = @p00.project_onto_energy([1, 2])
+    results = @p00.project_onto_energy(0, [1, 2])
     assert_equal(corrects.size, results.size)
     corrects.size.times do |i|
       assert_equal(corrects[i][:energy], results[i][:energy])

@@ -138,9 +138,9 @@ class VaspUtils::Procar
     result
   end
 
-  def header
-    sprintf("# k-points: #{@states.size}  bands: #{@states[0].size}  ions: #{@states[0][0].size}\n")
-  end
+  #def header
+  #  sprintf("# k-points: #{@states.size}  bands: #{@states[0].size}  ions: #{@states[0][0].size}\n")
+  #end
 
   # Return an array of Density of States(DOS) data.
   # The array is a duplex array.
@@ -150,11 +150,16 @@ class VaspUtils::Procar
   # dividedly outputed.
   # If options[:occupancy] is true, each band component is substituted to occupation.
   def density_of_states(ion_indices, options)
-    proj = project_onto_energy(ion_indices)
+    projections = Array.new(num_spin)
+    @States.size.times do |spin_index|
+      projections[spin_index] = project_onto_energy(spin_index, ion_indices)
+    end
+
     if options[:occupancy] == true
-      pp proj;
-      pp @occupancies
-      exit
+      TODO
+      #pp projections;
+      #pp @occupancies
+      #exit
       (num_orbitals).times {|l| proj[:orbitals][l] *= @occupancies[j][i] / 2.0 }
       proj[:raw_total] = @weights[j] * @occupancies[j][i] /2.0
     end
@@ -245,28 +250,28 @@ class VaspUtils::Procar
   # outer array is all bands of all k-points.
   # inner array is all orbitals.
   #of each orbital component for ions in 'ion_indices' 
-  def project_onto_energy(ion_indices) #old name: sum_ions()
+  def project_onto_energy(spin_index, ion_indices) #old name: sum_ions()
     results = Array.new
 
     # sum up orbitals for ions
-    @states[0].size.times do |k|          # for kpoints
-      @states[0][0].size.times do |band|         # for band
+    @states[spin_index].size.times do |k|          # for kpoints
+      @states[spin_index][0].size.times do |band|  # for band
 
         # initialize
-        projected_orbitals = {}
-        projected_orbitals[:energy] = @energies[k][band]
-        #projected_orbitals[:weight] = @weights[k]
-        projected_orbitals[:orbitals] = Array.new(num_orbitals).fill(0.0)
+        proj_orbs = {} # projected_orbitals
+        proj_orbs[:energy] = @energies[k][band]
+        #proj_orbs[:weight] = @weights[k]
+        proj_orbs[:orbitals] = Array.new(num_orbitals).fill(0.0)
 
         ion_indices.each do |ion|
           num_orbitals.times do |orb|
-            projected_orbitals[:orbitals][orb] += @states[0][k][band][ion-1][orb]
+            proj_orbs[:orbitals][orb] += @states[spin_index][k][band][ion-1][orb]
           end
         end
 
-        (num_orbitals).times {|orb| projected_orbitals[:orbitals][orb] *= @weights[k] * 2.0}
-        projected_orbitals[:raw_total] = @weights[k] * 2.0
-        results << projected_orbitals
+        (num_orbitals).times {|orb| proj_orbs[:orbitals][orb] *= @weights[k] * 2.0}
+        proj_orbs[:raw_total] = @weights[k] * 2.0
+        results << proj_orbs
       end
     end
 
