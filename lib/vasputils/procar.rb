@@ -142,8 +142,6 @@ class VaspUtils::Procar
       doses[spin_index] = dos_for_spin(ion_indices, options, spin_index)
     end
 
-
-    
     pp doses
     HERE
     if options[:down]
@@ -303,7 +301,9 @@ class VaspUtils::Procar
     num_points = division_x + 1 #for energy points
     num_orb = proj[0][:orbitals].size
 
-    results = Array.new(num_points)
+    energies = Array.new(num_points)
+    orbitals = Array.new(num_points)
+    raw_total_sums = Array.new(num_points)
     (num_points).times do |i|
       cur_energy = min_energy + energy_width * (i.to_f / division_x.to_f)
 
@@ -319,9 +319,13 @@ class VaspUtils::Procar
         end
         raw_total_sum += band[:raw_total] * gauss
       end
-      results[i] = [cur_energy] + orbital_sums + [raw_total_sum]
+      energies[i] = cur_energy      
+      orbitals[i] = orbital_sums    
+      raw_total_sums[i] = raw_total_sum
     end
-    results
+    results = {:energies => energies,
+               :orbitals => orbitals,
+               :raw_total_sums => raw_total_sums}
 
   end
 
