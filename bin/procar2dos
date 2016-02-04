@@ -7,7 +7,7 @@
 # Time-stamp: <2006-05-25 21:41:31 togo>
 # $Id: procar2dos.rb 405 2006-05-25 12:57:12Z  $
 # Modified by Ippei Kishida.
-# Last-modified: 2016/02/04 01:22:50.
+# Last-modified: 2016/02/04 22:35:04.
 
 
 USAGE = <<HERE
@@ -127,13 +127,20 @@ labels.size.times { |i| printf(" %12s", labels[i]) }
 puts
 
 ### data
-dos.each do |values|
-  print ' '
-  values.each do |value|
-    printf(" %12.8f", value)
+dos[:energies].size.times do |i|
+  printf(" %12f", dos[:energies][i])
+  dos[:orbitals][i].each do |orb|
+    printf(" %12f", orb)
   end
   puts
 end
+#
+#  print ' '
+#  values.each do |value|
+#    printf(" %12.8f", value)
+#  end
+#  puts
+#end
 
 exit
 

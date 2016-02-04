@@ -226,18 +226,15 @@ class TC_Procar < Test::Unit::TestCase
   end
 
   def test_broadening
-    options = {
-      :tick       => 1.0,
-      :sigma      => 1.0,
-      :occupancy  => false,
-      :min_energy => nil,
-      :max_energy => nil
-    }
+    sigma      = 1.0
+    min_energy = -11.0
+    max_energy = 11.0
+    tick       = 1.0
     proj = [
       { :energy => -1.0, :orbitals => [1.0, 1.0], :raw_total => 2.0 },
       { :energy =>  1.0, :orbitals => [1.0, 2.0], :raw_total => 1.0 },
     ]
-    results = @p00.broadening(proj, options)
+    results = @p00.broadening(proj, sigma, min_energy, max_energy, tick)
     corrects =
       { :energies => [
           -11.0, -10.0, -9.0, -8.0, -7.0, -6.0, -5.0, -4.0, -3.0, -2.0, -1.0,
@@ -309,14 +306,21 @@ class TC_Procar < Test::Unit::TestCase
 
   def test_dos_labels
     options = {}
-    assert_equal(['eigenvalue', 's', 'p', 'd', 'raw_total'],
+    #assert_equal(['eigenvalue', 's', 'p', 'd', 'raw_total'],
+    #             @p00.dos_labels(options))
+    assert_equal(['eigenvalue',
+                  's_up', 'p_up', 'd_up', 'raw_total_up',
+                  's_down', 'p_down', 'd_down', 'raw_total_down'],
                  @p00.dos_labels(options))
     assert_equal(['eigenvalue', 's', 'p', 'd', 'f', 'raw_total'],
                  @p01.dos_labels(options))
 
     options = { :precise     => true, }
     assert_equal(
-      ['eigenvalue', "s", "py", "pz", "px", "dxy", "dyz", "dz2", "dxz", "dx2", 'raw_total'],
+      ['eigenvalue',
+       "s_up", "py_up", "pz_up", "px_up", "dxy_up", "dyz_up", "dz2_up", "dxz_up", "dx2_up", 'raw_total_up',
+       "s_down", "py_down", "pz_down", "px_down", "dxy_down", "dyz_down", "dz2_down", "dxz_down", "dx2_down", 'raw_total_down',
+    ],
       @p00.dos_labels(options)
     )
     assert_equal(
@@ -329,16 +333,27 @@ class TC_Procar < Test::Unit::TestCase
     assert_equal(['eigenvalue', 's_up', 'p_up', 'd_up', 'raw_total_up',
                   's_down', 'p_down', 'd_down', 'raw_total_down'],
                  @p00.dos_labels(options))
-    assert_equal(['eigenvalue', 's_up', 'p_up', 'd_up', 'f_up', 'raw_total_up',
-                  's_down', 'p_down', 'd_down', 'f_down', 'raw_total_down'],
+    assert_equal(['eigenvalue', 's', 'p', 'd', 'f', 'raw_total'],
                  @p01.dos_labels(options))
+    #assert_equal(['eigenvalue', 's_up', 'p_up', 'd_up', 'f_up', 'raw_total_up',
+    #              's_down', 'p_down', 'd_down', 'f_down', 'raw_total_down'],
+    #             @p01.dos_labels(options))
   end
 
   def test_density_of_states
+    #ion_indices = [1]
+    #options = {
+    #  :tick   => 1.0,
+    #  :sigma  => 0.1,
+    #  :occupancy => false
+    #}
+    #@p00.density_of_states(ion_indices, options)
+
     ion_indices = [1]
     options = {
       :tick   => 1.0,
       :sigma  => 0.1,
+      :down  => true,
       :occupancy => false
     }
 

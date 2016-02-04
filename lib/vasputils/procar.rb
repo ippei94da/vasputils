@@ -142,10 +142,32 @@ class VaspUtils::Procar
       doses[spin_index] = dos_for_spin(ion_indices, options, spin_index)
     end
 
-    pp doses
-    HERE
-    if options[:down]
+    if num_spins == 1
+      results = doses[0]
+    else
+      if options[:down]
+        doses[1][:orbitals].map! do |orbs|
+          orbs.map{|i| -i}
+        end
+      end
+
+      results = {}
+      results[:energies] = doses[0][:energies]
+      results[:orbitals] = []
+      results[:energies].size.times do |i|
+        results[:orbitals][i] = []
+        results[:orbitals][i] << doses[0][:orbitals][i]
+        results[:orbitals][i] << doses[0][:raw_total_sums][i]
+        results[:orbitals][i] << doses[1][:orbitals][i]
+        results[:orbitals][i] << doses[1][:raw_total_sums][i]
+        results[:orbitals][i].flatten!
+      end
+      results[:raw_total_sums] = []
     end
+
+    #pp results; exit
+    #HERE
+    results
   end
 
   def dos_labels(options)
@@ -163,8 +185,10 @@ class VaspUtils::Procar
 
     orbitals = s + p + d
     orbitals += f if f_orbital?
+    orbitals << 'raw_total'
 
-    if options[:down]
+    #if options[:down]
+    if num_spins == 2
       up   = orbitals.map {|i| i.sub(/$/, '_up')}
       down = orbitals.map {|i| i.sub(/$/, '_down')}
       orbitals = up + down
@@ -173,7 +197,6 @@ class VaspUtils::Procar
     results = []
     results << 'eigenvalue'
     results << orbitals
-    results << 'raw_total'
     results.flatten
   end
 
@@ -216,9 +239,16 @@ class VaspUtils::Procar
       end
       proj = new_proj
     end
-    #pp proj ; exit
 
-    broadening(proj, options)
+    min_energy = options[:min_energy]
+    max_energy = options[:max_energy]
+    sigma      = options[:sigma]
+    tick       = options[:tick]
+    flat_energies = @energies.flatten
+    min_energy ||= left_foot_gaussian(flat_energies[0], sigma, tick)
+    max_energy ||= right_foot_gaussian(flat_energies[-1], sigma, tick)
+
+    broadening(proj, sigma, min_energy, max_energy, tick)
   end
 
 
@@ -285,18 +315,11 @@ class VaspUtils::Procar
   # dE : tick
   # proj : projection
   # Energy を 
-  def broadening(proj, options)
-    tick       = options[:tick]
-    sigma      = options[:sigma]
-    min_energy = options[:min_energy]
-    max_energy = options[:max_energy]
-
+  def broadening(proj, sigma, min_energy, max_energy, tick)
     ### min and max of energy in DOS.
-    flat_energies = proj.map {|i| i[:energy]}.sort
-
-    min_energy ||= left_foot_gaussian(flat_energies[0], sigma, tick)
-    max_energy ||= right_foot_gaussian(flat_energies[-1], sigma, tick)
     energy_width = max_energy - min_energy
+    #pp energy_width 
+    #pp tick
     division_x = (energy_width / tick).round
     num_points = division_x + 1 #for energy points
     num_orb = proj[0][:orbitals].size
@@ -310,6 +333,10 @@ class VaspUtils::Procar
       orbital_sums = Array.new(num_orb).fill(0.0) #each orbital
       raw_total_sum = 0.0
       proj.each do |band|
+        #pp cur_energy
+        #pp band[:energy]
+        #pp sigma 
+        #pp GAUSS_WIDTH_FACTOR
         next if (cur_energy - band[:energy]).abs > sigma * GAUSS_WIDTH_FACTOR
           ## To speed up.
 
