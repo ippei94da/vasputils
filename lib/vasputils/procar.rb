@@ -22,7 +22,6 @@ class VaspUtils::Procar
     @energies    = energies
     @occupancies = occupancies
     @weights     = weights
-    #pp @energies;
   end
 
   # PROCAR 形式ファイルから読み込む。
@@ -151,22 +150,9 @@ class VaspUtils::Procar
         end
       end
 
-      results = {}
-      results[:energies] = doses[0][:energies]
-      results[:orbitals] = []
-      results[:energies].size.times do |i|
-        results[:orbitals][i] = []
-        results[:orbitals][i] << doses[0][:orbitals][i]
-        results[:orbitals][i] << doses[0][:raw_total_sums][i]
-        results[:orbitals][i] << doses[1][:orbitals][i]
-        results[:orbitals][i] << doses[1][:raw_total_sums][i]
-        results[:orbitals][i].flatten!
-      end
-      results[:raw_total_sums] = []
+      results = merge_peaks(doses)
     end
 
-    #pp results; exit
-    #HERE
     results
   end
 
@@ -200,25 +186,60 @@ class VaspUtils::Procar
     results.flatten
   end
 
+  def peaks(ion_indices)
+    results = []
+    num_spins.times do |spin_index|
+      results[spin_index] = project_onto_energy(spin_index, ion_indices)
+    end
+    results
+  end
+
   private
+
+  def merge_peaks(doses)
+    results = {}
+    results[:energies] = doses[0][:energies]
+    results[:orbitals] = []
+    results[:energies].size.times do |i|
+      results[:orbitals][i] = []
+      results[:orbitals][i] << doses[0][:orbitals][i]
+      results[:orbitals][i] << doses[0][:raw_total_sums][i]
+      results[:orbitals][i] << doses[1][:orbitals][i]
+      results[:orbitals][i] << doses[1][:raw_total_sums][i]
+      results[:orbitals][i].flatten!
+    end
+    results[:raw_total_sums] = []
+    results
+  end
 
   def dos_for_spin(ion_indices, options, spin_index)
     proj = project_onto_energy(spin_index, ion_indices)
 
-    ## num_spin==1 && occupancy==true :   0〜2
-    ## num_spin==2 && occupancy==true :   0〜1
-    ## num_spin==1 && occupancy==false:   0〜2
-    ## num_spin==2 && occupancy==false:   0〜1
-    #
-    #pp @occupancies; exit
+    # num_spin==1 && occupancy==true :   0〜2
+    # num_spin==2 && occupancy==true :   0〜1
+    # num_spin==1 && occupancy==false:   0〜2
+    # num_spin==2 && occupancy==false:   0〜1
+    
     #if options[:occupancy] == true
-    #  (num_orbitals).times {|l| proj[:orbitals][l] *= @occupancies[spin_index][i] }
-    #  proj[:raw_total] *= @occupancies[j][i]
+      ##ここでは情報欠損していて、できない。
+      #pp @occupancies
+      #pp proj
+      #num_spins.times do |s|
+      #  num_kpoints.times do |k|
+      #    num_bands.times do |b|
+      #      (num_orbitals).times do |o|
+      #        proj[s][:orbitals][o] *= @occupancies[s][k][b]
+      #      end
+      #    end
+      #  end
+      #end
+      #proj[s][k][b][:raw_total] *= @occupancies[s][0]
     #end
-    if num_spins == 1
-      (num_orbitals).times {|l| proj[:orbitals][l] *= 2.0}
-      proj[:raw_total] *=  2.0
-    end
+    #pp proj
+    #if num_spins == 1
+    #  (num_orbitals).times {|l| proj[:orbitals][l] *= 2.0}
+    #  proj[:raw_total] *=  2.0
+    #end
 
     unless options[:precise]
       ## sum up orbitals; e.g, py + pz + px = p
@@ -281,7 +302,6 @@ class VaspUtils::Procar
   #of each orbital component for ions in 'ion_indices' 
   def project_onto_energy(spin_index, ion_indices) #old name: sum_ions()
     results = Array.new
-    #pp @states;exit
 
     # sum up orbitals for ions
     @states[spin_index].size.times do |k|          # for kpoints
@@ -298,7 +318,6 @@ class VaspUtils::Procar
             proj_orbs[:orbitals][orb] += @states[spin_index][k][band][ion-1][orb]
           end
         end
-        #pp proj_orbs
 
         ## not multiply 2.0 here.
         (num_orbitals).times {|orb| proj_orbs[:orbitals][orb] *= @weights[k]}
@@ -306,7 +325,6 @@ class VaspUtils::Procar
         results << proj_orbs
       end
     end
-    #pp results
 
     results.sort_by{|i| i[:energy]}
   end
@@ -318,8 +336,6 @@ class VaspUtils::Procar
   def broadening(proj, sigma, min_energy, max_energy, tick)
     ### min and max of energy in DOS.
     energy_width = max_energy - min_energy
-    #pp energy_width 
-    #pp tick
     division_x = (energy_width / tick).round
     num_points = division_x + 1 #for energy points
     num_orb = proj[0][:orbitals].size
@@ -333,10 +349,6 @@ class VaspUtils::Procar
       orbital_sums = Array.new(num_orb).fill(0.0) #each orbital
       raw_total_sum = 0.0
       proj.each do |band|
-        #pp cur_energy
-        #pp band[:energy]
-        #pp sigma 
-        #pp GAUSS_WIDTH_FACTOR
         next if (cur_energy - band[:energy]).abs > sigma * GAUSS_WIDTH_FACTOR
           ## To speed up.
 

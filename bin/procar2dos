@@ -7,7 +7,7 @@
 # Time-stamp: <2006-05-25 21:41:31 togo>
 # $Id: procar2dos.rb 405 2006-05-25 12:57:12Z  $
 # Modified by Ippei Kishida.
-# Last-modified: 2016/02/04 22:35:04.
+# Last-modified: 2016/02/05 13:58:04.
 
 
 USAGE = <<HERE
@@ -39,12 +39,18 @@ op.banner = USAGE
 op.on('--check', 'Just show number of ions and number of eigenvalues'){
   options[:check] = true
 }
+op.on('-S', '--no-sigma', 'Only show peaks without gaussian broadening.'){
+  options[:no_sigma] = true
+}
 op.on('-f energy', '--fermi=energy', Float, 'FERMI ENERGY'){ |v|
   options[:fermi] = v
 }
-op.on('-s val', '--sigma=val', Float, 'Set standard deviation for broadning (required, example --sigma=0.1).)'){ |v|
-  options[:sigma] = v
-}
+op.on('-s val', '--sigma=val', Float,
+      'Set standard deviation for broadning (required, example --sigma=0.1)'
+      #'When --sigma=0.0 is set, show peak information without broadening.'
+     ){ |v|
+        options[:sigma] = v
+      }
 op.on('-t TICK', '--tick=num', Float, 'Tick value (default 0.01)'){ |v|
   options[:tick] = v
 }
@@ -79,8 +85,6 @@ end
 procar = VaspUtils::Procar.load_file(procar_file)
 
 if options[:check]
-  procar = VaspUtils::Procar.load_file(procar_file)
-  #pp procar;exit
   puts "number of spins:       #{procar.num_spins}"
   puts "number of kpoints:     #{procar.num_kpoints}"
   puts "number of bands:       #{procar.num_bands}"
@@ -89,11 +93,20 @@ if options[:check]
   exit(1)
 end
 
+ion_indices = ARGV.map{|i| i.to_i}
+ion_indices = (1..(procar.num_ions)).to_a if ARGV.empty?
+if ion_indices.include?( 0 )
+  puts "Ion index must be indicated by PROCAR style, starting from 1."
+  puts USAGE
+  exit
+end
+ion_indices.map! {|i| i.to_i}
+
 
 options[:fermi] ||= 0.0
 options[:tick]  ||= 0.01
-#options[:sigma] ||= 0.1
-#pp options; exit
+
+
 
 unless options[:sigma]
   puts '--sigma option must be indicated.'
@@ -105,19 +118,11 @@ if options[:sigma] == 0.0
 end
 
 
-ion_indices = ARGV.map{|i| i.to_i}
-ion_indices = (1..(procar.num_ions)).to_a if ARGV.empty?
-if ion_indices.include?( 0 )
-  puts "Ion index must be indicated by PROCAR style, starting from 1."
-  puts USAGE
-  exit
-end
-ion_indices.map! {|i| i.to_i}
-
 options.delete(:procar)
 options.delete(:check)
 
 dos = procar.density_of_states(ion_indices, options)
+
 
 ## output
 ### labels
