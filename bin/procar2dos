@@ -7,8 +7,14 @@
 # Time-stamp: <2006-05-25 21:41:31 togo>
 # $Id: procar2dos.rb 405 2006-05-25 12:57:12Z  $
 # Modified by Ippei Kishida.
-# Last-modified: 2016/02/05 13:58:04.
+# Last-modified: 2016/02/06 09:44:54.
 
+#スピンごとに正負を逆にするか、同じ軸にするかのオプションと関連。
+#スピンごとにどのようい表示すべきか。。
+#建増しがひどく、すっきりかけていない。
+#occupancy オプションで対応するのがよいきもしてきた。
+#Procar.dos_for_spin で occupancy に対処しようとしたが、ここでは既に occupancy の情報が
+#失われているので、やるならもっと上流でやる必要がある。
 
 USAGE = <<HERE
 usage: procar2dos.rb [OPTION] [ion_indices]
@@ -39,10 +45,7 @@ op.banner = USAGE
 op.on('--check', 'Just show number of ions and number of eigenvalues'){
   options[:check] = true
 }
-op.on('-S', '--no-sigma', 'Only show peaks without gaussian broadening.'){
-  options[:no_sigma] = true
-}
-op.on('-f energy', '--fermi=energy', Float, 'FERMI ENERGY'){ |v|
+op.on('-f energy', '--fermi=energy', Float, "Fermi energy. (E' = E-E_Fermi, Positive value shifts DOS to right-hand.)"){ |v|
   options[:fermi] = v
 }
 op.on('-s val', '--sigma=val', Float,
@@ -60,9 +63,9 @@ op.on('-d', '--downspin-minus', 'Multiply (-1) to down spin.'){
 op.on('-p', '--precise', 'Show precise orbitals. E.g., py, pz, px'){
   options[:precise] = true
 }
-#op.on('-o', '--occupancy', 'Use occupancy(0<=x<=1), in spite of 2 electrons in a orbital.'){
-#  options[:occupancy] = true
-#}
+op.on('-o', '--occupancy', 'Use occupancy(0<=x<=1), in spite of 2 electrons in a orbital.'){
+  options[:occupancy] = true
+}
 op.on('-P file', '--PROCAR=file', 'Indicate PROCAR file. Default is "PROCAR"'){ |v|
   options[:procar] = v
 }
@@ -107,7 +110,6 @@ options[:fermi] ||= 0.0
 options[:tick]  ||= 0.01
 
 
-
 unless options[:sigma]
   puts '--sigma option must be indicated.'
   exit
@@ -121,14 +123,14 @@ end
 options.delete(:procar)
 options.delete(:check)
 
+#p options
 dos = procar.density_of_states(ion_indices, options)
 
 
 ## output
 ### labels
-labels = procar.dos_labels(options)
 print "#"
-labels.size.times { |i| printf(" %12s", labels[i]) }
+procar.dos_labels(options).each {|label| printf(" %12s", label) }
 puts
 
 ### data
@@ -148,30 +150,6 @@ end
 #end
 
 exit
-
-class Procar2dos
-
-  def printGnuplot
-    if options[:total]
-    else
-      if options[:precise]
-        #printPhaseGnuplot
-      else
-        #printPartialGnuplot
-      end
-    end
-  end
-
-  private
-
-  def eachProcar(filename)
-    procar = VaspUtils::Procar.load_file(filename)
-    if options[:total]
-    else
-      states = eachProcarPartial(procar)
-    end
-    states
-  end
 
 #  def layover
 #    weightArray = Array.new
@@ -196,10 +174,3 @@ class Procar2dos
 #    end
 #    @projection.sort!
 #  end
-
-
-end
-
-
-dos = Procar2dos.new
-dos.printGnuplot

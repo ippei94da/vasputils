@@ -174,6 +174,64 @@ class TC_Procar < Test::Unit::TestCase
       end
       assert_equal(corrects[i][:energy], results[i][:energy])
     end
+
+    # occpancy
+    corrects = [ 
+      {:energy=>-5.72406918, :orbitals=>[0.01875, 0.00025, 0.00000, 0.00050, 0.0, 0.0, 0.0, 0.0, 0.0], :raw_total=>0.25 }, #:weight=>0.25, 
+      {:energy=>-3.85979310, :orbitals=>[0.05850, 0.00300, 0.00150, 0.00075, 0.0, 0.0, 0.0, 0.0, 0.0], :raw_total=>0.75 }, #:weight=>0.75, 
+      {:energy=>-1.03952109, :orbitals=>[0.04725, 0.00600, 0.00300, 0.00975, 0.0, 0.0, 0.0, 0.0, 0.0], :raw_total=>0.75 }, #:weight=>0.75, 
+      {:energy=> 1.39818264, :orbitals=>[0.01025, 0.00250, 0.00125, 0.00725, 0.0, 0.0, 0.0, 0.0, 0.0], :raw_total=>0.25 }, #:weight=>0.25, 
+      {:energy=> 1.83993091, :orbitals=>[0.00750, 0.01125, 0.00600, 0.02625, 0.0, 0.0, 0.0, 0.0, 0.0], :raw_total=>0.75 }, #:weight=>0.75, 
+      {:energy=> 3.13528844, :orbitals=>[0.00000, 0.01950, 0.03900, 0.00000, 0.0, 0.0, 0.0, 0.0, 0.0], :raw_total=>0.75 }, #:weight=>0.75, 
+      {:energy=> 4.54489326, :orbitals=>[0.00000, 0.00175, 0.01875, 0.00100, 0.0, 0.0, 0.0, 0.0, 0.0], :raw_total=>0.25 }, #:weight=>0.25, 
+      {:energy=> 4.54489326, :orbitals=>[0.00000, 0.01500, 0.00050, 0.00625, 0.0, 0.0, 0.0, 0.0, 0.0], :raw_total=>0.25 }, #:weight=>0.25, 
+      {:energy=> 6.82460808, :orbitals=>[0.00000, 0.00000, 0.00000, 0.00000, 0.0, 0.0, 0.0, 0.0, 0.0], :raw_total=>0.0  }, #:weight=>0.75, 
+      {:energy=> 7.18759475, :orbitals=>[0.00000, 0.00000, 0.00000, 0.00000, 0.0, 0.0, 0.0, 0.0, 0.0], :raw_total=>0.0  }, #:weight=>0.25, 
+      {:energy=> 8.74432526, :orbitals=>[0.00000, 0.00000, 0.00000, 0.00000, 0.0, 0.0, 0.0, 0.0, 0.0], :raw_total=>0.0  }, #:weight=>0.25, 
+      {:energy=> 8.74432526, :orbitals=>[0.00000, 0.00000, 0.00000, 0.00000, 0.0, 0.0, 0.0, 0.0, 0.0], :raw_total=>0.0  }, #:weight=>0.25, 
+      {:energy=> 9.7084102 , :orbitals=>[0.00000, 0.00000, 0.00000, 0.00000, 0.0, 0.0, 0.0, 0.0, 0.0], :raw_total=>0.0  }, #:weight=>0.75, 
+      {:energy=>10.87421242, :orbitals=>[0.00000, 0.00000, 0.00000, 0.00000, 0.0, 0.0, 0.0, 0.0, 0.0], :raw_total=>0.0  }, #:weight=>0.75, 
+      {:energy=>11.13140386, :orbitals=>[0.00000, 0.00000, 0.00000, 0.00000, 0.0, 0.0, 0.0, 0.0, 0.0], :raw_total=>0.0  }, #:weight=>0.75, 
+      {:energy=>11.94041316, :orbitals=>[0.00000, 0.00000, 0.00000, 0.00000, 0.0, 0.0, 0.0, 0.0, 0.0], :raw_total=>0.0  }, #:weight=>0.25, 
+    ]
+    results = @p00.project_onto_energy(0, [2], 0.0, true)
+    assert_equal(corrects.size, results.size)
+    corrects.size.times do |i|
+      assert_equal(corrects[i][:energy], results[i][:energy])
+      corrects[i][:orbitals].size.times do |o|
+        assert_in_delta(corrects[i][:orbitals][o], results[i][:orbitals][o], TOLERANCE)
+      end
+      assert_equal(corrects[i][:energy], results[i][:energy])
+    end
+
+    ##fermi
+    corrects = [ 
+      {:energy=>-6.72406918, :orbitals=>[0.01875, 0.00025, 0.00000, 0.00050, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.25, 
+      {:energy=>-4.85979310, :orbitals=>[0.05850, 0.00300, 0.00150, 0.00075, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.75, 
+      {:energy=>-2.03952109, :orbitals=>[0.04725, 0.00600, 0.00300, 0.00975, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.75, 
+      {:energy=> 0.39818264, :orbitals=>[0.01025, 0.00250, 0.00125, 0.00725, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.25, 
+      {:energy=> 0.83993091, :orbitals=>[0.00750, 0.01125, 0.00600, 0.02625, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.75, 
+      {:energy=> 2.13528844, :orbitals=>[0.00000, 0.01950, 0.03900, 0.00000, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.75, 
+      {:energy=> 3.54489326, :orbitals=>[0.00000, 0.00175, 0.01875, 0.00100, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.25, 
+      {:energy=> 3.54489326, :orbitals=>[0.00000, 0.01500, 0.00050, 0.00625, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.25, 
+      {:energy=> 5.82460808, :orbitals=>[0.01800, 0.01050, 0.00525, 0.00150, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.75, 
+      {:energy=> 6.18759475, :orbitals=>[0.01900, 0.00125, 0.00050, 0.00350, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.25, 
+      {:energy=> 7.74432526, :orbitals=>[0.00000, 0.00000, 0.01375, 0.00225, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.25, 
+      {:energy=> 7.74432526, :orbitals=>[0.00000, 0.01250, 0.00050, 0.00300, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.25, 
+      {:energy=> 8.7084102 , :orbitals=>[0.00900, 0.00375, 0.00225, 0.02475, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.75, 
+      {:energy=> 9.87421242, :orbitals=>[0.02400, 0.01275, 0.00600, 0.03000, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.75, 
+      {:energy=>10.13140386, :orbitals=>[0.00000, 0.01500, 0.03075, 0.00000, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.75, 
+      {:energy=>10.94041316, :orbitals=>[0.01475, 0.00475, 0.00225, 0.01400, 0.0, 0.0, 0.0, 0.0, 0.0]}, #:weight=>0.25, 
+    ]
+    results = @p00.project_onto_energy(0, [2], 1.0)
+    assert_equal(corrects.size, results.size)
+    corrects.size.times do |i|
+      assert_in_delta(corrects[i][:energy], results[i][:energy], TOLERANCE)
+      corrects[i][:orbitals].size.times do |o|
+        assert_in_delta(corrects[i][:orbitals][o], results[i][:orbitals][o], TOLERANCE)
+      end
+    end
+
   end
 
   def test_dos_for_spin
@@ -216,7 +274,6 @@ class TC_Procar < Test::Unit::TestCase
     assert_equal(corrects, results)
 
 
-    setup
     options = {
       :tick       => 2.0,
       :sigma      => 0.1,
@@ -255,15 +312,6 @@ class TC_Procar < Test::Unit::TestCase
         0.0]}
 
 
-    options = {
-      :tick       => 2.0,
-      :sigma      => 0.1,
-      :occupancy  => true,
-      :min_energy => nil,
-      :max_energy => nil
-    }
-    pp @p00.dos_for_spin([1], options, 0)
-    exit
   end
 
   def test_left_foot_gaussian

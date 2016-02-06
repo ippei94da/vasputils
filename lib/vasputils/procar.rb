@@ -140,6 +140,7 @@ class VaspUtils::Procar
     @states.size.times do |spin_index|
       doses[spin_index] = dos_for_spin(ion_indices, options, spin_index)
     end
+    #pp doses
 
     if num_spins == 1
       results = doses[0]
@@ -213,33 +214,8 @@ class VaspUtils::Procar
   end
 
   def dos_for_spin(ion_indices, options, spin_index)
-    proj = project_onto_energy(spin_index, ion_indices)
+    proj = project_onto_energy(spin_index, ion_indices, options[:fermi], options[:occupancy])
 
-    # num_spin==1 && occupancy==true :   0〜2
-    # num_spin==2 && occupancy==true :   0〜1
-    # num_spin==1 && occupancy==false:   0〜2
-    # num_spin==2 && occupancy==false:   0〜1
-    
-    #if options[:occupancy] == true
-      ##ここでは情報欠損していて、できない。
-      #pp @occupancies
-      #pp proj
-      #num_spins.times do |s|
-      #  num_kpoints.times do |k|
-      #    num_bands.times do |b|
-      #      (num_orbitals).times do |o|
-      #        proj[s][:orbitals][o] *= @occupancies[s][k][b]
-      #      end
-      #    end
-      #  end
-      #end
-      #proj[s][k][b][:raw_total] *= @occupancies[s][0]
-    #end
-    #pp proj
-    #if num_spins == 1
-    #  (num_orbitals).times {|l| proj[:orbitals][l] *= 2.0}
-    #  proj[:raw_total] *=  2.0
-    #end
 
     unless options[:precise]
       ## sum up orbitals; e.g, py + pz + px = p
@@ -265,7 +241,9 @@ class VaspUtils::Procar
     max_energy = options[:max_energy]
     sigma      = options[:sigma]
     tick       = options[:tick]
-    flat_energies = @energies.flatten
+    #flat_energies = @energies.flatten
+    #pp @energies.flatten
+    flat_energies = @energies.flatten.map{|e| e - options[:fermi].to_f}
     min_energy ||= left_foot_gaussian(flat_energies[0], sigma, tick)
     max_energy ||= right_foot_gaussian(flat_energies[-1], sigma, tick)
 
@@ -300,7 +278,9 @@ class VaspUtils::Procar
   # outer array is all bands of all k-points.
   # inner array is all orbitals.
   #of each orbital component for ions in 'ion_indices' 
-  def project_onto_energy(spin_index, ion_indices) #old name: sum_ions()
+  #If occupancy == true, orbital intensities are multiplied by occupancy.
+  #old name: sum_ions()
+  def project_onto_energy(spin_index, ion_indices, fermi = 0.0, occupancy = false)
     results = Array.new
 
     # sum up orbitals for ions
@@ -309,19 +289,22 @@ class VaspUtils::Procar
 
         # initialize
         proj_orbs = {} # projected_orbitals
-        proj_orbs[:energy] = @energies[spin_index][k][band]
+        proj_orbs[:energy] = @energies[spin_index][k][band] - fermi.to_f
         #proj_orbs[:weight] = @weights[spin_index][k]
         proj_orbs[:orbitals] = Array.new(num_orbitals).fill(0.0)
 
         ion_indices.each do |ion|
           num_orbitals.times do |orb|
-            proj_orbs[:orbitals][orb] += @states[spin_index][k][band][ion-1][orb]
+            intensity = @states[spin_index][k][band][ion-1][orb]
+            intensity *= @occupancies[spin_index][k][band] if occupancy
+            proj_orbs[:orbitals][orb] += intensity
           end
         end
 
         ## not multiply 2.0 here.
         (num_orbitals).times {|orb| proj_orbs[:orbitals][orb] *= @weights[k]}
         proj_orbs[:raw_total] = @weights[k]
+        proj_orbs[:raw_total] *= @occupancies[spin_index][k][band] if occupancy
         results << proj_orbs
       end
     end
