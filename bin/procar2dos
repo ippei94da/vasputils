@@ -7,7 +7,7 @@
 # Time-stamp: <2006-05-25 21:41:31 togo>
 # $Id: procar2dos.rb 405 2006-05-25 12:57:12Z  $
 # Modified by Ippei Kishida.
-# Last-modified: 2016/02/09 23:16:06.
+# Last-modified: 2016/02/09 23:33:27.
 
 #スピンごとに正負を逆にするか、同じ軸にするかのオプションと関連。
 #スピンごとにどのようい表示すべきか。。
@@ -157,14 +157,27 @@ def gen_image(dos, format)
       #=> [-3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0]
       #y = x.collect { |v| v ** 3 - 2 * v + 2}
       #=> [-19.0, -2.0, 3.0, 2.0, 1.0, 6.0, 23.0]
-      pp dos
 
-      plot.data << Gnuplot::DataSet.new([x, y]) do |ds|
-        ds.with      = "linespoints"  # 点のみなら "points"
-        ds.linewidth = 2
-        ds.linecolor = 3
-        ds.notitle
+      
+      orbitals =dos[:orbitals]
+      orbitals[0].size.times do |i|
+        ys = orbitals.map{|orb| orb[i]}
+
+        plot.data << Gnuplot::DataSet.new([dos[:energies], ys]) do |ds|
+          ds.with      = "lines"  # 点のみなら "points"
+          ds.linewidth = 2
+          ds.linecolor = i
+          ds.notitle
+        end
       end
+
+      #pp dos; exit
+      #plot.data << Gnuplot::DataSet.new([dos[:energies], dos[:raw_total_sums]) do |ds|
+      #  ds.with      = "lines"  # 点のみなら "points"
+      #  ds.linewidth = 2
+      #  ds.linecolor = 3
+      #  ds.notitle
+      #end
     end
   end
 
