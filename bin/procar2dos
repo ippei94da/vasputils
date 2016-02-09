@@ -7,7 +7,7 @@
 # Time-stamp: <2006-05-25 21:41:31 togo>
 # $Id: procar2dos.rb 405 2006-05-25 12:57:12Z  $
 # Modified by Ippei Kishida.
-# Last-modified: 2016/02/06 09:44:54.
+# Last-modified: 2016/02/09 12:32:11.
 
 #スピンごとに正負を逆にするか、同じ軸にするかのオプションと関連。
 #スピンごとにどのようい表示すべきか。。
@@ -24,10 +24,10 @@ usage: procar2dos.rb [OPTION] [ion_indices]
 
 HERE
 
-
 require "vasputils"
 require "optparse"
 require "pp"
+require "gnuplot"
 
 ## option analysis
 options = {}
