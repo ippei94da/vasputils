@@ -6,11 +6,11 @@ source "http://rubygems.org"
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
 group :development do
-  gem "test-unit", "~> 3.1.2"
+  gem "test-unit", "~> 3.1"
   gem "rdoc", "~> 4.2"
-  gem "bundler", "~> 1.9"
+  gem "bundler", "~> 1.11"
   gem "jeweler", "~> 2.0"
-  gem "simplecov", "~> 0.9"
+  gem "simplecov", "~> 0.11"
   gem "thor", "~> 0.19"
   gem "mageo", ">= 0.0.3"
   gem "malge", ">= 0.0.9"
@@ -18,5 +18,4 @@ group :development do
   gem "comana", ">= 0.1.0"
   gem "builtinextension", ">= 0.1.3"
   gem "crystalcell", ">= 0.0.4"
-  #gem "psych", ">= 0"
 end
