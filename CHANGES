@@ -2,6 +2,11 @@
 
 == Master (for 1.0.1)
 
+??
+- procar2dos
+
+- vasprunxml command?
+
 == Version 1.0.0 [2014-08-30] released
 - Small revision of output of 'showvaspdir' to show zero at the tail of toten.
 - LAST_UPDATE in 'showvaspdir -a' is changed to be "time ago".
