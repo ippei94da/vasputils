@@ -1,0 +1,30 @@
+#! /usr/bin/env ruby
+
+
+require 'thor'
+require 'malge'
+require 'vasputils'
+require 'pp'
+require "optparse"
+
+## vasprun.xml を操作する
+
+### Command template
+class VasprunXmlCommand < Thor
+
+  DEFAULT_XML = 'vasprun.xml'
+
+  desc 'vasprunxml dos [options]', 'Generate DOS.'
+  option :xml,  desc: "Indicate vasprun.xml file."
+  #option :kabc,  desc: "kabc values"
+  def dos(* args)
+    #pp args
+    options[:xml] ||= DEFAULT_XML
+    vasprunxml = VaspUtils::VasprunXml.load_file( options[:xml] )
+    #pp vx.xpath("/modeling/calculation/dos/total/array/")
+    #vasprunxml.dos
+  end
+
+end
+
+VasprunXmlCommand.start(ARGV)
