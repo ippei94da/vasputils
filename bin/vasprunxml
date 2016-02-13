@@ -18,6 +18,27 @@ class VasprunXmlCommand < Thor
   option :xml,  desc: "Indicate vasprun.xml file."
   #option :kabc,  desc: "kabc values"
   def dos(* args)
+    total_dos
+    partial_dos
+    ion
+    spin
+
+    イオンを指定したら partial に。
+    指定していなかったら total に。
+      明示的に全てのイオンを指示することも可能。
+
+    --sum 指定ありの時、指定したイオンの総和で1つの DOS を描く。
+    --sum 指定なしの時、イオンごとに別個の DOSj を描く。
+      pdos-ions-1..4,9..12.png
+
+    spin は、
+
+    --down-spin 
+
+    --png
+    --eps
+    --dat
+
     #pp args
     options[:xml] ||= DEFAULT_XML
     vasprunxml = VaspUtils::VasprunXml.load_file( options[:xml] )
