@@ -58,5 +58,24 @@ class VaspUtils::VasprunXml
     end
   end
 
+  def total_dos
+    @data.xpath("/modeling/calculation/dos/total/array/set/set[@comment='spin 1']/r").children.map do |elem|
+      elem.to_s.strip.split.map{|i| i.to_f}
+      #elem.class
+      #elem.methods.sort
+    end
+  end
+
+  def fermi_energy
+    @data.xpath("/modeling/calculation/dos/i[@name='efermi']").children.to_s.to_f
+  end
+
+  def num_atoms
+    #@data.xpath("/modeling/calculation/dos/i[@name='efermi']").children.to_s.to_f
+  end
+
+  def num_spins
+  end
+
 end
 

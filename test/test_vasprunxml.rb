@@ -10,6 +10,7 @@ class TC_VasprunXml < Test::Unit::TestCase
     #@v00 = VaspUtils::VasprunXml.new
     @v00 = VaspUtils::VasprunXml.load_file('test/vasprunxml/singlepoint.xml')
     @v01 = VaspUtils::VasprunXml.load_file('test/vasprunxml/geomopt.xml')
+    @v02 = VaspUtils::VasprunXml.load_file('test/vasprunxml/dos.xml')
   end
 
   def test_load_file
@@ -66,6 +67,37 @@ class TC_VasprunXml < Test::Unit::TestCase
 
   def test_elements
     assert_equal(['Li'], @v01.elements)
+  end
+
+  def test_fermi_energy
+    assert_equal( 3.78039662, @v00.fermi_energy)
+    assert_equal(-3.28068319, @v01.fermi_energy)
+    assert_equal(6.07577117, @v02.fermi_energy)
+  end
+
+  def test_num_ions
+    assert_equal(2, @v02.num_ions)
+  end
+
+  def test_num_spins
+    assert_equal(2, @v02.num_spins)
+  end
+
+  def test_total_dos
+    results = @v02.total_dos
+
+    assert_equal([-40.0000, 0.0000, 0.0000], results[0])
+    assert_equal([  0.0000, 0.0615, 1.7078], results[400])
+    assert_equal([30.0000, 0.0000, 20.0000], results[-1])
+  end
+
+  def test_partial_dos
+    #pp @v01.total_dos
+    #  partial
+    #    array
+    #      set
+    #        ion
+    #          spin
   end
 end
 
