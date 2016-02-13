@@ -14,34 +14,34 @@ class VasprunXmlCommand < Thor
 
   DEFAULT_XML = 'vasprun.xml'
 
-  desc 'vasprunxml dos [options]', 'Generate DOS.'
+  desc 'vasprunxml dos [options] [ion_indices]', <<HERE
+  Generate DOS.
+  If ion_indices are indicated, use partial dos and generate each image.
+  If ion_indices is empty, use total dos.
+HERE
   option :xml,  desc: "Indicate vasprun.xml file."
-  #option :kabc,  desc: "kabc values"
+  option :sum, :type => :boolean,  desc: "Sum up orbitals of multiple ions."
+  option :png, :type => :boolean,  desc: "Output png image."
+  option :eps, :type => :boolean,  desc: "Output eps image."
+  option :dat, :type => :boolean,  desc: "Output Gnuplot style data file."
+  # --sum 指定ありの時、指定したイオンの総和で1つの DOS を描く。
+  # --sum 指定なしの時、イオンごとに別個の DOSj を描く。
+  #   pdos-ions-1..4,9..12.png
+  # --down-spin デフォルトにして、変更できないようにする。当面。
+  #
+  # total dos がだせるか
+  # spin が1つ、2つの場合がそれぞれ適正か。
+  # partial dos がだせるか。複数イオンで複数ファイルになるか。
+  # --sum がはたらくか。
+  # eps がだせるか
+  # png がだせるか
+  # dat がだせるか
   def dos(* args)
-    total_dos
-    partial_dos
-    ion
-    spin
-
-    イオンを指定したら partial に。
-    指定していなかったら total に。
-      明示的に全てのイオンを指示することも可能。
-
-    --sum 指定ありの時、指定したイオンの総和で1つの DOS を描く。
-    --sum 指定なしの時、イオンごとに別個の DOSj を描く。
-      pdos-ions-1..4,9..12.png
-
-    spin は、
-
-    --down-spin 
-
-    --png
-    --eps
-    --dat
+    #pp options
 
     #pp args
-    options[:xml] ||= DEFAULT_XML
-    vasprunxml = VaspUtils::VasprunXml.load_file( options[:xml] )
+    xml = options[:xml] || DEFAULT_XML
+    vasprunxml = VaspUtils::VasprunXml.load_file( xml )
     #pp vx.xpath("/modeling/calculation/dos/total/array/")
     #vasprunxml.dos
   end
