@@ -42,8 +42,7 @@ HERE
     #pp args
     xml = options[:xml] || DEFAULT_XML
     vasprunxml = VaspUtils::VasprunXml.load_file( xml )
-    #pp vx.xpath("/modeling/calculation/dos/total/array/")
-    #vasprunxml.dos
+    pp vasprunxml.total_dos
   end
 
 end
