@@ -66,6 +66,10 @@ class VaspUtils::VasprunXml
     end
   end
 
+  def total_dos_labels
+    @data.xpath("/modeling/calculation/dos/total/array/field").map{|i| i.children.to_s}
+  end
+
   def fermi_energy
     @data.xpath("/modeling/calculation/dos/i[@name='efermi']").children.to_s.to_f
   end

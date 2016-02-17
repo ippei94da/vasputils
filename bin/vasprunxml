@@ -37,12 +37,37 @@ HERE
   # png がだせるか
   # dat がだせるか
   def dos(* args)
-    #pp options
-
-    #pp args
     xml = options[:xml] || DEFAULT_XML
     vasprunxml = VaspUtils::VasprunXml.load_file( xml )
-    pp vasprunxml.total_dos
+    data = vasprunxml.total_dos
+
+    write_dat(vasprunxml.total_dos_labels, data ) if options[:dat]
+    write_eps(vasprunxml.total_dos_labels, data ) if options[:eps]
+
+    #pp vasprunxml.total_dos.transpose
+    #labels = ['energy', 'total_dos', '']
+    #pp vasprunxml.total_dos
+  end
+
+  private
+
+  def write_png(labels, data)
+    HERE
+  end
+
+  def write_dat(labels, data)
+    print '#'
+    labels.each do |i|
+      printf("%8s  ", i)
+    end
+    puts
+    data.each do |items|
+      print ' '
+      items.each do |item|
+        printf("%8.4f  ", item)
+      end
+      puts
+    end
   end
 
 end

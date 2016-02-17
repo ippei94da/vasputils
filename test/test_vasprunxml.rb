@@ -91,6 +91,12 @@ class TC_VasprunXml < Test::Unit::TestCase
     assert_equal([30.0000, 0.0000, 20.0000], results[-1])
   end
 
+  def test_total_dos_labels
+    results = @v02.total_dos_labels
+    corrects = [ 'energy', 'total', 'integrated' ]
+    assert_equal(corrects, results)
+  end
+
   def test_partial_dos
     #pp @v01.total_dos
     #  partial
