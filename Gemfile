@@ -12,6 +12,7 @@ group :development do
   gem "jeweler", "~> 2.0"
   gem "simplecov", "~> 0.11"
   gem "thor", "~> 0.19"
+  gem "gnuplot", "~> 2.6"
   gem "mageo", ">= 0.0.3"
   gem "malge", ">= 0.0.9"
   gem "maset", ">= 0.0.0"

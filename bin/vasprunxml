@@ -6,6 +6,7 @@ require 'malge'
 require 'vasputils'
 require 'pp'
 require "optparse"
+#require "gnuplot"
 
 ## vasprun.xml を操作する
 
@@ -13,6 +14,7 @@ require "optparse"
 class VasprunXmlCommand < Thor
 
   DEFAULT_XML = 'vasprun.xml'
+  DOS_BASENAME = 'total_dos'
 
   desc 'vasprunxml dos [options] [ion_indices]', <<HERE
   Generate DOS.
@@ -42,7 +44,9 @@ HERE
     data = vasprunxml.total_dos
 
     write_dat(vasprunxml.total_dos_labels, data ) if options[:dat]
-    write_eps(vasprunxml.total_dos_labels, data ) if options[:eps]
+    write_png(vasprunxml.total_dos_labels, data ) if options[:png]
+    #write_eps(vasprunxml.total_dos_labels, data ) if options[:eps]
+    #TODO spin
 
     #pp vasprunxml.total_dos.transpose
     #labels = ['energy', 'total_dos', '']
@@ -52,7 +56,26 @@ HERE
   private
 
   def write_png(labels, data)
-    HERE
+    Gnuplot.open do |gp|
+      Gnuplot::Plot.new(gp) do |plot|
+        plot.terminal "png enhanced font 'IPA P ゴシック' fontscale 1.2"
+        plot.output   DOS_BASENAME + ".png"
+        plot.title    "Total DOS"
+        plot.xlabel   "Energy [eV]"
+        plot.ylabel   "Density [states/eV]" #TODO
+        #plot.xrange    '[-10:10]'
+        columns = data.transpose
+        1.upto(columns.size - 1) do |i|
+          #pp i
+          plot.data << Gnuplot::DataSet.new([columns[0], columns[i]]) do |ds|
+            ds.with      = "lines"  # 点のみなら "points"
+            ds.linewidth = 2
+            ds.linecolor = i
+            ds.notitle
+          end
+        end
+      end
+    end
   end
 
   def write_dat(labels, data)

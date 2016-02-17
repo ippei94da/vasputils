@@ -85,6 +85,7 @@ class TC_VasprunXml < Test::Unit::TestCase
 
   def test_total_dos
     results = @v02.total_dos
+    NEED_SPINS
 
     assert_equal([-40.0000, 0.0000, 0.0000], results[0])
     assert_equal([  0.0000, 0.0615, 1.7078], results[400])

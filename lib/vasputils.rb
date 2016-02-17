@@ -6,6 +6,7 @@ require "mageo"
 require "comana"
 require "crystalcell"
 require "float/equalindelta"
+require "gnuplot"
 
 module VaspUtils; end
 
