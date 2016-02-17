@@ -80,6 +80,8 @@ class TC_VasprunXml < Test::Unit::TestCase
   end
 
   def test_num_spins
+    assert_equal(2, @v00.num_spins)
+    assert_equal(1, @v01.num_spins)
     assert_equal(2, @v02.num_spins)
   end
 
