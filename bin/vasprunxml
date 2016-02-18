@@ -16,11 +16,9 @@ class VasprunXmlCommand < Thor
   DEFAULT_XML = 'vasprun.xml'
   DOS_BASENAME = 'total_dos'
 
-  desc 'vasprunxml dos [options] [ion_indices]', <<HERE
-Generate DOS.
-HERE
+  desc 'vasprunxml dos [options]', 
+    'Generate DOS.'
   option :xml,  desc: "Indicate vasprun.xml file."
-  option :sum, :type => :boolean,  desc: "Sum up orbitals of multiple ions."
   option :png, :type => :boolean,  desc: "Output png image."
   option :eps, :type => :boolean,  desc: "Output eps image."
   option :dat, :type => :boolean,  desc: "Output Gnuplot style data file."
@@ -66,13 +64,18 @@ HERE
   # --sum 指定ありの時、指定したイオンの総和で1つの DOS を描く。
   # --sum 指定なしの時、イオンごとに別個の DOSj を描く。
   #   pdos-ions-1..4,9..12.png
-  # --down-spin デフォルトにして、変更できないようにする。当面。
   # partial dos がだせるか。複数イオンで複数ファイルになるか。
-  # --sum がはたらくか。
-  desc 'vasprunxml pdos [options] [ion_indices]', <<HERE
-Generate Partial DOS.
-HERE
-  def pdos
+  desc 'vasprunxml pdos [options] ion_indices', 
+    'Generate Partial DOS.'
+  option :xml,  desc: "Indicate vasprun.xml file."
+  #arguments :arg
+  #option :sum, :type => :boolean,  desc: "Sum up orbitals of multiple ions."
+  def pdos(ion_indices)
+    xml = options[:xml] || DEFAULT_XML
+    vasprunxml = VaspUtils::VasprunXml.load_file( xml )
+    ion_indices.map{|i| i.to_i}.each do |i|
+      vasprunxml.partial_dos(i)
+    end
     HERE
   end
 
