@@ -70,13 +70,17 @@ class VasprunXmlCommand < Thor
   option :xml,  desc: "Indicate vasprun.xml file."
   #arguments :arg
   #option :sum, :type => :boolean,  desc: "Sum up orbitals of multiple ions."
-  def pdos(ion_indices)
+  def pdos(* ion_indices)
     xml = options[:xml] || DEFAULT_XML
     vasprunxml = VaspUtils::VasprunXml.load_file( xml )
-    ion_indices.map{|i| i.to_i}.each do |i|
-      vasprunxml.partial_dos(i)
+
+    pdos_list = ion_indices.map{|i| i.to_i}.each do |i|
+      vasprunxml.partial_dos(i, 1)
     end
-    HERE
+
+    #if num_spins
+    pp ion_indices
+    #HERE
   end
 
   private
