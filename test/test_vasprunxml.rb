@@ -75,12 +75,12 @@ class TC_VasprunXml < Test::Unit::TestCase
     assert_equal(6.07577117, @v02.fermi_energy)
   end
 
-  def test_num_ions
-    assert_equal(2, @v00.num_atoms)
-    assert_equal(2, @v01.num_atoms)
+  def test_num_atoms
+    assert_equal(4, @v00.num_atoms)
+    assert_equal(1, @v01.num_atoms)
     assert_equal(2, @v02.num_atoms)
 
-    assert_equal(2, @v00.num_ions)
+    assert_equal(4, @v00.num_ions)
   end
 
   def test_num_spins
@@ -90,12 +90,18 @@ class TC_VasprunXml < Test::Unit::TestCase
   end
 
   def test_total_dos
-    results = @v02.total_dos
-    NEED_SPINS
-
+    results = @v02.total_dos(1)
     assert_equal([-40.0000, 0.0000, 0.0000], results[0])
     assert_equal([  0.0000, 0.0615, 1.7078], results[400])
     assert_equal([30.0000, 0.0000, 20.0000], results[-1])
+
+    results = @v02.total_dos(2)
+    assert_equal([-40.0000, 0.0000, 0.0000], results[0])
+    assert_equal([  0.0000, 0.4175, 1.4531], results[400])
+    assert_equal([30.0000, 0.0000, 20.0000], results[-1])
+
+    assert_raise(VaspUtils::VasprunXml::IllegalArgumentError){ @v02.total_dos(3)}
+    assert_raise(VaspUtils::VasprunXml::IllegalArgumentError){ @v01.total_dos(2)}
   end
 
   def test_total_dos_labels
@@ -105,14 +111,28 @@ class TC_VasprunXml < Test::Unit::TestCase
   end
 
   def test_partial_dos
-    #pp @v01.total_dos
-    #  partial
-    #    array
-    #      set
-    #        ion
-    #          spin
+    results = @v02.partial_dos(1, 1)
+    #pp results[0]
+    assert_equal([-40.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], results[0])
+    assert_equal([
+      0.0000, 0.0044, 0.0002, 0.0004, 0.0010,
+      0.0000, 0.0000, 0.0000, 0.0000, 0.0000
+    ], results[400])
+    assert_equal([ 30.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], results[-1])
+
+    #assert_equal([  0.0000, 0.0615, 1.7078], results[400])
+    #assert_equal([30.0000, 0.0000, 20.0000], results[-1])
+
+    results = @v02.partial_dos(2, 2)
+    #assert_equal([-40.0000, 0.0000, 0.0000], results[0])
+    #assert_equal([  0.0000, 0.4175, 1.4531], results[400])
+    #assert_equal([30.0000, 0.0000, 20.0000], results[-1])
+
+    error = VaspUtils::VasprunXml::IllegalArgumentError
+    assert_nothing_raised{ @v00.partial_dos(4, 1)}
+    assert_raise(error){ @v00.partial_dos(5, 1)}
   end
 
-  undef test_total_dos
+
 end
 

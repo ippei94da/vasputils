@@ -9,6 +9,8 @@ require 'nokogiri'
 class VaspUtils::VasprunXml
   attr_reader :data
 
+  class IllegalArgumentError < StandardError; end
+
   #
   def initialize(data)
     @data = data
@@ -58,16 +60,37 @@ class VaspUtils::VasprunXml
     end
   end
 
-  def total_dos
-    @data.xpath("/modeling/calculation/dos/total/array/set/set[@comment='spin 1']/r").children.map do |elem|
-      elem.to_s.strip.split.map{|i| i.to_f}
-      #elem.class
-      #elem.methods.sort
+  # Return an array of [energy, total, integrated] for spin.
+  # 'spin' is indicated by number started from 1 (should be 1 or 2).
+  # If the 'spin' does not exist, raise IllegalArgumentError
+  def total_dos(spin)
+    if (spin < 1) || (num_spins < spin)
+      raise IllegalArgumentError, "'spin' is indicated as #{spin}"
     end
+
+    result = @data.xpath("/modeling/calculation/dos/total/array/set/set[@comment='spin #{spin}']/r").children.map do |elem|
+      elem.to_s.strip.split.map{|i| i.to_f}
+    end
+    result
   end
 
   def total_dos_labels
     @data.xpath("/modeling/calculation/dos/total/array/field").map{|i| i.children.to_s}
+  end
+
+  def partial_dos(ion, spin)
+    if (spin < 1) || (num_ions < ion)
+      raise IllegalArgumentError, "'ion' is indicated as #{ion}"
+    end
+
+    if (spin < 1) || (num_ions < spin)
+      raise IllegalArgumentError, "'spin' is indicated as #{spin}"
+    end
+
+    result = @data.xpath("/modeling/calculation/dos/partial/array/set/set[@comment='ion #{ion}']/set[@comment='spin #{spin}']/r").children.map do |elem|
+      elem.to_s.strip.split.map{|i| i.to_f}
+    end
+    result
   end
 
   def fermi_energy

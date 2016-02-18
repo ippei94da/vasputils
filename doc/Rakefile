@@ -1,0 +1,76 @@
+# coding: utf-8
+# Rakefile for Markdown documents.
+
+#DIRMAP_HTML = '.dirmap.html'
+ENCODING = "UTF-8"
+HTML2PDF = "wkhtmltopdf"
+HTML2PDF_OPTIONS = "-B 1cm -L 1.5cm -R 1.5cm -T 1.5cm -s A4 --encoding #{ENCODING} "
+
+require "pp"
+require "fileutils"
+require "pathname"
+
+desc "Make .sidebar"
+#dirmaps = []
+
+#Dir.glob(['.', "**/*"]).each do |path|
+#  next unless FileTest.directory? path
+#
+#  dirpath = Pathname.new(path)
+#  dirmap = "#{dirpath}/#{DIRMAP_HTML}"
+#  dirmap.sub!(/^\.\//, '')
+#  dirmaps << dirmap
+#  #pp dirmap
+#  file dirmap => [dirpath, dirpath.parent] do
+#    sh "dirmap #{dirpath} > #{dirpath}/#{DIRMAP_HTML}"
+#  end
+#end
+##pp dirmaps
+#task :dirmaps => dirmaps
+
+desc "Make *.html from *.md"
+md_files = FileList["**/*.md"]
+html_files = md_files.ext("html")
+task :md2html => FileList[html_files]
+html_files.each do |html_file|
+  md_file = html_file.ext("md")
+  md_path = Pathname.new( md_file)
+  dirpath = md_path.dirname
+  #dirmap = md_path.dirname + DIRMAP_HTML
+  #file html_file => [md_file, dirmap] do
+  #file html_file => [md_file, dirpath, dirpath.parent] do
+  file html_file => [md_file] do
+    #sh "madowu -o -s #{dirmap} -c madowu.css #{md_file}"
+    #sh "madowu -o -d -c madowu.css -C UTF-8 #{md_file}"
+    sh "madowu -O -d -c madowu.css -C UTF-8 #{md_file}"
+  end
+end
+
+desc "Update mtime of all html files"
+task :tree => :md2html do
+  html_files.each do |html_file|
+    File.utime(Time.now, Time.now, html_file)
+  end
+end
+
+desc "Make *.pdf from *.html"
+pdf_files = html_files.ext("pdf")
+task :html2pdf => FileList[pdf_files]
+pdf_files.each do |pdf_file|
+  html_file = pdf_file.ext("html")
+  file pdf_file => html_file do
+    sh "#{HTML2PDF} #{HTML2PDF_OPTIONS} #{html_file} #{pdf_file}"
+  end
+end
+
+
+task :pdf => :html2pdf
+task :default => :tree
+
+require "rake/clean"
+CLEAN.include( [
+  html_files,
+  pdf_files,
+  #dirmaps,
+])
+
