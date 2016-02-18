@@ -76,10 +76,15 @@ class VaspUtils::VasprunXml
 
   def num_atoms
     #@data.xpath("/modeling/calculation/dos/i[@name='efermi']").children.to_s.to_f
+    #@data.xpath("/modeling/parameters/separator[@name='electronic']/separator[@name='electronic spin']/i[@name='ISPIN']").children.to_s.to_i
+    @data.xpath("/modeling/atominfo/atoms").children.to_s.to_i
   end
+  alias num_ions num_atoms
 
   def num_spins
+    @data.xpath("/modeling/parameters/separator[@name='electronic']/separator[@name='electronic spin']/i[@name='ISPIN']").children.to_s.to_i
   end
+
 
 end
 

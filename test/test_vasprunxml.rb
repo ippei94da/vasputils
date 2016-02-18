@@ -76,7 +76,11 @@ class TC_VasprunXml < Test::Unit::TestCase
   end
 
   def test_num_ions
-    assert_equal(2, @v02.num_ions)
+    assert_equal(2, @v00.num_atoms)
+    assert_equal(2, @v01.num_atoms)
+    assert_equal(2, @v02.num_atoms)
+
+    assert_equal(2, @v00.num_ions)
   end
 
   def test_num_spins
@@ -108,5 +112,7 @@ class TC_VasprunXml < Test::Unit::TestCase
     #        ion
     #          spin
   end
+
+  undef test_total_dos
 end
 
