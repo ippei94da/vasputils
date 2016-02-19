@@ -83,7 +83,7 @@ class VaspUtils::VasprunXml
       raise IllegalArgumentError, "'ion' is indicated as #{ion}"
     end
 
-    if (spin < 1) || (num_ions < spin)
+    if (spin < 1) || (num_spins < spin)
       raise IllegalArgumentError, "'spin' is indicated as #{spin}"
     end
 
