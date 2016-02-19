@@ -27,29 +27,18 @@ class VasprunXmlCommand < Thor
   option :max, desc: "Maximum energy of horizontal axis."
     ## :type => :numeric で負数を指定できなかった。[2016-02-18]
   def dos(* args)
-    xml = options[:xml] || DEFAULT_XML
-    vasprunxml = VaspUtils::VasprunXml.load_file( xml )
+    @xml = VaspUtils::VasprunXml.load_file( options[:xml] || DEFAULT_XML )
+    dos_data = @xml.total_dos(1)
 
-    dos_data = vasprunxml.total_dos(1)
-    labels = vasprunxml.total_dos_labels
-
-    if vasprunxml.num_spins == 2
-      dos_data_down = vasprunxml.total_dos(2)
-      dos_data.size.times do |i|
-        dos_data_down[i].shift
-        dos_data[i] += dos_data_down[i].map{|j| j * (-1.0)}
-      end
-
-      new_labels = [labels.shift]
-      new_labels += labels.map{|i| i + "-up"}
-      new_labels += labels.map{|i| i + "-down"}
-      labels = new_labels
+    if @xml.num_spins == 2
+      dos_data_down = @xml.total_dos(2)
+      dos_data = merge_spins(dos_data, dos_data_down)
     end
 
     if options[:fermi]
       dos_data.map! do |i|
         energy = i.shift
-        energy -= vasprunxml.fermi_energy
+        energy -= @xml.fermi_energy
         [energy] + i
       end
     end
@@ -84,6 +73,26 @@ class VasprunXmlCommand < Thor
   end
 
   private
+
+  def labels
+    results = @xml.total_dos_labels
+    if @xml.num_spins == 2
+      new_labels = [results.shift]
+      new_labels += results.map{|i| i + "-up"}
+      new_labels += results.map{|i| i + "-down"}
+      results = new_labels
+    end
+    results
+  end
+
+  def merge_spins(dos1, dos2)
+    results = []
+    dos1.size.times do |i|
+      dos2[i].shift
+      results[i] = dos1[i] + dos2[i].map{|j| j * (-1.0)}
+    end
+    results
+  end
 
   def plot(labels, data, min = nil, max = nil, type)
     if type == :png
