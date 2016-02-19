@@ -78,6 +78,10 @@ class VaspUtils::VasprunXml
     @data.xpath("/modeling/calculation/dos/total/array/field").map{|i| i.children.to_s}
   end
 
+  def partial_dos_labels
+    @data.xpath("/modeling/calculation/dos/partial/array/field").map{|i| i.children.to_s.strip}
+  end
+
   def partial_dos(ion, spin)
     if (spin < 1) || (num_ions < ion)
       raise IllegalArgumentError, "'ion' is indicated as #{ion}"

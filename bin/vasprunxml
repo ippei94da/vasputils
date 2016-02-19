@@ -15,7 +15,7 @@ class VasprunXmlCommand < Thor
 
   DEFAULT_XML = 'vasprun.xml'
   DOS_BASENAME = 'dos'
-  PDOS_BASENAME = 'pdos'
+  PDOS_PREFIX = 'pdos'
 
   desc 'vasprunxml dos [options]', 
     'Generate total DOS.'
@@ -23,37 +23,20 @@ class VasprunXmlCommand < Thor
   option :png, :type => :boolean,  desc: "Output png image."
   option :eps, :type => :boolean,  desc: "Output eps image."
   option :dat, :type => :boolean,  desc: "Output Gnuplot style data file."
+  option :stdout, :type => :boolean,  desc: "Output Gnuplot style data to stdout."
   option :fermi, :type => :boolean, desc: "Read Fermi energy and set as zero."
   option :min, desc: "Minimum energy of horizontal axis."
   option :max, desc: "Maximum energy of horizontal axis."
     ## :type => :numeric で負数を指定できなかった。[2016-02-18]
   #def dos(* args)
   def dos
-    @xml = VaspUtils::VasprunXml.load_file( options[:xml] || DEFAULT_XML )
+    @options = options
+    @xml = VaspUtils::VasprunXml.load_file( @options[:xml] || DEFAULT_XML )
 
-    dos_data = @xml.total_dos(1)
-    dos_data = merge_spins(dos_data, @xml.total_dos(2)) if @xml.num_spins == 2
-    dos_data = shift_fermi(dos_data) if options[:fermi]
+    dos_data1 = @xml.total_dos(1)
+    dos_data2 = @xml.total_dos(2) if @xml.num_spins == 2
 
-    if options[:png]
-      write_image(labels,
-                  dos_data,
-                  :png,
-                  DOS_BASENAME+".png",
-                  options[:min],
-                  options[:max] )
-    end
-    if options[:eps]
-      write_image(labels,
-                  dos_data,
-                  :eps,
-                  DOS_BASENAME+".eps",
-                  options[:min],
-                  options[:max] )
-    end
-    io = $stdout
-    io = File.open(DOS_BASENAME + ".dat", 'w') if options[:dat]
-    write_dat(labels, dos_data, io )
+    plot_dos(dos_data1, dos_data2, DOS_BASENAME, dos_labels)
   end
 
   #If ion_indices are indicated, use partial dos and generate each image.
@@ -68,60 +51,108 @@ class VasprunXmlCommand < Thor
   option :png, :type => :boolean,  desc: "Output png image."
   option :eps, :type => :boolean,  desc: "Output eps image."
   option :dat, :type => :boolean,  desc: "Output Gnuplot style data file."
+  option :stdout, :type => :boolean,  desc: "Output Gnuplot style data to stdout."
   option :fermi, :type => :boolean, desc: "Read Fermi energy and set as zero."
   option :min, desc: "Minimum energy of horizontal axis."
   option :max, desc: "Maximum energy of horizontal axis."
-  #arguments :arg
-  #option :sum, :type => :boolean,  desc: "Sum up orbitals of multiple ions."
+  option :azimuthal, :type => :boolean, desc: "Sum for the same azimuthal orbitals."
+  option :sum, :type => :boolean,  desc: "Sum up orbitals of multiple ions."
   def pdos(* ion_indices)
+    @options = options
     if ion_indices.empty?
       puts "'pdos' subcommand needs at least one atom index. Exit."
       exit
     end
 
     @xml = VaspUtils::VasprunXml.load_file( options[:xml] || DEFAULT_XML )
-    pdos_data = []
+    pdos1_for_ions = []
+    pdos2_for_ions = []
     ion_indices.size.times do |i|
       ion_index = ion_indices[i].to_i
-      pdos_data[i] = @xml.partial_dos(ion_index, 1)
+      tmp_pdos = @xml.partial_dos(ion_index, 1)
+      tmp_pdos = sum_azimuthal(tmp_pdos) if @options[:azimuthal]
+      pdos1_for_ions << tmp_pdos
       if @xml.num_spins == 2
-        pdos_data[i] = merge_spins(pdos_data[i], @xml.partial_dos(ion_index, 2))
+        tmp_pdos = @xml.partial_dos(ion_index, 2)
+        tmp_pdos = sum_azimuthal(tmp_pdos) if @options[:azimuthal]
+        pdos2_for_ions << tmp_pdos
       end
     end
-    pp pdos_data[0][400]; exit
-    pp pdos_data[0][400]; exit
 
-    if options[:sum]
-      #pdos_for_ions.each do |dos_data|
-      #  #dos_data = まとめる
-      #end
-      #write_dat(labels, dos_data, PDOS_BASENAME + ".dat" ) if options[:dat]
-      #write_image(labels, dos_data, :png, options[:min], options[:max] ) if options[:png]
-      #write_image(labels, dos_data, :eps, options[:min], options[:max] ) if options[:eps]
+    if @options[:sum]
+      ##test
+      #a = [
+      #  [[0,1,1],[1,2,3], [2,0,0]],
+      #  [[0,2,2],[1,4,6], [2,0,0]],
+      #]
+      #sum_ions(a)
+      ##=> [[0, 3.0, 3.0], [1, 6.0, 9.0], [2, 0.0, 0.0]]
+      #
+      #exit
+
+      sum_pdos1 = sum_ions(pdos1_for_ions)
+      sum_pdos2 = sum_ions(pdos2_for_ions)
+      plot_dos(sum_pdos1, sum_pdos2, "#{PDOS_PREFIX}-sum", pdos_labels)
     else
-      pdos_for_ions.each do |dos_data|
-        #pp dos_data
-        dos_data = merge_spins(dos_data, @xml.total_dos(2)) if @xml.num_spins == 2
-        dos_data = shift_fermi(dos_data) if options[:fermi]
-
-        io = File.open(PDOS_BASENAME + ".dat" , 'w')
-        write_dat(labels, dos_data, ) if options[:dat]
-        if options[:png]
-          write_image(labels, dos_data, :png, PDOS_BASENAME+".png", options[:min], options[:max] )
-        end
-        if options[:eps]
-          write_image(labels, dos_data, :eps, PDOS_BASENAME+".eps", options[:min], options[:max] )
-        end
+      #plot not sum
+      pdos1_for_ions.size.times do |i|
+        plot_dos(pdos1_for_ions[i], pdos2_for_ions[i], "#{PDOS_PREFIX}-#{ion_indices[i]}", pdos_labels)
       end
     end
-
-
-    ##if num_spins
-    #pp ion_indices
-    ##HERE
+    #    0.0000    0.0044    0.0016    0.0000   -0.0270   -0.0103   -0.0000 
   end
 
   private
+
+  def sum_ions(dos_for_ions)
+    results = []
+    num_energies = dos_for_ions[0].size
+    num_ions = @xml.num_ions
+    num_orbitals = dos_for_ions[0][0].size - 1
+    num_energies.times do |e|
+      # dos_for_ions[i][e][o]
+      energy = dos_for_ions[0][e][0]
+      orbitals = Array.new(num_orbitals).fill(0.0)
+      num_ions.times do |i|
+        line_items = dos_for_ions[i][e]
+        line_items.shift #energy
+        orbitals.size.times do |o|
+          orbitals[o] += line_items[o]
+        end
+      end
+      results << [energy] + orbitals
+    end
+    results
+  end
+
+  def sum_azimuthal(dos_data)
+    results = dos_data.map do |os|
+      s = os[1]
+      p = os[2] + os[3] + os[4]
+      d = os[5] + os[6] + os[7] + os[8] + os[9]
+      items = [os[0], s, p, d]
+      if dos_data[0].size > 10 # including f_orbital
+        items << os[10] + os[11] + os[12] + os[13] + os[14]
+      end
+      items
+    end
+  end
+
+  def plot_dos(dos_data1, dos_data2, basename, labels)
+    dos_data = merge_spins(dos_data1, dos_data2) if @xml.num_spins == 2
+    dos_data = shift_fermi(dos_data) if @options[:fermi]
+
+    write_image(labels, dos_data, :png, basename + ".png") if @options[:png]
+    write_image(labels, dos_data, :eps, basename + ".eps") if @options[:eps]
+    if @options[:dat]
+      io = File.open(basename + ".dat", 'w')
+      write_dat(labels, dos_data, io )
+    end
+    if @options[:stdout]
+      io = $stdout
+      write_dat(labels, dos_data, io )
+    end
+  end
 
   def shift_fermi(dos_data)
     result = dos_data.map do |i|
@@ -132,7 +163,25 @@ class VasprunXmlCommand < Thor
     result
   end
 
-  def labels
+  def pdos_labels
+    results = @xml.partial_dos_labels
+
+    if @options[:azimuthal]
+      new_labels = [results.shift]
+      new_labels += results.map{|i| i.split('')[0]}.uniq
+      results = new_labels
+    end
+
+    if @xml.num_spins == 2
+      new_labels = [results.shift]
+      new_labels += results.map{|i| i + "-up"}
+      new_labels += results.map{|i| i + "-down"}
+      results = new_labels
+    end
+    results
+  end
+
+  def dos_labels
     results = @xml.total_dos_labels
     if @xml.num_spins == 2
       new_labels = [results.shift]
@@ -152,13 +201,15 @@ class VasprunXmlCommand < Thor
     results
   end
 
-  def write_image(labels, data, type, outfile, min = nil, max = nil)
+  def write_image(labels, data, type, outfile)
     if type == :png
       terminal = "png enhanced font 'IPA P ゴシック' fontscale 1.2"
     end
     if type == :eps
       terminal = 'postscript eps enhanced color'
     end
+    min = @options[:min]
+    max = @options[:max]
 
     Gnuplot.open do |gp|
       Gnuplot::Plot.new(gp) do |plot|

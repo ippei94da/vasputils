@@ -110,6 +110,17 @@ class TC_VasprunXml < Test::Unit::TestCase
     assert_equal(corrects, results)
   end
 
+  def test_partial_dos_labels
+    results = @v02.partial_dos_labels
+    corrects = %w( energy s py pz px dxy dyz dz2 dxz dx2 )
+    assert_equal(corrects, results)
+
+    xml = VaspUtils::VasprunXml.load_file('test/vasprunxml/La.xml')
+    results = xml.partial_dos_labels
+    corrects = %w( energy s py pz px dxy dyz dz2 dxz dx2 f-3 f-2 f-1 f0 f1 f2 f3 )
+    assert_equal(corrects, results)
+  end
+
   def test_partial_dos
     results = @v02.partial_dos(1, 1)
     #pp results[0]
