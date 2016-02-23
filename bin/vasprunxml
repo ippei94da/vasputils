@@ -23,7 +23,8 @@ class VasprunXmlCommand < Thor
   option :png, :type => :boolean,  desc: "Output png image."
   option :eps, :type => :boolean,  desc: "Output eps image."
   option :dat, :type => :boolean,  desc: "Output Gnuplot style data file."
-  option :stdout, :type => :boolean,  desc: "Output Gnuplot style data to stdout."
+  #option :stdout, :type => :boolean,  desc: "Output Gnuplot style data to stdout."
+  option :quiet, :type => :boolean,  desc: "Not output to stdout."
   option :fermi, :type => :boolean, desc: "Read Fermi energy and set as zero."
   option :min, desc: "Minimum energy of horizontal axis."
   option :max, desc: "Maximum energy of horizontal axis."
@@ -35,6 +36,10 @@ class VasprunXmlCommand < Thor
 
     dos_data1 = @xml.total_dos(1)
     dos_data2 = @xml.total_dos(2) if @xml.num_spins == 2
+
+    ## remove integrated
+    dos_data1.map!{|i| [i[0], i[1]]}
+    dos_data2.map!{|i| [i[0], i[1]]}
 
     plot_dos(dos_data1, dos_data2, DOS_BASENAME, dos_labels)
   end
@@ -51,7 +56,8 @@ class VasprunXmlCommand < Thor
   option :png, :type => :boolean,  desc: "Output png image."
   option :eps, :type => :boolean,  desc: "Output eps image."
   option :dat, :type => :boolean,  desc: "Output Gnuplot style data file."
-  option :stdout, :type => :boolean,  desc: "Output Gnuplot style data to stdout."
+  #option :stdout, :type => :boolean,  desc: "Output Gnuplot style data to stdout."
+  option :quiet, :type => :boolean,  desc: "Not output to stdout."
   option :fermi, :type => :boolean, desc: "Read Fermi energy and set as zero."
   option :min, desc: "Minimum energy of horizontal axis."
   option :max, desc: "Maximum energy of horizontal axis."
@@ -148,7 +154,7 @@ class VasprunXmlCommand < Thor
       io = File.open(basename + ".dat", 'w')
       write_dat(labels, dos_data, io )
     end
-    if @options[:stdout]
+    unless @options[:quiet]
       io = $stdout
       write_dat(labels, dos_data, io )
     end
@@ -183,6 +189,7 @@ class VasprunXmlCommand < Thor
 
   def dos_labels
     results = @xml.total_dos_labels
+    results.pop ## remove integrated
     if @xml.num_spins == 2
       new_labels = [results.shift]
       new_labels += results.map{|i| i + "-up"}
