@@ -39,7 +39,7 @@ class VasprunXmlCommand < Thor
 
     ## remove integrated
     dos_data1.map!{|i| [i[0], i[1]]}
-    dos_data2.map!{|i| [i[0], i[1]]}
+    dos_data2.map!{|i| [i[0], i[1]]} if @xml.num_spins == 2
 
     plot_dos(dos_data1, dos_data2, DOS_BASENAME, dos_labels)
   end
@@ -146,6 +146,7 @@ class VasprunXmlCommand < Thor
 
   def plot_dos(dos_data1, dos_data2, basename, labels)
     dos_data = merge_spins(dos_data1, dos_data2) if @xml.num_spins == 2
+    dos_data ||= dos_data1
     dos_data = shift_fermi(dos_data) if @options[:fermi]
 
     write_image(labels, dos_data, :png, basename + ".png") if @options[:png]
