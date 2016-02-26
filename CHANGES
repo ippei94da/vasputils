@@ -1,96 +1,99 @@
 = vasputils changelog
 
 == Master (for 1.0.1)
+* Add command
+    * bin/vasprunxml
 
-??
-- procar2dos
-- vasprunxml dos
+
+
+* poscar substitute -a option
+
 
 == Version 1.0.0 [2014-08-30] released
-- Small revision of output of 'showvaspdir' to show zero at the tail of toten.
-- LAST_UPDATE in 'showvaspdir -a' is changed to be "time ago".
-- Small revision of output of 'symposcar' to include 'operation_id'
+* Small revision of output of 'showvaspdir' to show zero at the tail of toten.
+* LAST_UPDATE in 'showvaspdir -a' is changed to be "time ago".
+* Small revision of output of 'symposcar' to include 'operation_id'
 
-- Add bin/vaspdir with subcommands;
+* Add bin/vaspdir with subcommands;
     - 'vaspdir show' shows inspect VaspDir, instead of showvaspdir.
     - 'vaspdir run'  runs vasp calculation, instead of runvaspdir.
     - 'vaspdir reset' reset to inital state of VaspDir, instead of resetvaspdir.
-- bin/vaspgeomopt is made, instead of showvaspdir, etc.
+* bin/vaspgeomopt is made, instead of showvaspdir, etc.
 
-- Poscar, Kpoints, Incar, Potcar modules converted to class.
-- Change interface of poscar.parse and poscar.load_file to return poscar class instance.
-- Add poscar.to_cell
-- Add poscar.load_cell
-- Add bin/poscar
-- Add bin/potcar
-- Add vaspspcond including subcommand 'vary', instead of varycondition.
-- Add VaspUtils::Vasprun_xml
-- Add bin/geomoptposcar
-- Add subcommand `povray' to bin/poscar
-- Add element order to Poscar.dump
+* Poscar, Kpoints, Incar, Potcar modules converted to class.
+* Change interface of poscar.parse and poscar.load_file to return poscar class instance.
+* Add poscar.to_cell
+* Add poscar.load_cell
+* Add bin/poscar
+* Add bin/potcar
+* Add vaspspcond including subcommand 'vary', instead of varycondition.
+* Add VaspUtils::Vasprun_xml
+* Add bin/geomoptposcar
+* Add subcommand `povray' to bin/poscar
+* Add element order to Poscar.dump
 
 == Version 0.0.12 [2014-08-30] released
-- Update bin/symposcar .
-- Add options to bin/checkvasp and modified output format.
-- Rename VaspGeomOpt to VaspGeometryOptimizer
-- Add VaspGeometryOptimizer::reset_init
-- Add VaspGeometryOptimizer::reset_next
-- Add VaspGeometryOptimizer::reset_reincarnation
-- Add bin/resetvaspgeompot
-- Remove bin/nextvasp. Use bin/resetvaspgeomopt -n.
-- Rename bin/setvaspdir to bin/resetvaspdir
-- Remove optiions from bin/resetvaspdir
-- Change prefix for subdir of VaspGeomOpt from "try" to "geomopt"
-- Change indent width from 2 to 4.
-- Add bin/varycondition and related libraries.
-- Raise InitializeError when VaspGeometryOptimizer.new is failed.
-- Divide bin/checkvasp to bin/showvaspdir and bin/showvaspgeomopt.
-- Divide bin/runvasp to bin/runvaspdir and bin/runvaspgeomopt.
-- Add some options to bin/showvaspdir
-- Update dependency on other gems.
+* Update bin/symposcar .
+* Add options to bin/checkvasp and modified output format.
+* Rename VaspGeomOpt to VaspGeometryOptimizer
+* Add VaspGeometryOptimizer::reset_init
+* Add VaspGeometryOptimizer::reset_next
+* Add VaspGeometryOptimizer::reset_reincarnation
+* Add bin/resetvaspgeompot
+* Remove bin/nextvasp. Use bin/resetvaspgeomopt -n.
+* Rename bin/setvaspdir to bin/resetvaspdir
+* Remove optiions from bin/resetvaspdir
+* Change prefix for subdir of VaspGeomOpt from "try" to "geomopt"
+* Change indent width from 2 to 4.
+* Add bin/varycondition and related libraries.
+* Raise InitializeError when VaspGeometryOptimizer.new is failed.
+* Divide bin/checkvasp to bin/showvaspdir and bin/showvaspgeomopt.
+* Divide bin/runvasp to bin/runvaspdir and bin/runvaspgeomopt.
+* Add some options to bin/showvaspdir
+* Update dependency on other gems.
 
 == Version 0.0.11
-- Modify bin/qsubvasp
-- Add VaspUtils::generate_kmeshes
-- Add example/dot.vasputils
-- Add Setting class
-- Add Potcar::Concatenater
-- Add Incar.dump
-- Modify vasputils/poscar.rb to adjust vasp 5.2 style
-- Renamed and modified bin/rmvaspout to bin/redovasp
-- Add bin/nextvasp
+* Modify bin/qsubvasp
+* Add VaspUtils::generate_kmeshes
+* Add example/dot.vasputils
+* Add Setting class
+* Add Potcar::Concatenater
+* Add Incar.dump
+* Modify vasputils/poscar.rb to adjust vasp 5.2 style
+* Renamed and modified bin/rmvaspout to bin/redovasp
+* Add bin/nextvasp
 
 == Version 0.0.10
-- Delete Outcar.volume
-- Delete Outcar.irreducible_kpoints
-- Accelerate Outcar, using UNIX commands: grep, tail, and head
-- Modify bin/symposcar
-- Add bin/rmvaspout
-- Change name space for classes
+* Delete Outcar.volume
+* Delete Outcar.irreducible_kpoints
+* Accelerate Outcar, using UNIX commands: grep, tail, and head
+* Modify bin/symposcar
+* Add bin/rmvaspout
+* Change name space for classes
 
 == Version 0.0.9
-- Add VaspDir.poscar
-- Add bin/checkvasp
-- Delete bin/lsvasp, bin/lsvaspdir, bin/lsvaspseries
+* Add VaspDir.poscar
+* Add bin/checkvasp
+* Delete bin/lsvasp, bin/lsvaspdir, bin/lsvaspseries
 
 == Version 0.0.8
-- Modified bin/qsubvasp, add -g option
+* Modified bin/qsubvasp, add -g option
 
 == Version 0.0.7
-- Modified bin/qsubvasp
+* Modified bin/qsubvasp
 
 == Version 0.0.6
-- bin/qsubvasp is added
-- lib/vaspdir is modified to raise ExecuteError when vasp failed
+* bin/qsubvasp is added
+* lib/vaspdir is modified to raise ExecuteError when vasp failed
 
 == Version 0.0.5
-- Modifiy error process in VaspDir.calculate
-- Add qsubvasp
+* Modifiy error process in VaspDir.calculate
+* Add qsubvasp
 
 == Version 0.0.4
-- Modified to use Comana
-- bin/runvasp is added
-- VaspDir is modified
-- VaspGeomOpt is added
+* Modified to use Comana
+* bin/runvasp is added
+* VaspDir is modified
+* VaspGeomOpt is added
 
 == Version 0.0.3

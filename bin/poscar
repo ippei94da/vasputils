@@ -72,6 +72,10 @@ def substitute(args)
 
   poscar, elem1, elem2 = * args
   poscar = VaspUtils::Poscar.load_file(poscar)
+
+  #HERE, set lattice constant if option
+  poscar.axes
+
   poscar.substitute(elem1, elem2).dump($stdout)
 end
 
@@ -139,13 +143,13 @@ if command == nil
 end
 
 case command
-when /^l/ #latticeconstants
+when /^l/
   lattice_constants(ARGV)
-when /^d/ #distance
+when /^d/
   distance(ARGV)
-when /^s/ #substitute
+when /^s/
   substitute(ARGV)
-when /^p/ #substitute
+when /^p/
   povray(ARGV)
 end
 
