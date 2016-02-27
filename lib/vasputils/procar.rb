@@ -1,9 +1,11 @@
 #!/usr/bin/ruby -w
 
 # class for parsing PROCAR
+#puts 'Procar class will not be maintained. Use VasprunXml class.'
 #
 # First written by Atsushi Togo, <2006-07-31 22:54:10 togo>
 # Modified by Ippei Kishdia 
+
 
 #raw_total というのはたぶん、PROCAR に出てくる tot とは関係なく、
 #k点の重みとバンドエネルギーだけで出せる DOS だと思う。
