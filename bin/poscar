@@ -64,6 +64,17 @@ def distance(args)
 end
 
 def substitute(args)
+
+  usage = "Usage: #{File.basename("#{__FILE__}")}"
+
+  ## option analysis
+  options = {}
+  op = OptionParser.new
+  op.banner = usage
+  op.on("-a"    , "--atomic-radii"    , "Lattice constants from atomic radii."){    options[:atomic] = true}
+  #op.on("-b val", "--bak=val", "descriptionB"){|v| options[:bak] = v}
+  op.parse!(ARGV)
+
   unless args.size == 3
     puts "USAGE: poscar s[ubstitute] poscar elem1 elem2"
     puts "  E.g., poscar substitute dir/poscar Ti Ni"
@@ -71,12 +82,24 @@ def substitute(args)
   end
 
   poscar, elem1, elem2 = * args
-  poscar = VaspUtils::Poscar.load_file(poscar)
+  old_poscar = VaspUtils::Poscar.load_file(poscar)
 
-  #HERE, set lattice constant if option
-  poscar.axes
+  #new_poscar = old_poscar.substitute(elem1, elem2).dump($stdout)
+  new_poscar = old_poscar.substitute(elem1, elem2)
 
-  poscar.substitute(elem1, elem2).dump($stdout)
+  sum_old_radius = 0.0
+  old_poscar.elements.size.times do |i|
+    radius = CrystalCell::Element.atomic_radius( old_poscar.elements[i])
+    sum_old_radius+= radius * old_poscar.nums_elements[i]
+  end
+  sum_new_radius = 0.0
+  new_poscar.elements.size.times do |i|
+    radius = CrystalCell::Element.atomic_radius( new_poscar.elements[i])
+    sum_new_radius+= radius * new_poscar.nums_elements[i]
+  end
+
+  new_poscar.axes = old_poscar.axes.map{|axis| axis.map{|v| v * sum_new_radius/sum_old_radius}}
+  new_poscar.dump($stdout)
 end
 
 def povray(args)
