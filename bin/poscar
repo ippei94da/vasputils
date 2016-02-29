@@ -5,104 +5,97 @@ gem "crystalcell"
 require "crystalcell"
 require "vasputils"
 require "optparse"
-#gem "mageo"
-#require "mageo"
-##require "povrayutils/povrayobject.rb"
-#gem "crystalcell"
-#require "crystalcell"
+require 'thor'
 
-
-#gem "crystalcell"
-#require "crystalcell/latticeaxes.rb"
-#require "crystalcell/cell.rb"
-
-def lattice_constants(args)
-  puts "      a,       b,       c,  alpha,   beta,  gamma,   volume, file"
-  ARGV.each do |file|
-    axes = VaspUtils::Poscar.load_file(file).axes
-    latticeconstants = CrystalCell::LatticeAxes.axes_to_lc(axes)
-    printf("%7.4f, %7.4f, %7.4f, %6.2f, %6.2f, %6.2f, ",
-      *(latticeconstants))
-    printf("%8.3f, ", CrystalCell::Cell.new(axes).calc_volume) # show volume
-    puts file
-  end
-end
-
-def distance(args)
-  if args.size > 3
-    puts "USAGE: poscar d[istance] poscar [id1] [id2]"
-    puts "Note: id count from 1"
-    exit
-  end
-
-  poscar = VaspUtils::Poscar.load_file(args.shift)
-  id = args.shift
-  atom1s = [id.to_i]
-  atom1s = 1..poscar.positions.size if id == nil
-
-  id = args.shift
-  atom2s = [id.to_i]
-  atom2s = 1..poscar.positions.size if id == nil
-
-  printf("atom1, atom2, %8s, %8s\n", "distance", "periodic_distance")
-  atom1s.each do |atom1|
-    atom2s.each do |atom2|
-      index1 = atom1 - 1
-      index2 = atom2 - 1
-
-      cell = poscar.to_cell
-      positions = cell.positions
-      d =  cell.distance(positions[index1], positions[index2]) #not periodic
-
-      pcell = cell.to_pcell
-      pd = pcell.nearest_distance(positions[index1], positions[index2]) #not periodic
-      printf("%5i, %5i, %8.5f, %8.5f\n", atom1, atom2 , d, pd)
-
-      #pp cell.distance
+### Command template
+class PoscarCommand < Thor
+  desc "lattice", "show lattice constants"
+  def lattice_constants(* args)
+    puts "      a,       b,       c,  alpha,   beta,  gamma,   volume, file"
+    args.each do |file|
+      axes = VaspUtils::Poscar.load_file(file).axes
+      latticeconstants = CrystalCell::LatticeAxes.axes_to_lc(axes)
+      printf("%7.4f, %7.4f, %7.4f, %6.2f, %6.2f, %6.2f, ",
+        *(latticeconstants))
+      printf("%8.3f, ", CrystalCell::Cell.new(axes).calc_volume) # show volume
+      puts file
     end
   end
-end
 
-def substitute(args)
+  ## 
+  desc "distance poscar_file id1 id2", "distance between atoms"
+  def distance(* args)
+    if args.size > 3
+      puts "USAGE: poscar distance poscar_file [id1] [id2]"
+      puts "Note: id count from 1"
+      exit
+    end
 
-  usage = "Usage: #{File.basename("#{__FILE__}")}"
+    poscar = VaspUtils::Poscar.load_file(args.shift)
+    id = args.shift
+    atom1s = [id.to_i]
+    atom1s = 1..poscar.positions.size if id == nil
 
-  ## option analysis
-  options = {}
-  op = OptionParser.new
-  op.banner = usage
-  op.on("-a"    , "--atomic-radii"    , "Lattice constants from atomic radii."){    options[:atomic] = true}
-  #op.on("-b val", "--bak=val", "descriptionB"){|v| options[:bak] = v}
-  op.parse!(ARGV)
+    id = args.shift
+    atom2s = [id.to_i]
+    atom2s = 1..poscar.positions.size if id == nil
 
-  unless args.size == 3
-    puts "USAGE: poscar s[ubstitute] poscar elem1 elem2"
-    puts "  E.g., poscar substitute dir/poscar Ti Ni"
-    exit
+    printf("atom1, atom2, %8s, %8s\n", "distance", "periodic_distance")
+    atom1s.each do |atom1|
+      atom2s.each do |atom2|
+        index1 = atom1 - 1
+        index2 = atom2 - 1
+
+        cell = poscar.to_cell
+        positions = cell.positions
+        d =  cell.distance(positions[index1], positions[index2]) #not periodic
+
+        pcell = cell.to_pcell
+        pd = pcell.nearest_distance(positions[index1], positions[index2]) #not periodic
+        printf("%5i, %5i, %8.5f, %8.5f\n", atom1, atom2 , d, pd)
+
+        #pp cell.distance
+      end
+    end
   end
 
-  poscar, elem1, elem2 = * args
-  old_poscar = VaspUtils::Poscar.load_file(poscar)
+  desc "substitute POSCAR elem1 elem2", "generate poscar with substituted elements."
+  def substitute(* args)
+    usage = "Usage: #{File.basename("#{__FILE__}")} POSCAR old_elem new_elem"
 
-  #new_poscar = old_poscar.substitute(elem1, elem2).dump($stdout)
-  new_poscar = old_poscar.substitute(elem1, elem2)
+    ## option analysis
+    options = {}
+    op = OptionParser.new
+    op.banner = usage
+    op.on("-a"    , "--atomic-radii"    , "Lattice constants from atomic radii."){    options[:atomic] = true}
+    op.parse!(args)
 
-  sum_old_radius = 0.0
-  old_poscar.elements.size.times do |i|
-    radius = CrystalCell::Element.atomic_radius( old_poscar.elements[i])
-    sum_old_radius+= radius * old_poscar.nums_elements[i]
+    unless args.size == 3
+      puts "USAGE: poscar s[ubstitute] poscar elem1 elem2"
+      puts "  E.g., poscar substitute dir/poscar Ti Ni"
+      exit
+    end
+
+    poscar, elem1, elem2 = * args
+    old_poscar = VaspUtils::Poscar.load_file(poscar)
+
+    new_poscar = old_poscar.substitute(elem1, elem2)
+
+    sum_old_radius = 0.0
+    old_poscar.elements.size.times do |i|
+      radius = CrystalCell::Element.atomic_radius( old_poscar.elements[i])
+      sum_old_radius+= radius * old_poscar.nums_elements[i]
+    end
+    sum_new_radius = 0.0
+    new_poscar.elements.size.times do |i|
+      radius = CrystalCell::Element.atomic_radius( new_poscar.elements[i])
+      sum_new_radius+= radius * new_poscar.nums_elements[i]
+    end
+
+    new_poscar.axes = old_poscar.axes.map{|axis| axis.map{|v| v * sum_new_radius/sum_old_radius}}
+    new_poscar.dump($stdout)
   end
-  sum_new_radius = 0.0
-  new_poscar.elements.size.times do |i|
-    radius = CrystalCell::Element.atomic_radius( new_poscar.elements[i])
-    sum_new_radius+= radius * new_poscar.nums_elements[i]
-  end
 
-  new_poscar.axes = old_poscar.axes.map{|axis| axis.map{|v| v * sum_new_radius/sum_old_radius}}
-  new_poscar.dump($stdout)
-end
-
-def povray(args)
   # POSCAR から得られる情報から、povray objects を生み出す povray 形式ファイルを生成。
   # 描画は行わない。外部でシェルスクリプトなどで実行すべき。
   #
@@ -115,64 +108,33 @@ def povray(args)
   #   以下の2つの条件の和集合となる連結の描画情報を示す POSCAR.bonds.inc を生成。
   #   - Li-Ge間で距離 0.0〜1.0
   #   - Ge-Ge間で距離 2.0〜3.0
+  desc "povray", "generate povray objects."
+  def povray(* args)
+    ## option analysis
+    opts = {}
+    op = OptionParser.new
+    op.on( '-b conditions', '--bonds',
+      'Generate bonds matching conditions. e.g., -b "Li,Ge,0.0,1.0" indicateing two conditions' ) do |val|
+      tmp = val.split(",")
+      opts[:bonds] = [[tmp[0], tmp[1]], tmp[2].to_f, tmp[3].to_f]
+    end
+    op.on( '-t tolerance', '--tolerance', 'Tolerance for periodic shown atom.' ) do |val|
+      opts[:tolerance] = val.to_f
+    end
+    op.parse!(args)
+    unless args.size == 1
+      puts "Indicate only one POSCAR."
+      exit
+    end
 
-  ## option analysis
-  opts = {}
-  op = OptionParser.new
-  #op.on( '-e order', '--elements',
-  #  "Indicate element order for atoms.inc. e.g., -e 'Li,Ge,O'" ) do |val|
-  #  opts[:elements] = val.split(",")
-  #end
-  op.on( '-b conditions', '--bonds',
-    'Generate bonds matching conditions. e.g., -b "Li,Ge,0.0,1.0" indicateing two conditions' ) do |val|
-    tmp = val.split(",")
-    opts[:bonds] = [[tmp[0], tmp[1]], tmp[2].to_f, tmp[3].to_f]
-  end
-  op.on( '-t tolerance', '--tolerance', 'Tolerance for periodic shown atom.' ) do |val|
-    opts[:tolerance] = val.to_f
-  end
-  op.parse!(args)
-  unless args.size == 1
-    puts "Indicate only one POSCAR."
-    exit
-  end
-  #unless opts[:elements]
-  #  puts "Need order of elements with -e option. See --help."
-  #  exit
-  #end
+    opts[:tolerance] ||= 0.0
 
-  opts[:tolerance] ||= 0.0
+    cell = VaspUtils::Poscar.load_file(args[0]).to_cell(CrystalCell::Povray::Cell)
+    puts cell.atoms_to_povs(opts[:tolerance]).join
+    puts cell.lattice_to_povs.join
+    puts cell.bonds_to_povs(*opts[:bonds]).join if opts[:bonds]
+  end
 
-  cell = VaspUtils::Poscar.load_file(args[0]).to_cell(CrystalCell::Povray::Cell)
-  #cell.set_elements(opts[:elements])
-  puts cell.atoms_to_povs(opts[:tolerance]).join
-  puts cell.lattice_to_povs.join
-  puts cell.bonds_to_povs(*opts[:bonds]).join if opts[:bonds]
 end
 
-command = ARGV.shift 
-
-USAGE =<<HERE
-USAGE: poscar command [arguments]" 
-  command:
-    d[istance]
-    l[atticeconstants]
-    s[ubstitute]
-HERE
-
-if command == nil
-  puts USAGE
-  exit
-end
-
-case command
-when /^l/
-  lattice_constants(ARGV)
-when /^d/
-  distance(ARGV)
-when /^s/
-  substitute(ARGV)
-when /^p/
-  povray(ARGV)
-end
-
+PoscarCommand.start(ARGV)
