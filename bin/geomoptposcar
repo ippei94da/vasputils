@@ -36,18 +36,12 @@ else
   nums_elements = xml.nums_elements
 end
 
-#p bases
-#p elements
-#p nums_elements
-#exit
-
 num_iteration = positions_list.size
 width = num_iteration.to_s.size
 
 bases.size.times do |i|
   prefix = sprintf("%0#{width}d", i +1)
   File.open(prefix + ".vasp", "w") do |io|
-
 
     poscar = VaspUtils::Poscar.new(
       hash = {
