@@ -4,7 +4,7 @@ require "rubygems"
 gem "crystalcell"
 require "crystalcell"
 require "vasputils"
-require "optparse"
+#require "optparse"
 require 'thor'
 
 ### Command template
@@ -59,25 +59,34 @@ class PoscarCommand < Thor
     end
   end
 
-  desc "substitute POSCAR elem1 elem2", "generate poscar with substituted elements."
+  desc "substitute POSCAR [elem1 elem2]", "Generate poscar with substituted elements."
+  long_desc " When elem1 and elem2 are empty, show elements in POSCAR." +
+    " When elem2 already exist in POSCAR, merge the elements."
+  option :atmic_radii, desc: "Lattice constants from atomic radii."
   def substitute(* args)
     usage = "Usage: #{File.basename("#{__FILE__}")} POSCAR old_elem new_elem"
 
-    ## option analysis
-    options = {}
-    op = OptionParser.new
-    op.banner = usage
-    op.on("-a"    , "--atomic-radii"    , "Lattice constants from atomic radii."){    options[:atomic] = true}
-    op.parse!(args)
+    ### option analysis
+    #options = {}
+    #op = OptionParser.new
+    #op.banner = usage
+    #op.on("-a"    , "--atomic-radii"    , "Lattice constants from atomic radii."){    options[:atomic_radii] = true}
+    #op.parse!(args)
 
-    unless args.size == 3
-      puts "USAGE: poscar s[ubstitute] poscar elem1 elem2"
-      puts "  E.g., poscar substitute dir/poscar Ti Ni"
-      exit
-    end
+
 
     poscar, elem1, elem2 = * args
     old_poscar = VaspUtils::Poscar.load_file(poscar)
+
+    unless elem1 && elem2
+      num = old_poscar.elements.size
+      width = 7
+      printf("%7s" * num, * old_poscar.elements)
+      puts
+      printf("%7d" * num, * old_poscar.nums_elements)
+      puts
+      exit
+    end
 
     new_poscar = old_poscar.substitute(elem1, elem2)
 
