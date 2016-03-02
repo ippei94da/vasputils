@@ -7,18 +7,6 @@ gem "vasputils"
 require "vasputils.rb"
 
 
-# option analysis
-OPTIONS = {}
-op = OptionParser.new
-#op.on("-p POTCAR", "--potcar=POTCAR", "Element data from POTCAR. (vasp 5 sytle POTCAR only.)"){|v| OPTIONS[:potcar] = v}
-#op.on("-o", "--output-file", "Output to POTCAR file."){|v| OPTIONS[:potcar] = v}
-op.parse!(ARGV)
-
-#cell = VaspUtils::Potcar.load_file ARGV[0]
-#elements = cell.elements.uniq
-
-#elements = ARGV
-
 encut = ARGV[0].to_i
 if encut == 0
   puts "ENCUT must be indicated as an argument."
