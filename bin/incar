@@ -9,7 +9,9 @@ class IncarCommand < Thor
   #option :opt
   def generate(*args)
 
-    = を
+
+    #= を含む文字列は左のタグに右の値を入れる。
+    #それ以外の文字列は、setting から取得する。
 
     encut = ARGV[0].to_i
     if encut == 0

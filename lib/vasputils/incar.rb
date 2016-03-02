@@ -19,7 +19,7 @@
 # Class to utilize INCAR file of VASP.
 # まず、自分で使う範囲だけ作る。
 # あとで余力があれば精密化する。
-class VaspUtils::Incar
+class VaspUtils::Incar < Hash
 
   attr_accessor :data
   
@@ -34,6 +34,7 @@ class VaspUtils::Incar
         val = $2.strip
         val.sub!(/\s.*$/, "")
         next if key.empty?
+        #if valu
         results[key] = val
       end
     end
@@ -47,15 +48,14 @@ class VaspUtils::Incar
   end
 
   def initialize(data)
-    @data = data
-    @data ||= {}
+    self.merge! data
   end
 
   # io に書き出す。
   # io が nil の場合は INCAR 形式文字列を返す。
   # (改行文字を埋め込んでおり、配列化していない)
   def dump(io = nil)
-    result = @data.map { |key, val|
+    result = self.map { |key, val|
       "#{key} = #{val}"
     }.join("\n")
 
@@ -65,5 +65,6 @@ class VaspUtils::Incar
       return result
     end
   end
+
 end
 

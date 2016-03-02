@@ -1,4 +1,29 @@
 #! /usr/bin/env ruby
+    assert_equal(incar["SYSTEM" ], "Untitled")
+    assert_equal(incar["PREC"   ], "High")
+    assert_equal(incar["IBRION" ], "2")
+    assert_equal(incar["NSW"    ], "0")
+    assert_equal(incar["ISIF"   ], "2")
+    assert_equal(incar["ENCUT"  ], "400")
+    assert_equal(incar["NELM"   ], "60")
+    assert_equal(incar["NELMIN" ], "2")
+    assert_equal(incar["EDIFF"  ], "1.0e-05")
+    assert_equal(incar["EDIFFG" ], "-0.02")
+    assert_equal(incar["VOSKOWN"], "1")
+    assert_equal(incar["NBLOCK" ], "1")
+    assert_equal(incar["ISPIN"  ], "1")
+    assert_equal(incar["INIWAV" ], "1")
+    assert_equal(incar["ISTART" ], "1")
+    assert_equal(incar["ICHARG" ], "1")
+    assert_equal(incar["LWAVE"  ], ".TRUE.")
+    assert_equal(incar["LCHARG" ], ".TRUE.")
+    assert_equal(incar["ISMEAR" ], "0")
+    assert_equal(incar["SIGMA"  ], "0.1")
+    assert_equal(incar["IALGO"  ], "38")
+    assert_equal(incar["LREAL"  ], "Auto")
+    assert_equal(incar["NGX"    ], "36")
+    assert_equal(incar["NGY"    ], "36")
+    assert_equal(incar["NGZ"    ], "42")
 # coding: utf-8
 
 require "test/unit"
@@ -11,38 +36,10 @@ require "stringio"
 # assert_raise( RuntimeError ){}
 
 class TC_Incar < Test::Unit::TestCase
-  #def setup
-  # @k = Incar.new
-  #end
+  def setup
+   @i00 = VaspUtils::Incar.new({})
+  end
   
-  SAMPLE_PAIRS = {
-    "SYSTEM"    => "Untitled",
-    "PREC"      => "High",
-    "IBRION"    => "2",
-    "NSW"           => "100",
-    "ISIF"      => "2",
-    "ENCUT"     => "400",
-    "NELM"      => "60",
-    "NELMIN"    => "2",
-    "EDIFF"     => "1.0e-05",
-    "EDIFFG"    => "-0.02",
-    "VOSKOWN" => "1",
-    "NBLOCK"    => "1",
-    "ISPIN"     => "1",
-    "INIWAV"    => "1",
-    "ISTART"    => "1",
-    "ICHARG"    => "1",
-    "LWAVE"     => ".TRUE.",
-    "LCHARG"    => ".TRUE.",
-    "ISMEAR"    => "0",
-    "SIGMA"     => "0.1",
-    "IALGO"     => "38",
-    "LREAL"     => "Auto",
-    "NGX"           => "36",
-    "NGY"           => "36",
-    "NGZ"           => "42",
-  }
-
   def test_self_parse
     io = StringIO.new
     io.puts "# SCF input for VASP"
@@ -76,88 +73,61 @@ class TC_Incar < Test::Unit::TestCase
     io.puts "    NGZ = 42"
     io.rewind
     incar = VaspUtils::Incar.parse(io)
-    #assert_equal(incar.data["SYSTEM"], "Untitled (VASP)")
-    assert_equal(incar.data["SYSTEM"], "Untitled")
-    assert_equal(incar.data["PREC"], "High")
-    assert_equal(incar.data["IBRION"], "2")
-    assert_equal(incar.data["NSW"], "100")
-    assert_equal(incar.data["ISIF"], "2")
-    assert_equal(incar.data["ENCUT"], "400")
-    assert_equal(incar.data["NELM"], "60")
-    assert_equal(incar.data["NELMIN"], "2")
-    assert_equal(incar.data["EDIFF"], "1.0e-05")
-    assert_equal(incar.data["EDIFFG"], "-0.02")
-    assert_equal(incar.data["VOSKOWN"], "1")
-    assert_equal(incar.data["NBLOCK"], "1")
-    assert_equal(incar.data["ISPIN"], "1")
-    assert_equal(incar.data["INIWAV"], "1")
-    assert_equal(incar.data["ISTART"], "1")
-    assert_equal(incar.data["ICHARG"], "1")
-    assert_equal(incar.data["LWAVE"], ".TRUE.")
-    assert_equal(incar.data["LCHARG"], ".TRUE.")
-    assert_equal(incar.data["ISMEAR"], "0")
-    assert_equal(incar.data["SIGMA"], "0.1")
-    assert_equal(incar.data["IALGO"], "38")
-    assert_equal(incar.data["LREAL"], "Auto")
-    assert_equal(incar.data["NGX"], "36")
-    assert_equal(incar.data["NGY"], "36")
-    assert_equal(incar.data["NGZ"], "42")
+    #assert_equal(incar["SYSTEM"], "Untitled (VASP)")
+    assert_equal(incar["SYSTEM"    ], "Untitled")
+    assert_equal(incar["PREC"      ], "High")
+    assert_equal(incar["IBRION"    ], 2)
+    assert_equal(incar["NSW"       ], 100)
+    assert_equal(incar["ISIF"      ], 2)
+    assert_equal(incar["ENCUT"     ], 400)
+    assert_equal(incar["NELM"      ], 60)
+    assert_equal(incar["NELMIN"    ], 2)
+    assert_equal(incar["EDIFF"     ], 1.0e-05)
+    assert_equal(incar["EDIFFG"    ], -0.02)
+    assert_equal(incar["VOSKOWN"   ], 1)
+    assert_equal(incar["NBLOCK"    ], 1)
+    assert_equal(incar["ISPIN"     ], 1)
+    assert_equal(incar["INIWAV"    ], 1)
+    assert_equal(incar["ISTART"    ], 1)
+    assert_equal(incar["ICHARG"    ], 1)
+    assert_equal(incar["LWAVE"     ], true ) #".TRUE."
+    assert_equal(incar["LCHARG"    ], true ) #".TRUE."
+    assert_equal(incar["ISMEAR"    ], 0)
+    assert_equal(incar["SIGMA"     ], 0.1)
+    assert_equal(incar["IALGO"     ], 38)
+    assert_equal(incar["LREAL"     ], "Auto")
+    assert_equal(incar["NGX"       ], 36)
+    assert_equal(incar["NGY"       ], 36)
+    assert_equal(incar["NGZ"       ], 42)
   end
 
   def test_self_load_file
-    incar = VaspUtils::Incar.load_file "test/incar/INCAR.00"
-    assert_equal(incar.data["SYSTEM"    ], "Untitled")
-    assert_equal(incar.data["PREC"      ], "High")
-    assert_equal(incar.data["IBRION"    ], "2")
-    assert_equal(incar.data["NSW"       ], "100")
-    assert_equal(incar.data["ISIF"      ], "2")
-    assert_equal(incar.data["ENCUT"     ], "400")
-    assert_equal(incar.data["NELM"      ], "60")
-    assert_equal(incar.data["NELMIN"    ], "2")
-    assert_equal(incar.data["EDIFF"     ], "1.0e-05")
-    assert_equal(incar.data["EDIFFG"    ], "-0.02")
-    assert_equal(incar.data["VOSKOWN"   ], "1")
-    assert_equal(incar.data["NBLOCK"    ], "1")
-    assert_equal(incar.data["ISPIN"     ], "1")
-    assert_equal(incar.data["INIWAV"    ], "1")
-    assert_equal(incar.data["ISTART"    ], "1")
-    assert_equal(incar.data["ICHARG"    ], "1")
-    assert_equal(incar.data["LWAVE"     ], ".TRUE.")
-    assert_equal(incar.data["LCHARG"    ], ".TRUE.")
-    assert_equal(incar.data["ISMEAR"    ], "0")
-    assert_equal(incar.data["SIGMA"     ], "0.1")
-    assert_equal(incar.data["IALGO"     ], "38")
-    assert_equal(incar.data["LREAL"     ], "Auto")
-    assert_equal(incar.data["NGX"       ], "36")
-    assert_equal(incar.data["NGY"       ], "36")
-    assert_equal(incar.data["NGZ"       ], "42")
-
     incar = VaspUtils::Incar.load_file "test/incar/INCAR.01"
-    assert_equal(incar.data["SYSTEM" ], "Untitled")
-    assert_equal(incar.data["PREC"   ], "High")
-    assert_equal(incar.data["IBRION" ], "2")
-    assert_equal(incar.data["NSW"    ], "0")
-    assert_equal(incar.data["ISIF"   ], "2")
-    assert_equal(incar.data["ENCUT"  ], "400")
-    assert_equal(incar.data["NELM"   ], "60")
-    assert_equal(incar.data["NELMIN" ], "2")
-    assert_equal(incar.data["EDIFF"  ], "1.0e-05")
-    assert_equal(incar.data["EDIFFG" ], "-0.02")
-    assert_equal(incar.data["VOSKOWN"], "1")
-    assert_equal(incar.data["NBLOCK" ], "1")
-    assert_equal(incar.data["ISPIN"  ], "1")
-    assert_equal(incar.data["INIWAV" ], "1")
-    assert_equal(incar.data["ISTART" ], "1")
-    assert_equal(incar.data["ICHARG" ], "1")
-    assert_equal(incar.data["LWAVE"  ], ".TRUE.")
-    assert_equal(incar.data["LCHARG" ], ".TRUE.")
-    assert_equal(incar.data["ISMEAR" ], "0")
-    assert_equal(incar.data["SIGMA"  ], "0.1")
-    assert_equal(incar.data["IALGO"  ], "38")
-    assert_equal(incar.data["LREAL"  ], "Auto")
-    assert_equal(incar.data["NGX"    ], "36")
-    assert_equal(incar.data["NGY"    ], "36")
-    assert_equal(incar.data["NGZ"    ], "42")
+    assert_equal(incar["SYSTEM"    ], "Untitled")
+    assert_equal(incar["PREC"      ], "High")
+    assert_equal(incar["IBRION"    ], 2)
+    assert_equal(incar["NSW"       ], 100)
+    assert_equal(incar["ISIF"      ], 2)
+    assert_equal(incar["ENCUT"     ], 400)
+    assert_equal(incar["NELM"      ], 60)
+    assert_equal(incar["NELMIN"    ], 2)
+    assert_equal(incar["EDIFF"     ], 1.0e-05)
+    assert_equal(incar["EDIFFG"    ], -0.02)
+    assert_equal(incar["VOSKOWN"   ], 1)
+    assert_equal(incar["NBLOCK"    ], 1)
+    assert_equal(incar["ISPIN"     ], 1)
+    assert_equal(incar["INIWAV"    ], 1)
+    assert_equal(incar["ISTART"    ], 1)
+    assert_equal(incar["ICHARG"    ], 1)
+    assert_equal(incar["LWAVE"     ], true ) #".TRUE."
+    assert_equal(incar["LCHARG"    ], true ) #".TRUE."
+    assert_equal(incar["ISMEAR"    ], 0)
+    assert_equal(incar["SIGMA"     ], 0.1)
+    assert_equal(incar["IALGO"     ], 38)
+    assert_equal(incar["LREAL"     ], "Auto")
+    assert_equal(incar["NGX"       ], 36)
+    assert_equal(incar["NGY"       ], 36)
+    assert_equal(incar["NGZ"       ], 42)
 
     # not exist
     assert_raise(Errno::ENOENT){VaspUtils::Incar.load_file("")}
@@ -190,5 +160,6 @@ class TC_Incar < Test::Unit::TestCase
     assert_equal( correct, File.open(outfile).read)
     FileUtils.rm outfile if File.exist? outfile
   end
+
 end
 
