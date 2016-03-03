@@ -25,7 +25,7 @@ class VaspUtils::Incar < Hash
   
   # 与えられた IO を読み込み、INCAR として解析したハッシュを返す。
   def self.parse(io)
-    results = {}
+    results = self.new
     io.each_line do |line|
       line.sub!(/\#.*/, "") # コメント文字以降を削除
       next unless /=/ =~ line
@@ -35,10 +35,19 @@ class VaspUtils::Incar < Hash
         val.sub!(/\s.*$/, "")
         next if key.empty?
         #if valu
+        if val.integer?
+          val = val.to_i
+        elsif val.float?
+          val = val.to_f
+        elsif val == ".TRUE."
+          val = true
+        elsif val == ".FALSE."
+          val = false
+        end
         results[key] = val
       end
     end
-    self.new( results)
+    results
   end
 
   # 与えられた名前のファイルを INCAR として解析したハッシュを返す。
@@ -47,16 +56,21 @@ class VaspUtils::Incar < Hash
     return self.parse(io)
   end
 
-  def initialize(data)
-    self.merge! data
-  end
+  #def initialize(data)
+  #  self.merge! data
+  #end
 
   # io に書き出す。
   # io が nil の場合は INCAR 形式文字列を返す。
   # (改行文字を埋め込んでおり、配列化していない)
   def dump(io = nil)
     result = self.map { |key, val|
-      "#{key} = #{val}"
+      if val == true
+        val = ".TRUE."
+      elsif val == false
+        val = ".FALSE."
+      end
+      sprintf("%-8s = %s", key, val.to_s)
     }.join("\n")
 
     if io # is defined

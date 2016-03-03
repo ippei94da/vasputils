@@ -17,6 +17,6 @@ group :development do
   gem "malge", ">= 0.0.9"
   gem "maset", ">= 0.0.0"
   gem "comana", ">= 0.1.0"
-  gem "builtinextension", ">= 0.1.3"
+  gem "builtinextension", ">= 0.1.4"
   gem "crystalcell", ">= 0.0.4"
 end
