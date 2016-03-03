@@ -108,6 +108,10 @@ class TC_Incar < Test::Unit::TestCase
     assert_raise(Errno::ENOENT){VaspUtils::Incar.load_file("")}
   end
 
+  def test_append
+    TODO
+  end
+
   def test_dump
     incar = VaspUtils::Incar.new
     incar["SYSTEM"] = "dummy"

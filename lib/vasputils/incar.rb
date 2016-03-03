@@ -60,6 +60,12 @@ class VaspUtils::Incar < Hash
   #  self.merge! data
   #end
 
+  # Load setting with name 'seting' in setting file, i.e.,  ~/.vasputils,
+  # and append to self.
+  def append(setting)
+    TODO
+  end
+
   # io に書き出す。
   # io が nil の場合は INCAR 形式文字列を返す。
   # (改行文字を埋め込んでおり、配列化していない)
