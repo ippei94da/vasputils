@@ -66,6 +66,9 @@ class VaspUtils::Incar < Hash
   # Load setting with 'setting_name' in setting file, i.e.,  ~/.vasputils,
   # and append to self.
   def append(setting_name, setting = VaspUtils::Setting.new)
+    pp setting
+    #pp setting['incar']
+    exit
     self.merge!(setting['incar'][setting_name])
   end
 
