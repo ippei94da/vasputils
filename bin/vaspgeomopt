@@ -17,7 +17,7 @@ USAGE
 E.g.,
   vaspgeomopt show  [option] [path] # Show state of vasp geometry optimization.
   vaspgeomopt latest         [path] # Show latest vaspdir.
-  vaspgeomopt run   [option] [path] # Run vasp geometry optimization
+  vaspgeomopt exec   [option] [path] # Execute vasp geometry optimization
   vaspgeomopt next  [option] [path] # Generate next step of geomopt.
   vaspgeomopt initialize  [option] [path] # Initialize geomopt.
   vaspgeomopt reincarnate [option] [path] # Generate new geomopt from final structure.
@@ -31,8 +31,8 @@ when "show"
     VaspUtils::VaspGeometryOptimizer.show_inspect(ARGV)
 when "latest"
     VaspUtils::VaspGeometryOptimizer.show_latest(ARGV)
-when "run"
-    VaspUtils::VaspGeometryOptimizer.run(ARGV)
+when "exec"
+    VaspUtils::VaspGeometryOptimizer.exec(ARGV)
 #when "reset"
 #    VaspUtils::VaspGeometryOptimizer.reset(ARGV)
 when "next"

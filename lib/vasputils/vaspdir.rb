@@ -44,7 +44,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
 
   def initialize(dir)
     super(dir)
-    @lockdir        = "lock_run"
+    @lockdir        = "lock_exec"
     %w(INCAR KPOINTS POSCAR POTCAR).each do |file|
       infile = "#{@dir}/#{file}"
       raise InitializeError, infile unless FileTest.exist? infile
@@ -52,7 +52,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
   end
 
   #
-  def self.run(args)
+  def self.exec(args)
     tgts = args
     tgts = [ENV['PWD']] if tgts.size == 0
 
@@ -189,7 +189,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
           end
 
 
-          encut = calc.incar.data["ENCUT"]
+          encut = calc.incar["ENCUT"]
         rescue
           toten = i_step = e_step = time = k_str = encut = ""
         end
@@ -370,7 +370,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
 
     ##INCAR
     new_incar = incar
-    new_incar.data["ENCUT"] = condition[:encut] if condition[:encut]
+    new_incar["ENCUT"] = condition[:encut] if condition[:encut]
     File.open("#{tgt_name}/INCAR", "w") do |io|
       new_incar.dump(io)
     end
@@ -445,7 +445,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
     command += "#{info["mpi"]} -machinefile #{MACHINEFILE} -np #{nslots} #{info["vasp"]}"
     command += "| tee stdout"
 
-    io = File.open("#{@dir}/runvasp.log", "w")
+    io = File.open("#{@dir}/execvasp.log", "w")
     io.puts command
     io.close
 

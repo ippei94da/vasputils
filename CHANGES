@@ -1,6 +1,6 @@
 = vasputils changelog
 
-== Master (for 1.0.1)
+== Master (for 1.1.0)
 * Add command
     * bin/vasprunxml
     * bin/incar
@@ -14,6 +14,7 @@
 * Remove bin/runvaspgeomopt.   Use 'bin/vaspgeomopt exec'
 * Remove bin/showvaspgeomopt.  Use 'bin/vaspgeomopt show'
 * Remove bin/vaspspcond.
+* Change INCAR interface, inherited from Hash
 
 
 == Version 1.0.0 [2014-08-30] released

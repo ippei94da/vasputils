@@ -17,7 +17,7 @@ USAGE
 
 E.G.,
   vaspdir show [option] [path]
-  vaspdir run [path]
+  vaspdir exec [path]
   vaspdir clean [path]
     delete output files of vasp command.
   vaspdir initialize [path]
@@ -40,8 +40,8 @@ args = ARGV
 case command
 when "show"
   VaspUtils::VaspDir.show_inspect(args)
-when "run"
-  VaspUtils::VaspDir.run(args)
+when "exec"
+  VaspUtils::VaspDir.exec(args)
 when "submit"
   VaspUtils::VaspDir.submit(args)
 when "clean"

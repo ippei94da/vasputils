@@ -129,8 +129,8 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
 
   end
 
-  # Run geometry optimization.
-  def self.run(args)
+  # Execute geometry optimization.
+  def self.exec(args)
     targets = args
     targets = [ENV['PWD']] if targets.size == 0
 
