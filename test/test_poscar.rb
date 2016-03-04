@@ -650,7 +650,9 @@ class TC_Poscar < Test::Unit::TestCase
     result = @p00.substitute('Ge', 'Si')
     assert_equal(p01, result)
 
-    p02 = VaspUtils::Poscar.new({
+    setup
+    result = @p00.substitute('Li', 'O')
+    correct = VaspUtils::Poscar.new({
       :comment => 'p00',
       :scale   => 1.0,
       :axes    => [
@@ -658,19 +660,20 @@ class TC_Poscar < Test::Unit::TestCase
         [0.0, 1.0, 0.0 ],
         [0.0, 0.0, 1.0 ],
       ],
-      :elements           => %w(Si O),
-      :nums_elements      => [1,3],
+      :elements           => %w(O Ge),
+      :nums_elements      => [3,1],
       :selective_dynamics => false,
       :direct             => true,
       :positions          => [
-        [0.5,  0.0,  0.0],
         [0.0,  0.0,  0.0],
         [0.5,  0.5,  0.0],
         [0.5,  0.5,  0.5],
+        [0.5,  0.0,  0.0],
       ]
     })
-    result = @p00.substitute('Li', 'O')
-    assert_equal(p02, result)
+    #pp correct;exit
+    #pp @p00;exit
+    assert_equal(correct, result)
   end
 
   def test_unite_elements
@@ -773,7 +776,5 @@ class TC_Poscar < Test::Unit::TestCase
       @p00.fill_true( [ [T, T, T], [T, T, T], [T, T]])
     )
   end
-
-  undef test_substitute
 end
 

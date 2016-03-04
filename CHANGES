@@ -1,6 +1,6 @@
 = vasputils changelog
 
-== Master (for 1.1.0)
+== Master (for 0.1.1)
 * Add command
     * bin/vasprunxml
     * bin/incar
@@ -13,11 +13,13 @@
 * Remove bin/resetvaspgeomopt. Use 'bin/vaspgeomopt reset'
 * Remove bin/runvaspgeomopt.   Use 'bin/vaspgeomopt exec'
 * Remove bin/showvaspgeomopt.  Use 'bin/vaspgeomopt show'
-* Remove bin/vaspspcond.
+* Remove bin/vaspspcond
+* Remove bin/qsubvasp
 * Change INCAR interface, inherited from Hash
+* Remove bin/geomoptposcar.    Use 'bin/poscar snapgeomopt'
 
 
-== Version 1.0.0 [2014-08-30] released
+== Version 0.1.0 not released
 * Small revision of output of 'showvaspdir' to show zero at the tail of toten.
 * LAST_UPDATE in 'showvaspdir -a' is changed to be "time ago".
 * Small revision of output of 'symposcar' to include 'operation_id'
