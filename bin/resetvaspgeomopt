@@ -1,6 +1,0 @@
-#! /usr/bin/env ruby
-# coding: utf-8
-
-puts "Coommand 'resetvaspgeomopt' is obsolated. Use 'vaspgeomopt reset'"
-exit
-

@@ -7,6 +7,14 @@
     * bin/kpoints
 * poscar substitute -a option
 
+* Remove bin/resetvaspdir.     Use 'bin/vaspdir reset'
+* Remove bin/runvaspdir.       Use 'bin/vaspdir exec'
+* Remove bin/showvaspdir.      Use 'bin/vaspdir show'
+* Remove bin/resetvaspgeomopt. Use 'bin/vaspgeomopt reset'
+* Remove bin/runvaspgeomopt.   Use 'bin/vaspgeomopt exec'
+* Remove bin/showvaspgeomopt.  Use 'bin/vaspgeomopt show'
+* Remove bin/vaspspcond.
+
 
 == Version 1.0.0 [2014-08-30] released
 * Small revision of output of 'showvaspdir' to show zero at the tail of toten.

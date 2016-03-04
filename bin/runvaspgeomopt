@@ -1,7 +1,0 @@
-#! /usr/bin/env ruby
-# coding: utf-8
-
-
-puts "Coommand 'runvaspgeomopt' is obsolated. Use 'vaspgeomopt run'"
-exit
-

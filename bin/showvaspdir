@@ -1,6 +1,0 @@
-#! /usr/bin/env ruby
-# coding: utf-8
-
-puts "Command 'showvaspdir' is obsolated. Use 'vaspdir show *'"
-exit
-
