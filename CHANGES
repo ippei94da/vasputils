@@ -17,6 +17,7 @@
 * Remove bin/qsubvasp
 * Change INCAR interface, inherited from Hash
 * Remove bin/geomoptposcar.    Use 'bin/poscar snapgeomopt'
+* Remove bin/symposcar
 
 
 == Version 0.1.0 not released
