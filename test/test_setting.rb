@@ -7,7 +7,7 @@ require 'helper'
 
 class TC_Setting < Test::Unit::TestCase
     def setup
-        @s = VaspUtils::Setting.new("example/dot.vasputils")
+        @s = VaspUtils::Setting.new("test/setting/dot.vasputils")
     end
 
     def test_initialize

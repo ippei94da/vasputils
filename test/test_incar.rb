@@ -12,7 +12,8 @@ require "stringio"
 
 class TC_Incar < Test::Unit::TestCase
   def setup
-   @i00 = VaspUtils::Incar.new({})
+    @i00 = VaspUtils::Incar.new
+    #@i00 = VaspUtils::Incar.new({})
   end
   
   def test_self_parse
@@ -109,7 +110,22 @@ class TC_Incar < Test::Unit::TestCase
   end
 
   def test_append
-    TODO
+    setting = VaspUtils::Setting.new("test/setting/dot.vasputils")
+
+    incar = VaspUtils::Incar.new
+    incar.clear
+    assert_equal({}, incar)
+
+    incar.append("default")
+    assert_equal(@i00, incar)
+
+    incar = VaspUtils::Incar.new
+    incar.clear
+    incar.append("spin1")
+    assert_equal({"ISPIN" => 1}, incar)
+
+    incar.append("spin2")
+    assert_equal({"ISPIN" => 2}, incar)
   end
 
   def test_dump
