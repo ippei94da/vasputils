@@ -5,25 +5,56 @@ require "vasputils"
 require 'thor'
 
 class IncarCommand < Thor
-  desc "generate [option] argument...", "Generate INCAR"
+  desc "generate [option] settings", "Generate INCAR"
+  long_desc <<HERE
+    Generate INCAR file.
+    'settings' can be allowed in two style;
+      if including '=' word like 'key=val', include the setting pair into incar.
+      if word without '=', find the name in incar setting in ~/.vasputils.
+        and append the settings.
+HERE
   #option :opt
+
+  option :enmax, banner: '[=POTCAR]', desc: 'Use the highest value of ENMAXes in POTCAR'
+  option :enmax130, banner: '[=POTCAR]', desc: 'Like --enmax option, but multiplied by 1.3'
+  option :load, banner: '[=INCAR]', desc: 'Load INCAR'
   def generate(*args)
+    incar = VaspUtils::Incar.new
 
-
-    #= を含む文字列は左のタグに右の値を入れる。
-    #それ以外の文字列は、setting から取得する。
-
-    encut = ARGV[0].to_i
-    if encut == 0
-      puts "ENCUT must be indicated as an argument."
-      exit
+    if options[:load]
+      incar = VaspUtils::Incar.load_file(options[:load])
     end
 
-    setting = VaspUtils::Setting.new
-    items = setting["incar_default"]
-    items["ENCUT"] = encut
+    args.each do |str|
+      if /(.*)=(.*)/ =~ str
+        key = $1.strip
+        val = $2.strip
+        incar[key] = val
+      else
+        setting = VaspUtils::Setting.new
+        begin
+          setting["incar"][str].each do |key,val|
+            incar[key] = val
+          end
+        rescue 
+          puts "No entry in #{setting.filename}: #{str}"
+          puts "Exit"
+          exit
+        end
+      end
+    end
 
-    VaspUtils::Incar.dump(items, STDOUT)
+    if options[:enmax]
+      potcar = VaspUtils::Potcar.load_file(options[:enmax])
+      incar['ENCUT'] = potcar.enmaxes.max
+    end
+    if options[:enmax130]
+      potcar = VaspUtils::Potcar.load_file(options[:enmax130])
+      incar['ENCUT'] = potcar.enmaxes.max * 1.3
+    end
+
+
+    incar.dump(STDOUT)
   end
 end
 

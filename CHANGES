@@ -3,9 +3,8 @@
 == Master (for 1.0.1)
 * Add command
     * bin/vasprunxml
-
-
-
+    * bin/incar
+    * bin/kpoints
 * poscar substitute -a option
 
 

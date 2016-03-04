@@ -7,19 +7,24 @@
 # Class for dealing with POTCAR.
 #
 class VaspUtils::Potcar
-  attr_reader :elements
+  attr_reader :elements, :enmaxes
 
-  def initialize(elements)
-    @elements = elements
+  def initialize
+    @elements = []
+    @enmaxes = []
   end
 
+
   def self.load_file(path)
+    result = self.new
     elements = Array.new
     File.open( path, "r" ).each do |line|
       if line =~ /VRHFIN\s*=\s*([A-Za-z]*)/
-        elements << $1
+        result.elements << $1
+      elsif line =~ /ENMAX\s*=\s*(\d+\.\d+)/
+        result.enmaxes << $1.to_f
       end
     end
-    self.new(elements)
+    result
   end
 end
