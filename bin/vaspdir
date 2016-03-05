@@ -3,59 +3,91 @@
 
 # Manipulate VaspDir from command line.
 
-require "comana"
-require "fileutils"
-require "optparse"
-require "pp"
-require "rubygems"
+
+#require "comana"
+#require "fileutils"
+#require "optparse"
+#require "pp"
+#require "rubygems"
+#require "vasputils"
+#
+#def show_usage
+#  puts <<-HERE
+#USAGE
+#  vaspdir command [option] [path]
+#
+#E.G.,
+#  vaspdir show [option] [path]
+#  vaspdir exec [path]
+#  vaspdir clean [path]
+#    delete output files of vasp command.
+#  vaspdir initialize [path]
+#    delete all files except for four input files.
+#    (INCAR, KPOINTS, POSCAR, POTCAR.)
+#
+#  If [path] is not explicitely indicated, "." would be used.
+#
+#  HERE
+#end
+#  #Lines from stdin are simply added to end of command line arguments.
+#
+##stdin_items = $stdin.readlines.map{|str| str.chomp}
+#
+#command = ARGV.shift
+#args = ARGV
+#
+##args = ARGV + stdin_items
+#
+#case command
+#when "show"
+#  VaspUtils::VaspDir.show_inspect(args)
+#when "exec"
+#  VaspUtils::VaspDir.exec(args)
+#when "submit"
+#  VaspUtils::VaspDir.submit(args)
+#when "clean"
+#  VaspUtils::VaspDir.reset_clean(args)
+#when "initialize"
+#  VaspUtils::VaspDir.reset_initialize(args)
+##when "poscar"
+##    #VaspUtils::VaspDir.show_inspect(args)
+##    #pp VaspUtils::VaspDir.poscar(args)
+#when "--help"
+#  show_usage
+#else
+#  puts "Unknown command: #{command}"
+#  show_usage
+#end
+#exit
+
 require "vasputils"
+require 'thor'
 
-def show_usage
-  puts <<-HERE
-USAGE
-  vaspdir command [option] [path]
+### Command template
+class PoscarCommand < Thor
+  def show
+    VaspUtils::VaspDir.show_inspect(args)     
+  end
 
-E.G.,
-  vaspdir show [option] [path]
-  vaspdir exec [path]
-  vaspdir clean [path]
-    delete output files of vasp command.
-  vaspdir initialize [path]
-    delete all files except for four input files.
-    (INCAR, KPOINTS, POSCAR, POTCAR.)
+  def execute
+    VaspUtils::VaspDir.execute(args)          
+  end
 
-  If [path] is not explicitely indicated, "." would be used.
+  def submit
+    VaspUtils::VaspDir.submit(args)           
+  end
 
-  HERE
-end
-  #Lines from stdin are simply added to end of command line arguments.
+  def clean
+    VaspUtils::VaspDir.reset_clean(args)      
+  end
 
-#stdin_items = $stdin.readlines.map{|str| str.chomp}
+  def initialize
+    VaspUtils::VaspDir.reset_initialize(args) 
+  end
+  #def poscar
+  #    #VaspUtils::VaspDir.show_inspect(args) 
+  #    #pp VaspUtils::VaspDir.poscar(args)    
+  #end
+end                                         
 
-command = ARGV.shift
-args = ARGV
 
-#args = ARGV + stdin_items
-
-case command
-when "show"
-  VaspUtils::VaspDir.show_inspect(args)
-when "exec"
-  VaspUtils::VaspDir.exec(args)
-when "submit"
-  VaspUtils::VaspDir.submit(args)
-when "clean"
-  VaspUtils::VaspDir.reset_clean(args)
-when "initialize"
-  VaspUtils::VaspDir.reset_initialize(args)
-#when "poscar"
-#    #VaspUtils::VaspDir.show_inspect(args)
-#    #pp VaspUtils::VaspDir.poscar(args)
-when "--help"
-  show_usage
-else
-  puts "Unknown command: #{command}"
-  show_usage
-end
-
-exit

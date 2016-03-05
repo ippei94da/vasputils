@@ -4,7 +4,6 @@ require "rubygems"
 gem "crystalcell"
 require "crystalcell"
 require "vasputils"
-#require "optparse"
 require 'thor'
 
 ### Command template

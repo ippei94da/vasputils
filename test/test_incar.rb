@@ -2,8 +2,8 @@
 # coding: utf-8
 
 require "test/unit"
-require "vasputils.rb"
-require "vasputils/incar.rb"
+require "vasputils"
+#require "vasputils/incar.rb"
 require "stringio"
 
 # assert_equal( cor, data)
