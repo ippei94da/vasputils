@@ -1,49 +1,181 @@
 #! /usr/bin/env ruby
-# coding: utf-8
+## coding: utf-8
 
-require "comana"
-require "fileutils"
-require "optparse"
-require "pp"
-require "rubygems"
+# Manipulate VaspDir from command line.  
+
 require "vasputils"
+require 'thor'
 
+### Command template
+class VaspGeomOptCommand < Thor
+  desc 'show [option] [dirs]', 'Show state of geometry optimization.'
+  option :finished          , desc: "Show finished. -a is ignored."#-f
+  option :yet               , desc: "Show yet."                    #-y
+  option :terminated        , desc: "Show terminated."             #-t
+  option :started           , desc: "Show sarted."                 #-s
+  option :files_with_matches, desc: "Show filename only."          #-l
+  def show(* args)
+    show_dir_states = []
+    show_dir_states << :finished   if options[:finished]
+    show_dir_states << :yet        if options[:yet]
+    show_dir_states << :terminated if options[:terminated]
+    show_dir_states << :started    if options[:started]
 
-def show_usage
-  puts <<-HERE
-USAGE
-  vaspgeomopt command [option] [path]
+    ## if all select are not set, all are set.
+    if show_dir_states.empty?
+      show_dir_states = [:finished, :yet, :terminated, :started]
+    end
 
-E.g.,
-  vaspgeomopt show  [option] [path] # Show state of vasp geometry optimization.
-  vaspgeomopt latest         [path] # Show latest vaspdir.
-  vaspgeomopt exec   [option] [path] # Execute vasp geometry optimization
-  vaspgeomopt next  [option] [path] # Generate next step of geomopt.
-  vaspgeomopt initialize  [option] [path] # Initialize geomopt.
-  vaspgeomopt reincarnate [option] [path] # Generate new geomopt from final structure.
-  HERE
+    dirs = args
+    #dirs = Dir.glob("*").sort if args.empty?
+    dirs = ["."] if args.empty?
+
+    #I_S is ionic steps
+    #E_S is electronic steps
+    format_str = "%-11s %-10s %14s %9s %15s %s\n"
+    unless options[:files_with_matches]
+      printf(format_str,
+        "TYPE", "STATE", "TOTEN", "LATEST", "MODIFIED_TIME", "DIR")
+      puts "="*80
+    end
+    dirs.each do |dir|
+      next unless File.directory? dir
+
+      begin
+        calc = VaspUtils::VaspGeometryOptimizer.new(dir)
+        klass_name = "VaspGeomOpt"
+        state = calc.state
+        ld = calc.latest_dir
+
+        next unless show_dir_states.include?(state)
+
+        begin
+          outcar = ld.outcar
+          toten    = sprintf("%14.6f", outcar[:totens][-1].to_f)
+          ld_str = ld.dir.sub("#{dir}/", "")
+          time = calc.latest_modified_time.strftime("%Y%m%d-%H%M%S")
+        rescue
+          #toten    = i_step = time = ""
+          toten = time = ld_str = ""
+        end
+
+      rescue VaspUtils::VaspGeometryOptimizer::InitializeError
+        klass_name = "-------"
+        state = toten = ld_str = "---"
+      end
+
+      if options[:files_with_matches]
+        puts dir
+      else
+        printf(format_str, klass_name, state, toten, ld_str, time, dir)
+      end
+    end
+  end
+
+  desc 'latest [path]', 'Show latest vaspdir.'
+  def latest(* args)
+    targets = args
+    targets = ["."] if args.empty?
+
+    targets.each do |target|
+      klass_name = "VaspGeomOpt"
+      begin
+        calc = VaspUtils::VaspGeometryOptimizer.new(target)
+      rescue
+        next
+      end
+
+      puts calc.latest_dir.dir
+    end
+  end
+
+  desc 'execute [option] [path]', 'Execute vasp geometry optimization'
+  def execute(* args)
+    #VaspUtils::VaspGeometryOptimizer.execute(ARGV)
+    targets = args
+    targets = [ENV['PWD']] if targets.empty?
+
+    targets.each do |dir|
+      begin
+        calc_dir = VaspUtils::VaspGeometryOptimizer.new(dir)
+        calc_dir.start
+      rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
+        puts "Not suitable for VaspGeometryOptimizer: #{dir}"
+        exit
+      rescue Comana::ComputationManager::AlreadyStartedError
+        puts "Already started. Exit."
+        exit
+      end
+    end
+  end
+
+  desc 'next [option] [path]', 'Generate next step of geomopt.'
+  def next(* args)
+    targets = args
+    targets = [ENV['PWD']] if targets.empty?
+
+    targets.each do |tgt_dir|
+      puts "Directory: #{tgt_dir}"
+
+      # Check tgt_dir is VaspDir?
+      begin
+        tgt = VaspUtils::VaspGeometryOptimizer.new(tgt_dir)
+      rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
+        puts "  Not VaspGeometryOptimizer: #{tgt_dir}"
+        next
+      end
+
+      puts "  Generate next: #{tgt_dir}"
+      begin
+        tgt.reset_next
+      rescue VaspUtils::VaspGeometryOptimizer::NoContcarError
+        puts "  CONTCAR not exist in latest_dir: #{tgt_dir}"
+      end
+    end
+  end
+
+  desc 'init [option] [path]', 'Initialize geomopt.'
+  def init(* args)
+    #VaspUtils::VaspGeometryOptimizer.reset_initialize(args)
+
+    targets = args
+    targets = [ENV['PWD']] if targets.empty?
+    targets.each do |tgt_dir|
+      puts "Directory: #{tgt_dir}"
+
+      # Check tgt_dir is VaspDir?
+      begin
+        tgt = VaspUtils::VaspGeometryOptimizer.new(tgt_dir)
+      rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
+        puts "  Not VaspGeometryOptimizer: #{tgt_dir}"
+        next
+      end
+
+      puts "  Back to init: #{tgt_dir}"
+      tgt.reset_initialize
+    end
+  end
+
+  #desc 'reincarnate [option] [path]', 'Generate new geomopt from final structure.'
+  #def reincarnate(* args)
+  #  targets = args
+  #  targets = [ENV['PWD']] if targets.empty?
+  #
+  #  targets.each do |tgt_dir|
+  #    puts "Directory: #{tgt_dir}"
+  #
+  #    # Check tgt_dir is VaspDir?
+  #    begin
+  #      tgt = VaspUtils::VaspGeometryOptimizer.new(tgt_dir)
+  #    rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
+  #      puts "  Not VaspGeometryOptimizer: #{tgt_dir}"
+  #      next
+  #    end
+  #
+  #    puts "  Reincarnate(generate dir as new calc): #{tgt_dir}"
+  #    tgt.reset_reincarnate
+  #  end
+  #end
 end
 
-command = ARGV.shift
-
-case command
-when "show"
-    VaspUtils::VaspGeometryOptimizer.show_inspect(ARGV)
-when "latest"
-    VaspUtils::VaspGeometryOptimizer.show_latest(ARGV)
-when "exec"
-    VaspUtils::VaspGeometryOptimizer.exec(ARGV)
-#when "reset"
-#    VaspUtils::VaspGeometryOptimizer.reset(ARGV)
-when "next"
-    VaspUtils::VaspGeometryOptimizer.next(ARGV)
-when "initialize"
-    VaspUtils::VaspGeometryOptimizer.reset_initialize(ARGV)
-when "reincarnate"
-    VaspUtils::VaspGeometryOptimizer.reincarnate(ARGV)
-when "--help"
-    show_usage
-else
-    puts "Unknown command: #{command}"
-    show_usage
-end
+VaspGeomOptCommand.start(ARGV)
