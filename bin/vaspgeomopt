@@ -109,6 +109,40 @@ class VaspGeomOptCommand < Thor
     end
   end
 
+  desc 'qsub [options] [dirs]', "Submit queue to grid engine. Empty 'dirs' in argument indicates current directory.' "
+  option :q_name, desc: "Queue name for '#$ -q'"
+  option :pe_name, desc: "Parallel environment name for '#$ -pe'"
+  option :ld_library_path, desc: "Environmental variable 'LD_LIBRARY_PATH'"
+  option :command, desc: "Command"
+  #option :load_group, desc: "Load setting from group in setting file."
+  #option :auto, desc: "Select low load group and automatic setting."
+  #~/.clustersetting."
+  def qsub(* args)
+    tgts = args
+    tgts = [ENV['PWD']] if tgts.empty?
+
+    command = options[:command] || "#{`which #{__FILE__}`.chomp} execute"
+
+    tgts.each do |dir|
+      begin
+        calc_dir = VaspUtils::VaspGeometryOptimizer.new(dir)
+        calc_dir.queue_submit(
+          q_name:           options[:q_name],
+          pe_name:          options[:pe_name],
+          ld_library_path:  options[:ld_library_path],
+          command:          command
+        )
+      rescue VaspUtils::VaspGeometryOptimizer::InitializeError
+        puts "Not VaspDir: #{dir}"
+        exit
+      rescue Comana::ComputationManager::AlreadySubmittedError
+        puts "Already started. Exit."
+        exit
+      end
+    end
+  end
+
+
   desc 'next [option] [path]', 'Generate next step of geomopt.'
   def next(* args)
     targets = args

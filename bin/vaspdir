@@ -191,38 +191,53 @@ class VaspdirCommand < Thor
   desc 'qsub [options] [dirs]', "Submit queue to grid engine. Empty 'dirs' in argument indicates current directory.' "
   option :q_name, desc: "Queue name for '#$ -q'"
   option :pe_name, desc: "Parallel environment name for '#$ -pe'"
+  option :ppn, desc: "Process per node, 2nd argument for'#$ -pe'"
   option :ld_library_path, desc: "Environmental variable 'LD_LIBRARY_PATH'"
   option :command, desc: "Command"
   option :load_group, desc: "Load setting from group in setting file."
-  option :auto, desc: "Select low load group and automatic setting."
+  #option :auto, desc: "Select low load group and automatic setting."
   #~/.clustersetting."
   def qsub(* args)
-    pp options
     tgts = args
     tgts = [ENV['PWD']] if tgts.empty?
 
-    exit
+    q_name          = options[:q_name]           
+    pe_name         = options[:pe_name]          
+    ppn             = options[:ppn]          
+    ld_library_path = options[:ld_library_path]  
+    #command         = options[:command]         
+    command = options[:command] || "#{`which #{__FILE__}`.chomp} execute"
+    if options[:load_group]
+      settings = Comana::ClusterSetting.load_file
+      gs = settings.groups[options[:load_group]]
+      q_name          ||= gs['queue']
+      pe_name         ||= gs['pe']         
+      ppn             ||= gs['ppn']         
+      ld_library_path ||= gs['ld_library_path'] 
+      #pp gs
+    end
 
-
-
-    load_setting(group_name)
-
+    #pp q_name          
+    #pp pe_name         
+    #pp ld_library_path 
+    #pp command 
+    #exit
 
 
     tgts.each do |dir|
       begin
-        calc_dir = VaspUtils::VaspDir.queue_submit(
-          q_name: q_name,
-          pe_name: pe_name,
-          ld_library_path: ld_library_path,
-          command: command
+        calc_dir = VaspUtils::VaspDir.new(dir)
+        calc_dir.queue_submit(
+          q_name:           q_name,
+          pe_name:          pe_name,
+          ppn:              ppn,
+          ld_library_path:  ld_library_path,
+          command:          command
         )
-        calc_dir.start
       rescue VaspUtils::VaspDir::InitializeError
         puts "Not VaspDir: #{dir}"
         exit
       rescue Comana::ComputationManager::AlreadySubmittedError
-        TODO
         puts "Already started. Exit."
         exit
       end
