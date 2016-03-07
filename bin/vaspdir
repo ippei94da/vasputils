@@ -188,6 +188,49 @@ class VaspdirCommand < Thor
     end
   end
 
+  desc 'qsub [options] [dirs]', "Submit queue to grid engine. Empty 'dirs' in argument indicates current directory.' "
+  option :q_name, desc: "Queue name for '#$ -q'"
+  option :pe_name, desc: "Parallel environment name for '#$ -pe'"
+  option :ld_library_path, desc: "Environmental variable 'LD_LIBRARY_PATH'"
+  option :command, desc: "Command"
+  option :load_group, desc: "Load setting from group in setting file."
+  option :auto, desc: "Select low load group and automatic setting."
+  #~/.clustersetting."
+  def qsub(* args)
+    pp options
+    tgts = args
+    tgts = [ENV['PWD']] if tgts.empty?
+
+    exit
+
+
+
+    load_setting(group_name)
+
+
+
+    tgts.each do |dir|
+      begin
+        calc_dir = VaspUtils::VaspDir.queue_submit(
+          q_name: q_name,
+          pe_name: pe_name,
+          ld_library_path: ld_library_path,
+          command: command
+        )
+        calc_dir.start
+      rescue VaspUtils::VaspDir::InitializeError
+        puts "Not VaspDir: #{dir}"
+        exit
+      rescue Comana::ComputationManager::AlreadySubmittedError
+        TODO
+        puts "Already started. Exit."
+        exit
+      end
+    end
+  end
+
+
+
 
   #def submit
   #  VaspUtils::VaspDir.submit(args)
