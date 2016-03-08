@@ -199,7 +199,7 @@ class VaspdirCommand < Thor
   option :no_submit, desc: "Write script, but not submit."
   option :auto, desc: "Select low load group and automatic setting."
   def qsub(* args)
-    self.class.qsub(args, options)
+    VaspUtils::VaspDir.qsub(args, options)
     #tgts = args
     #tgts = [ENV['PWD']] if tgts.empty?
 
