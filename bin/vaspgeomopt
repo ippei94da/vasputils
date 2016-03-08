@@ -114,9 +114,10 @@ class VaspGeomOptCommand < Thor
   option :pe_name, desc: "Parallel environment name for '#$ -pe'"
   option :ld_library_path, desc: "Environmental variable 'LD_LIBRARY_PATH'"
   option :command, desc: "Command"
-  #option :load_group, desc: "Load setting from group in setting file."
-  #option :auto, desc: "Select low load group and automatic setting."
-  #~/.clustersetting."
+  option :command, desc: "Command"
+  option :load_group, desc: "Load setting from group in setting file."
+  option :no_submit, desc: "Write script, but not submit."
+  option :auto, desc: "Select low load group and automatic setting."
   def qsub(* args)
     VaspUtils::VaspGeometryOptimizer.qsub(args, options)
 
