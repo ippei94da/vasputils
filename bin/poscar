@@ -106,29 +106,21 @@ class PoscarCommand < Thor
   #   - Li-Ge間で距離 0.0〜1.0
   #   - Ge-Ge間で距離 2.0〜3.0
   desc "povray", "generate povray objects."
+  option :tolerance, desc: 'Tolerance for periodic shown atom.' #  '-t tolerance'
+  #option :bonds, desc: 'Generate bonds matching conditions.',
+  #  long_desc: 'E.g., -b "Li,Ge,0.0,1.0" indicateing two conditions'
+  #  #'-b conditions',
   def povray(* args)
-    opts = {}
-    op = OptionParser.new
-    op.on( '-b conditions', '--bonds',
-      'Generate bonds matching conditions. e.g., -b "Li,Ge,0.0,1.0" indicateing two conditions' ) do |val|
-      tmp = val.split(",")
-      opts[:bonds] = [[tmp[0], tmp[1]], tmp[2].to_f, tmp[3].to_f]
-    end
-    op.on( '-t tolerance', '--tolerance', 'Tolerance for periodic shown atom.' ) do |val|
-      opts[:tolerance] = val.to_f
-    end
-    op.parse!(args)
-    unless args.size == 1
-      puts "Indicate only one POSCAR."
-      exit
-    end
+    #[[tmp[0], tmp[1]], tmp[2].to_f, tmp[3].to_f] options[:bonds].split(',')
+    #tolerance = options[:tolerance].to_f
 
-    opts[:tolerance] ||= 0.0
+    poscar = 'POSCAR' if args.empty?
+    tolerance = options[:tolerance].to_f || 0.0
 
-    cell = VaspUtils::Poscar.load_file(args[0]).to_cell(CrystalCell::Povray::Cell)
-    puts cell.atoms_to_povs(opts[:tolerance]).join
+    cell = VaspUtils::Poscar.load_file(poscar).to_cell(CrystalCell::Povray::Cell)
+    puts cell.atoms_to_povs(tolerance).join
     puts cell.lattice_to_povs.join
-    puts cell.bonds_to_povs(*opts[:bonds]).join if opts[:bonds]
+    #puts cell.bonds_to_povs(*opts[:bonds]).join if opts[:bonds]
   end
 
   # 
