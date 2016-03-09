@@ -14,41 +14,20 @@ require "yaml"
 #
 class VaspUtils::VaspDir < Comana::ComputationManager
   MACHINEFILE = "machines"
-  #INSPECT_DEFAULT_ITEMS = [ :klass_name, :state, :toten, :dir, ]
-  ##INSPECT_ALL_ITEMS = [ :ka, :kb, :kc, :encut, :i_step, :e_step, :time, ] + INSPECT_DEFAULT_ITEMS
-  #INSPECT_ALL_ITEMS = [ :kpoints, :encut, :i_step, :e_step, :time, ] + INSPECT_DEFAULT_ITEMS
 
-  ## for printf option. minus value indicate left shifted printing.
-  #INSPECT_WIDTH = {
-  #  :dir         => "-20",
-  #  :e_step      => "3",
-  #  :i_step      => "3",
-  #  :klass_name  => "11",
-  #  :kpoints     => "8",
-  #  #:ka          => "2",
-  #  #:kb          => "2",
-  #  #:kc          => "2",
-  #  :encut       => "6",
-  #  :state       => "10",
-  #  :time        => "15",
-  #  :toten       => "17",
-  #}
-
-
-  #class InitializeError < Exception; end
-  class InitializeError < Comana::ComputationManager::InitializeError; end
-  class NoVaspBinaryError < Exception; end
-  class PrepareNextError < Exception; end
-  class ExecuteError < Exception; end
-  class InvalidValueError < Exception; end
-  class AlreadyExistError < Exception; end
+  #class InitializeError < Comana::ComputationManager::InitializeError; end
+  class InitializeError < StandardError; end
+  class NoVaspBinaryError < StandardError; end
+  class PrepareNextError < StandardError; end
+  class ExecuteError < StandardError; end
+  class InvalidValueError < StandardError; end
+  class AlreadyExistError < StandardError; end
 
   def initialize(dir)
     super(dir)
     @lockdir        = "lock_execute"
     %w(INCAR KPOINTS POSCAR POTCAR).each do |file|
       infile = "#{@dir}/#{file}"
-      #pp infile
       raise InitializeError, infile unless FileTest.exist? infile
     end
   end
@@ -72,7 +51,6 @@ class VaspUtils::VaspDir < Comana::ComputationManager
   end
 
   # 配下の INCAR を表現する Incar クラスインスタンスを返す。
-  #
   # 存在しなければ例外 Errno::ENOENT を返す筈だが、
   # vasp dir の判定を incar でやっているので生じる筈がない。
   def incar
@@ -92,9 +70,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
 
   # 正常に終了していれば true を返す。
   # 実行する前や実行中、OUTCAR が完遂していなければ false。
-  #
-  # MEMO
-  # PI12345 ファイルは実行中のみ存在し、終了後 vasp (mpi？) に自動的に削除される。
+  # MEMO: PI12345 ファイルは実行中のみ存在し、終了後 vasp (mpi？) に自動的に削除される。
   def finished?
     begin
       return VaspUtils::Outcar.load_file("#{@dir}/OUTCAR")[:normal_ended]
@@ -106,7 +82,6 @@ class VaspUtils::VaspDir < Comana::ComputationManager
   # VASP の出力ファイルを削除する。
   #入力のみに使うもの、残す
   #   INCAR KPOINTS POSCAR POTCAR
-  #
   #主に出力。消す。
   #   CHG CHGCAR CONTCAR DOSCAR EIGENVAL EIGENVALUE ELFCAR
   #   EXHCAR IBZKPT LOCPOT OSZICAR OUTCAR PCDAT PRJCAR PROCAR
@@ -129,7 +104,6 @@ class VaspUtils::VaspDir < Comana::ComputationManager
 
   # Delete all except for four files, INCAR, KPOINTS, POSCAR, POTCAR.
   def reset_initialize(io = $stdout)
-    #fullpath = File.expand_path @dir
     keep_files   = ["INCAR", "KPOINTS", "POSCAR", "POTCAR"]
     remove_files = []
     Dir.entries( @dir ).sort.each do |file|
@@ -235,7 +209,6 @@ class VaspUtils::VaspDir < Comana::ComputationManager
     raise InvalidValueError, "`nslots' is #{nslots}" unless nslots
     raise InvalidValueError, "`nslots' is #{nslots}" unless nslots
 
-    #pp "#{info["mpi"]} -machinefile #{MACHINEFILE} -np #{nslots} #{info["vasp"]}"
     command = "cd #{@dir};"
     command += "#{info["mpi"]} -machinefile #{MACHINEFILE} -np #{nslots} #{info["vasp"]}"
     command += "| tee stdout"
@@ -249,7 +222,6 @@ class VaspUtils::VaspDir < Comana::ComputationManager
   end
 
   def prepare_next
-    #do_nothing
     raise PrepareNextError, "VaspDir doesn't need next."
   end
 
@@ -258,5 +230,4 @@ class VaspUtils::VaspDir < Comana::ComputationManager
     io.puts lines
     io.close
   end
-
 end

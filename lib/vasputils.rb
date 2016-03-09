@@ -1,5 +1,4 @@
 require "rubygems"
-#gem     "mageo"
 require "malge"
 require "pathname"
 require "mageo"
@@ -9,13 +8,13 @@ require "float/equalindelta"
 require "string/integer"
 require "string/float"
 require "gnuplot"
+require 'nokogiri'
 
 module VaspUtils; end
 
 require "vasputils/incar.rb"
 require "vasputils/kpoints.rb"
 require "vasputils/outcar.rb"
-require "vasputils/procar.rb"
 require "vasputils/poscar.rb"
 require "vasputils/potcar.rb"
 require "vasputils/potcar/concatenater.rb"

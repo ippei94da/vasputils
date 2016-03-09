@@ -4,28 +4,6 @@
 require "vasputils"
 require 'thor'
 
-#data = {}
-#if ARGV[0] =~ /^m/i
-#  data[:type] = :monkhorst
-#elsif ARGV[0] =~ /^g/i
-#  data[:type] = :gamma_center
-#else
-#  puts "Unknown type. Exit."
-#  exit
-#end
-#
-#data[:mesh] = ARGV[1..3].map do |i|
-#  unless i.to_i 
-#    puts "Mesh divisions must be larger than 0. Exit"
-#    exit
-#  end
-#  i.to_i
-#end
-#
-#data[:shift] = [0.0, 0.0, 0.0]
-#VaspUtils::Kpoints.dump(data, STDOUT)
-
-
 class KpointsCommand < Thor
   desc "generate [option] settings", "Generate KPOINTS"
   long_desc " Generate KPOINTS file. \n" +
@@ -34,12 +12,17 @@ class KpointsCommand < Thor
   option :mesh, banner: '[=array]', desc: 'Indicate mesh', type: :array
   option :shift, banner: '[=array]', desc: 'Indicate shift', type: :array
   option :monkhorst, desc: 'Use Monkhorst packing'
-  #option :load, banner: '[=INCAR]', desc: 'Load INCAR'
-  #def generate(*args)
+  option :length, desc: 'Wavelength in real space. Need POSCAR.'
   def generate
-    #if options[:load]
-    #  kpoints = VaspUtils::Kpoints.load_file(options[:load])
-    #end
+    if options[:length]
+      axes = VaspUtils::Poscar.load_file('POSCAR').axes
+      lc =  CrystalCell::LatticeAxes.axes_to_lc(axes)
+      l = options[:length].to_f
+      mesh = []
+      3.times do |i|
+        mesh[i] = (l/lc[i]).ceil
+      end
+    end
 
     if options[:mesh]
       mesh = options[:mesh]

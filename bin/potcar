@@ -2,18 +2,15 @@
 # coding: utf-8
 
 require "thor"
-#require "rubygems"
-gem "vasputils"
+#gem "vasputils"
 require "vasputils"
 
 class PotcarCommand < Thor
 
-  desc 'generate element1 [elemnt2, ...]', 'generate POTCAR of elements'
+  desc 'generate [options] elem1 [elem2, ...]', 'generate POTCAR of elements'
   option :poscar, desc: 'Alternatively use of elements in POSCAR',
     lazy_default: "POSCAR"
   def generate(*elements)
-    #pp elements
-    #pp options[:poscar]
     if options[:poscar] && (! elements.empty?)
       puts "Error. Duplicated indication of elements with argument and --poscar option."
       exit

@@ -179,15 +179,15 @@ class VaspUtils::Poscar
       )
     end
 
-    # Element symbols for vasp 5.
+    ## Element symbols for vasp 5.
     if version >= 5
       io.puts elem_indices.map{|i| @elements[i]}.join(' ')
     end
 
-    # Atom numbers.
+    ## Atom numbers.
     io.puts elem_indices.map{|i| @nums_elements[i]}.join(' ')
 
-    # Selective dynamics
+    ## Selective dynamics
     io.puts "Selective dynamics" if @selective_dynamics
     io.puts "Direct"
 
@@ -203,7 +203,6 @@ class VaspUtils::Poscar
 
     atoms = []
     total_id = 0
-    #pp @positions
     @nums_elements.each_with_index do |num, elem_id|
       num.times do |atom_id|
         element = elem_id

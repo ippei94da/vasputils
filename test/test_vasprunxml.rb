@@ -2,12 +2,9 @@
 # coding: utf-8
 
 require "helper"
-#require "test/unit"
-#require "pkg/klass.rb"
 
 class TC_VasprunXml < Test::Unit::TestCase
   def setup
-    #@v00 = VaspUtils::VasprunXml.new
     @v00 = VaspUtils::VasprunXml.load_file('test/vasprunxml/singlepoint.xml')
     @v01 = VaspUtils::VasprunXml.load_file('test/vasprunxml/geomopt.xml')
     @v02 = VaspUtils::VasprunXml.load_file('test/vasprunxml/dos.xml')
@@ -123,7 +120,6 @@ class TC_VasprunXml < Test::Unit::TestCase
 
   def test_partial_dos
     results = @v02.partial_dos(1, 1)
-    #pp results[0]
     assert_equal([-40.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], results[0])
     assert_equal([
       0.0000, 0.0044, 0.0002, 0.0004, 0.0010,
@@ -131,14 +127,7 @@ class TC_VasprunXml < Test::Unit::TestCase
     ], results[400])
     assert_equal([ 30.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], results[-1])
 
-    #assert_equal([  0.0000, 0.0615, 1.7078], results[400])
-    #assert_equal([30.0000, 0.0000, 20.0000], results[-1])
-
     results = @v02.partial_dos(2, 2)
-    #assert_equal([-40.0000, 0.0000, 0.0000], results[0])
-    #assert_equal([  0.0000, 0.4175, 1.4531], results[400])
-    #assert_equal([30.0000, 0.0000, 20.0000], results[-1])
-
     error = VaspUtils::VasprunXml::IllegalArgumentError
     assert_nothing_raised{ @v00.partial_dos(4, 1)}
     assert_raise(error){ @v00.partial_dos(5, 1)}

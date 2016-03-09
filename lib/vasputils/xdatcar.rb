@@ -1,10 +1,6 @@
 #! /usr/bin/ruby
 # coding: utf-8
 
-require "rubygems"
-#gem "crystalcell"
-require "crystalcell"
-
 # Class to manage XDATCAR format of VASP.
 # 
 # 基本的に、読み込みだけを行う。
@@ -50,9 +46,6 @@ class VaspUtils::Xdatcar
         axes << vec.collect! { |i| i.to_f * scale } #multiply scaling factor
       end
 
-      # Element symbol (vasp 5). Nothing in vasp 4.
-
-      #elements = io.readline.strip.split(/\s+/).map{|i| i.to_i}
       vals = io.readline.strip.split(/\s+/)
       elements = nil
       if vals[0].to_i == 0
@@ -61,21 +54,6 @@ class VaspUtils::Xdatcar
       end
       nums_elements = vals.map{|i| i.to_i}
 
-      ## 'Selective dynamics' or not (bool)
-      #line = io.readline
-      #selective_dynamics = false
-      #if line =~ /^\s*s/i
-      #  selective_dynamics = []
-      #  line = io.readline      # when this situation, reading one more line is nessesarry
-      #end
-
-      #if (line =~ /^\s*d/i) # allow only 'Direct' now
-      #  direct = true
-      #else
-      #  raise "Not 'direct' indication."
-      #end
-
-      #num_atom = nums_elements.inject(sum=0) {|i| sum += i}
       io.readline # should be empty line
       steps_positions = []
       index = 0
@@ -86,14 +64,6 @@ class VaspUtils::Xdatcar
         else
           steps_positions[index] << line.strip.split(/\s+/).map {|coord| coord.to_f}
         end
-        
-        #nums_elements.size.times do |elem_index|
-        #  nums_elements[elem_index].times do |index|
-        #    items = io.readline.strip.split(/\s+/)
-        #    positions << items[0..2].map {|coord| coord.to_f}
-        #  end
-        #end
-
       end
     rescue EOFError
       raise ParseError, "end of file reached"
@@ -105,8 +75,6 @@ class VaspUtils::Xdatcar
       :axes               => axes              ,
       :elements           => elements          ,
       :nums_elements      => nums_elements     ,
-      #:selective_dynamics => selective_dynamics,
-      #:direct             => direct            ,
       :steps_positions          => steps_positions         ,
     }
     self.new(options)

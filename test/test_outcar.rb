@@ -1,8 +1,6 @@
 #! /usr/bin/ruby
 
-require 'test/unit'
-require "vasputils.rb"
-require 'vasputils/outcar.rb'
+require "helper"
 
 class TC_Outcar < Test::Unit::TestCase
     $tolerance = 10**(-10)
@@ -19,13 +17,6 @@ class TC_Outcar < Test::Unit::TestCase
     def test_self_load_file
         assert_raise(Errno::ENOENT){VaspUtils::Outcar.load_file( "" )}
     end
-
-    #def test_nsw
-    # assert_equal(100, @o01.nsw )
-    # assert_equal(100, @o01int.nsw )
-    # assert_equal(  2, @o02.nsw )
-    # assert_equal(100, @o03.nsw )
-    #end
 
     def test_normal_ended?
         assert_equal(true , @o01     [:normal_ended])
@@ -122,50 +113,12 @@ class TC_Outcar < Test::Unit::TestCase
         assert_in_delta( -15.64849543, @o03     [:totens][24], $tolerance )
         assert_in_delta( -15.648495  , @o03     [:totens][25], $tolerance )
 
-        #assert_in_delta( Iter1-Nsw0/OUTCAR:549:    free energy      TOTEN  =        -51450.70587600
-        #assert_in_delta( Iter1-Nsw0/OUTCAR:585:    free energy      TOTEN  =        -52760.43385845
-        #assert_in_delta( Iter1-Nsw0/OUTCAR:621:    free energy      TOTEN  =        -52974.33537688
-        #assert_in_delta( Iter1-Nsw0/OUTCAR:657:    free energy      TOTEN  =        -53114.51699744
-        #assert_in_delta( Iter1-Nsw0/OUTCAR:693:    free energy      TOTEN  =        -53178.90296722
-        #assert_in_delta( Iter1-Nsw0/OUTCAR:729:    free energy      TOTEN  =        -53226.44533651
-        #assert_in_delta( Iter1-Nsw0/OUTCAR:772:    free energy      TOTEN  =        -53233.03344036
-        #assert_in_delta( Iter1-Nsw0/OUTCAR:821:    free energy      TOTEN  =        -53232.27944261
-        #assert_in_delta( Iter1-Nsw0/OUTCAR:870:    free energy      TOTEN  =        -53232.72830304
-        #assert_in_delta( Iter1-Nsw0/OUTCAR:919:    free energy      TOTEN  =        -53232.71484487
-        #assert_in_delta( Iter1-Nsw0/OUTCAR:968:    free energy      TOTEN  =        -53232.70895409
-        #assert_in_delta( Iter1-Nsw0/OUTCAR:1017:    free energy        TOTEN    =      -53232.70751179
-        #assert_in_delta( Iter1-Nsw0/OUTCAR:1055:    free energy        TOTEN    =      -53232.70759898
-        #assert_in_delta( Iter1-Nsw0/OUTCAR:1463:    free    energy     TOTEN    =      -53232.707599
-        #
-        assert_in_delta(
-            -53232.707599, @o05     [:totens][13], $tolerance )
+        assert_in_delta( -53232.707599, @o05     [:totens][13], $tolerance )
     end
-
-    #def test_volume
-    #    assert_in_delta( 44.88, @o01       [:volumes][0], $tolerance )
-    #    assert_in_delta( 44.88, @o01       [:volumes][1], $tolerance )
-    #    assert_in_delta( 44.88, @o01int[:volumes][0], $tolerance )
-    #    assert_in_delta( 44.88, @o02       [:volumes][0], $tolerance )
-    #    assert_in_delta( 44.88, @o02       [:volumes][1], $tolerance )
-    #    assert_in_delta( 44.16, @o02       [:volumes][2], $tolerance )
-    #    assert_in_delta( 44.88, @o03       [:volumes][0], $tolerance )
-    #    assert_in_delta( 44.88, @o03       [:volumes][1], $tolerance )
-    #    assert_in_delta( 44.16, @o03       [:volumes][2], $tolerance )
-    #    assert_in_delta( 43.84, @o03       [:volumes][3], $tolerance )
-
-    #    #assert_in_delta( Iter1-Nsw0/OUTCAR:343:    volume of cell :           1258.66
-    #    #assert_in_delta( Iter1-Nsw0/OUTCAR:1488:  volume of cell :         1258.66
-
-    #end
 
     def test_elapsed_time
         assert_equal(nil, @o01int[:elapsed_time])
         assert_in_delta(164.134, @o04[:elapsed_time], $tolerance )
         assert_in_delta( 23.216, @o05[:elapsed_time], $tolerance )
     end
-
-    #def test_irreducible_kpoints
-    #    assert_equal(15, @o01[:irreducible_kpoints])
-    #end
-
 end

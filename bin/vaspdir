@@ -16,9 +16,6 @@ INSPECT_WIDTH = {
   :i_step      => "3",
   :klass_name  => "11",
   :kpoints     => "8",
-  #:ka          => "2",
-  #:kb          => "2",
-  #:kc          => "2",
   :encut       => "6",
   :state       => "10",
   :time        => "15",
@@ -172,21 +169,6 @@ class VaspdirCommand < Thor
   desc 'execute [dirs]', "Execute vasp"
   def execute(* args)
     VaspUtils::VaspDir.execute(args)
-    #tgts = args
-    #tgts = [ENV['PWD']] if tgts.empty?
-
-    #tgts.each do |dir|
-    #  begin
-    #    calc_dir = VaspUtils::VaspDir.new(dir)
-    #    calc_dir.start
-    #  rescue VaspUtils::VaspDir::InitializeError
-    #    puts "Not VaspDir: #{dir}"
-    #    exit
-    #  rescue Comana::ComputationManager::AlreadyStartedError
-    #    puts "Already started. Exit."
-    #    exit
-    #  end
-    #end
   end
 
   desc 'qsub [options] [dirs]', "Submit queue to grid engine. Empty 'dirs' in argument indicates current directory.' "
@@ -200,63 +182,8 @@ class VaspdirCommand < Thor
   option :auto, type: :boolean, desc: "Select low load group and automatic setting."
   def qsub(* args)
     new_options = Marshal.load(Marshal.dump(options))
-    #new_options[:command] = "#{File.basename(__FILE__)} execute"
     new_options[:command] = "#{__FILE__} execute"
-    #pp new_options
-    #exit
-    VaspUtils::VaspDir.qsub(args, new_options)
-    #tgts = args
-    #tgts = [ENV['PWD']] if tgts.empty?
-
-    #q_name          = options[:q_name]           
-    #pe_name         = options[:pe_name]          
-    #ppn             = options[:ppn]          
-    #ld_library_path = options[:ld_library_path]  
-    ##command         = options[:command]         
-    #command = options[:command] || "#{`which #{__FILE__}`.chomp} execute"
-    #if options[:load_group]
-    #  settings = Comana::ClusterSetting.load_file
-    #  gs = settings.groups[options[:load_group]]
-    #  q_name          ||= gs['queue']
-    #  pe_name         ||= gs['pe']         
-    #  ppn             ||= gs['ppn']         
-    #  ld_library_path ||= gs['ld_library_path'] 
-    #  #pp gs
-    #end
-
-    ##pp q_name          
-    ##pp pe_name         
-    ##pp ld_library_path 
-    ##pp command 
-    ##exit
-
-
-    #tgts.each do |dir|
-    #  begin
-    #    calc_dir = VaspUtils::VaspDir.new(dir)
-    #    calc_dir.queue_submit(
-    #      q_name:           q_name,
-    #      pe_name:          pe_name,
-    #      ppn:              ppn,
-    #      ld_library_path:  ld_library_path,
-    #      command:          command
-    #    )
-    #  rescue VaspUtils::VaspDir::InitializeError
-    #    puts "Not VaspDir: #{dir}"
-    #    exit
-    #  rescue Comana::ComputationManager::AlreadySubmittedError
-    #    puts "Already started. Exit."
-    #    exit
-    #  end
-    #end
   end
-
-
-
-
-  #def submit
-  #  VaspUtils::VaspDir.submit(args)
-  #end
 
   desc 'clean [dirs]', "Clean up output files of VASP"
   def clean(* args)
@@ -265,7 +192,6 @@ class VaspdirCommand < Thor
     targets.each do |target_dir|
       puts "Directory: #{target_dir}"
 
-      # Check target_dir is VaspDir?
       begin
         vd = VaspUtils::VaspDir.new(target_dir)
       rescue VaspUtils::VaspDir::InitializeError
@@ -283,7 +209,6 @@ class VaspdirCommand < Thor
     targets.each do |target_dir|
       puts "Directory: #{target_dir}"
 
-      # Check target_dir is VaspDir?
       begin
         vd = VaspUtils::VaspDir.new(target_dir)
       rescue VaspUtils::VaspDir::InitializeError
@@ -293,11 +218,6 @@ class VaspdirCommand < Thor
       vd.reset_initialize
     end
   end
-#
-#  ##def poscar
-#  ##    #VaspUtils::VaspDir.show_inspect(args)
-#  ##    #pp VaspUtils::VaspDir.poscar(args)
-#  ##end
 end
 
 VaspdirCommand.start(ARGV)

@@ -52,8 +52,6 @@ class PoscarCommand < Thor
         pcell = cell.to_pcell
         pd = pcell.nearest_distance(positions[index1], positions[index2]) #not periodic
         printf("%5i, %5i, %8.5f, %8.5f\n", atom1, atom2 , d, pd)
-
-        #pp cell.distance
       end
     end
   end
@@ -64,15 +62,6 @@ class PoscarCommand < Thor
   option :atmic_radii, desc: "Lattice constants from atomic radii."
   def substitute(* args)
     usage = "Usage: #{File.basename("#{__FILE__}")} POSCAR old_elem new_elem"
-
-    ### option analysis
-    #options = {}
-    #op = OptionParser.new
-    #op.banner = usage
-    #op.on("-a"    , "--atomic-radii"    , "Lattice constants from atomic radii."){    options[:atomic_radii] = true}
-    #op.parse!(args)
-
-
 
     poscar, elem1, elem2 = * args
     old_poscar = VaspUtils::Poscar.load_file(poscar)
@@ -118,7 +107,6 @@ class PoscarCommand < Thor
   #   - Ge-Ge間で距離 2.0〜3.0
   desc "povray", "generate povray objects."
   def povray(* args)
-    ## option analysis
     opts = {}
     op = OptionParser.new
     op.on( '-b conditions', '--bonds',
@@ -184,9 +172,37 @@ class PoscarCommand < Thor
         poscar.dump(io)
       end
     end
-
   end
 
+  desc "vaspdir options", "Generate vaspdir"
+  option :wavelength, :required => true,  desc: 'Wavelength in real space for KPOINTS.'
+  def vaspdir
+    system "potcar generate --poscar > POTCAR"
+    system "incar generate base singlepoint spin2 metal_geomopt --enmax130 > INCAR"
+    system "kpoints generate --length=#{options[:wavelength]} > KPOINTS"
+  end
+
+  desc "vaspgeomopt options", "Generate vaspdir"
+  option :wavelength, :required => true,  desc: 'Wavelength in real space for KPOINTS.'
+  def vaspgeomopt
+    poscar = VaspUtils::Poscar.load_file('POSCAR')
+    es = poscar.elements
+    ns = poscar.nums_elements
+    dirname = ''
+    poscar.elements.size.times do |i|
+      dirname += es[i]
+      dirname += ns[i].to_s
+    end
+    #pp dirname
+    FileUtils.mkdir_p dirname
+    subdir = dirname + '/geomopt00'
+    FileUtils.mkdir_p subdir
+
+    FileUtils.cp("POSCAR", subdir)
+    system "potcar generate --poscar > #{subdir}/POTCAR"
+    system "incar generate base full_relax spin2 metal_geomopt --enmax130=#{subdir}/POTCAR > #{subdir}/INCAR"
+    system "kpoints generate --length=#{options[:wavelength]} > #{subdir}/KPOINTS"
+  end
 end
 
 PoscarCommand.start(ARGV)

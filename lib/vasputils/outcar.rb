@@ -36,27 +36,6 @@ module VaspUtils::Outcar
     results[:elapsed_time               ] = nil
     results[:normal_ended               ] = false
 
-    #lines = File.readlines(file)
-    #lines.each do |line|
-    #    #if /Found\s+(\d+)\s+irreducible k-points/i =~ line
-    #    #  results[:irreducible_kpoints] = $1.to_i
-    #    #end
-
-    #    #if /^-* Iteration\s+(\d+)/ =~ line
-    #    #  results[:ionic_steps         ] = $1.to_i
-    #    #  results[:electronic_steps] += 1
-    #    #end
-
-    #    ##if /free\s+energy\s+TOTEN\s+=\s(.*)\s+eV/ =~ line
-    #    #if /TOTEN\s+=\s(.*)\s+eV/ =~ line
-    #    #  results[:totens] << $1.to_f
-    #    #end
-
-    #    #if /volume of cell :\s+(\d+\.\d+)$/ =~ line
-    #    #  results[:volumes] << $1.to_f
-    #    #end
-    #end
-
     lines = `grep Iteration #{file}`.split("\n")
     results[:electronic_steps] = lines.size
     /^-* Iteration\s+(\d+)/ =~ lines[-1]

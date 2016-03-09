@@ -1,8 +1,6 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
-require 'nokogiri'
-
 #
 #
 #
@@ -44,8 +42,6 @@ class VaspUtils::VasprunXml
         pos.text.strip.split.map {|i| i.to_f}
       end
     end
-    #t = @data.xpath("/modeling/calculation/structure/crystal/varray[@name='basis']/v").map { |i| pp i.text.strip.split.map{|j| j.to_f}}
-    #pp t.methods.sort
   end
 
   def nums_elements
@@ -102,8 +98,6 @@ class VaspUtils::VasprunXml
   end
 
   def num_atoms
-    #@data.xpath("/modeling/calculation/dos/i[@name='efermi']").children.to_s.to_f
-    #@data.xpath("/modeling/parameters/separator[@name='electronic']/separator[@name='electronic spin']/i[@name='ISPIN']").children.to_s.to_i
     @data.xpath("/modeling/atominfo/atoms").children.to_s.to_i
   end
   alias num_ions num_atoms
@@ -111,7 +105,5 @@ class VaspUtils::VasprunXml
   def num_spins
     @data.xpath("/modeling/parameters/separator[@name='electronic']/separator[@name='electronic spin']/i[@name='ISPIN']").children.to_s.to_i
   end
-
-
 end
 

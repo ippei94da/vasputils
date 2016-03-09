@@ -1,11 +1,7 @@
 #! /usr/bin/ruby -W
 
 require "helper"
-require "test/unit"
 require "stringio"
-
-require "rubygems"
-require "crystalcell"
 
 class VaspUtils::Poscar
   public :merge_selective_dynamics, :periodic_nearest, :fill_true, :unite_elements
@@ -192,7 +188,7 @@ class TC_Poscar < Test::Unit::TestCase
     cell = CrystalCell::Cell.new(axes, atoms)
     cell.comment = "test"
     poscar = VaspUtils::Poscar.load_cell(cell)
-    #
+
     assert_equal("test", poscar.comment)
     assert_equal(1.0, poscar.scale)
     assert_in_delta(1.0, poscar.axes[0][0], $tolerance)
@@ -224,7 +220,7 @@ class TC_Poscar < Test::Unit::TestCase
   end
 
   def test_dump
-    # vasp 5
+    ## vasp 5
     io = StringIO.new
     @p00.dump(io)
     io.rewind
@@ -290,65 +286,9 @@ class TC_Poscar < Test::Unit::TestCase
       assert_equal(cor, lines[index], "line: #{index}")
     end
     assert_equal(corrects.size, lines.size)
-
-    ## element order
-    #io = StringIO.new
-    #@p00.dump(io, %w(Ge O Li))
-    #io.rewind
-    #corrects = [
-    #  "p00\n",
-    #  "1.0\n",
-    #  "   1.000000000000000     0.000000000000000     0.000000000000000\n",
-    #  "   0.000000000000000     1.000000000000000     0.000000000000000\n",
-    #  "   0.000000000000000     0.000000000000000     1.000000000000000\n",
-    #  "Ge O Li\n",
-    #  "1 2 1\n",
-    #  "Direct\n",
-    #  "     0.500000000000000     0.000000000000000     0.000000000000000\n",
-    #  "     0.500000000000000     0.500000000000000     0.000000000000000\n",
-    #  "     0.500000000000000     0.500000000000000     0.500000000000000\n",
-    #  "     0.000000000000000     0.000000000000000     0.000000000000000\n",
-    #]
-    #lines = io.readlines
-    #corrects.each_with_index do |cor, index|
-    #  assert_equal(cor, lines[index], "line: #{index}")
-    #end
-    #assert_equal(corrects.size, lines.size)
-
-
   end
 
-  #def test_self_dump
-  #    # vasp 5
-  #    io = StringIO.new
-  #    @p00.dump(io)
-
-  #    VaspUtils::Poscar.dump(cell, ["Li", "O"], io, 5)
-  #    io.rewind
-  #    corrects = [
-  #        "p00\n",
-  #        "1.0\n",
-  #        "   1.000000000000000     0.000000000000000     0.000000000000000\n",
-  #        "   0.000000000000000     1.000000000000000     0.000000000000000\n",
-  #        "   0.000000000000000     0.000000000000000     1.000000000000000\n",
-  #        "Li Ge O\n",
-  #        "1 1 2\n",
-  #        "Direct\n",
-  #        "     0.000000000000000     0.000000000000000     0.000000000000000\n",
-  #        "     0.500000000000000     0.000000000000000     0.000000000000000\n",
-  #        "     0.500000000000000     0.500000000000000     0.000000000000000\n",
-  #    ]
-  #    lines = io.readlines
-  #    corrects.each_with_index do |cor, index|
-  #        assert_equal(cor, lines[index], "line: #{index}")
-  #    end
-  #    assert_equal(corrects.size, lines.size)
-  #end
-
   def test_parse
-    #io = StringIO.new
-    #assert_raises(VaspUtils::Poscar::ParseError){ VaspUtils::Poscar.parse(io) }
-
     # vasp 5 style
     io = File.open('test/poscar/POSCAR.5-0', 'r')
     poscar = VaspUtils::Poscar.parse(io)
@@ -509,7 +449,7 @@ class TC_Poscar < Test::Unit::TestCase
       :selective_dynamics => [ [T, T, T], [T, T, T], [T, T, T], [T, T, T] ],
       :direct             => true,
       :positions          => [
-        [0.05, 0.10, -0.1], #0 -> 0.6, 0-> -0.4
+        [0.05, 0.10, -0.1],
         [0.5,  0.05, 0.10],
         [0.5,  0.5,  0.05],
         [0.5,  0.5,  0.5],
@@ -568,18 +508,6 @@ class TC_Poscar < Test::Unit::TestCase
 
     result = VaspUtils::Poscar.interpolate(p01, p00, 0.5)
     assert_equal(correct, result)
-
-
-    #assert_equal(correct.comment, result.comment)
-    #assert_equal(correct.scale, result.scale)
-    #assert_equal(correct.axes, result.axes)
-    #assert_equal(correct.elements, result.elements)
-    #assert_equal(correct.nums_elements, result.nums_elements)
-    #assert_equal(correct.selective_dynamics, result.selective_dynamics)
-    #assert_equal(correct.direct, result.direct)
-    #assert_equal(correct.positions, result.positions)
-    #assert_equal(correct, result)
-
   end
 
   def test_equal
@@ -671,8 +599,6 @@ class TC_Poscar < Test::Unit::TestCase
         [0.5,  0.0,  0.0],
       ]
     })
-    #pp correct;exit
-    #pp @p00;exit
     assert_equal(correct, result)
   end
 

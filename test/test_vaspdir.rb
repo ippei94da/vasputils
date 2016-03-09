@@ -6,16 +6,6 @@ $TEST = true
 require "helper"
 require "fileutils"
 require "stringio"
-require "rubygems"
-#gem "comana"
-#require "comana/computationmanager.rb"
-
-require "test/unit"
-#require "vasputils.rb"
-
-# assert_equal( cor, data)
-# assert_in_delta( cor, data, $tolerance )
-# assert_raise( RuntimeError ){}
 
 class VaspUtils::VaspDir < Comana::ComputationManager
     attr_reader :mode
@@ -71,9 +61,6 @@ class TC_VaspDir < Test::Unit::TestCase
         GENERATED_FILES_VD00.each do |file|
             FileUtils.rm file if File.exist? file
         end
-
-        #lock_dir = "test/vaspdir/not-yet/lock"
-        #Dir.rmdir(lock_dir) if Dir.exist?(lock_dir)
     end
 
     def test_initialize
@@ -96,8 +83,6 @@ class TC_VaspDir < Test::Unit::TestCase
     def test_calculate
         lock_dir = "test/vaspdir/not-yet/lock_vaspdir"
         Dir.rmdir(lock_dir) if Dir.exist?(lock_dir)
-        #pp @vd00;exit
-        #@vd00.calculate
         assert_nothing_raised{@vd00.calculate}
 
         GENERATED_FILES_VD00.each do |file|
@@ -144,14 +129,6 @@ class TC_VaspDir < Test::Unit::TestCase
 
         io.rewind
         lines = io.readlines
-        #"  Remove files:",
-        #"      CONTCAR",
-        #"      OUTCAR",
-        #"  Keep files:",
-        #"      INCAR",
-        #"      KPOINTS",
-        #"      POSCAR",
-        #"      POTCAR",
         assert_equal("    Removing: CONTCAR\n", lines.shift)
         assert_equal("    Removing: OUTCAR\n",    lines.shift)
         assert_equal(nil                 ,  lines.shift)
@@ -206,7 +183,7 @@ class TC_VaspDir < Test::Unit::TestCase
         assert_equal([8,8,5], new_kpoints.mesh)
 
 
-        # already exist
+        ## already exist
         assert_raise(VaspUtils::VaspDir::AlreadyExistError){
             @vd00.mutate("test/vaspdir/mutate", conditions)
         }

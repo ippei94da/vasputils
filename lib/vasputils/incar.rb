@@ -34,7 +34,6 @@ class VaspUtils::Incar < Hash
         val = $2.strip
         val.sub!(/\s.*$/, "")
         next if key.empty?
-        #if valu
         if val.integer?
           val = val.to_i
         elsif val.float?

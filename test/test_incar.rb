@@ -1,19 +1,12 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
-require "test/unit"
-require "vasputils"
-#require "vasputils/incar.rb"
+require "helper"
 require "stringio"
-
-# assert_equal( cor, data)
-# assert_in_delta( cor, data, $tolerance )
-# assert_raise( RuntimeError ){}
 
 class TC_Incar < Test::Unit::TestCase
   def setup
     @i00 = VaspUtils::Incar.new
-    #@i00 = VaspUtils::Incar.new({})
   end
   
   def test_self_parse

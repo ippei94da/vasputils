@@ -15,8 +15,14 @@ class IncarCommand < Thor
 HERE
   #option :opt
 
-  option :enmax, banner: '[=POTCAR]', desc: 'Use the highest value of ENMAXes in POTCAR'
-  option :enmax130, banner: '[=POTCAR]', desc: 'Like --enmax option, but multiplied by 1.3'
+  option :enmax,
+    banner: '[=POTCAR]',
+    desc: 'Use the highest value of ENMAXes in POTCAR',
+    lazy_default: 'POTCAR'
+  option :enmax130,
+    banner: '[=POTCAR]',
+    desc: 'Like --enmax option, but multiplied by 1.3',
+    lazy_default: 'POTCAR'
   option :load, banner: '[=INCAR]', desc: 'Load INCAR'
   def generate(*args)
     incar = VaspUtils::Incar.new

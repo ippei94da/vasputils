@@ -23,13 +23,11 @@ class VasprunXmlCommand < Thor
   option :png, :type => :boolean,  desc: "Output png image."
   option :eps, :type => :boolean,  desc: "Output eps image."
   option :dat, :type => :boolean,  desc: "Output Gnuplot style data file."
-  #option :stdout, :type => :boolean,  desc: "Output Gnuplot style data to stdout."
   option :quiet, :type => :boolean,  desc: "Not output to stdout."
   option :fermi, :type => :boolean, desc: "Read Fermi energy and set as zero."
   option :min, desc: "Minimum energy of horizontal axis."
   option :max, desc: "Maximum energy of horizontal axis."
     ## :type => :numeric で負数を指定できなかった。[2016-02-18]
-  #def dos(* args)
   def dos
     @options = options
     @xml = VaspUtils::VasprunXml.load_file( @options[:xml] || DEFAULT_XML )
@@ -56,7 +54,6 @@ class VasprunXmlCommand < Thor
   option :png, :type => :boolean,  desc: "Output png image."
   option :eps, :type => :boolean,  desc: "Output eps image."
   option :dat, :type => :boolean,  desc: "Output Gnuplot style data file."
-  #option :stdout, :type => :boolean,  desc: "Output Gnuplot style data to stdout."
   option :quiet, :type => :boolean,  desc: "Not output to stdout."
   option :fermi, :type => :boolean, desc: "Read Fermi energy and set as zero."
   option :min, desc: "Minimum energy of horizontal axis."
@@ -86,26 +83,14 @@ class VasprunXmlCommand < Thor
     end
 
     if @options[:sum]
-      ##test
-      #a = [
-      #  [[0,1,1],[1,2,3], [2,0,0]],
-      #  [[0,2,2],[1,4,6], [2,0,0]],
-      #]
-      #sum_ions(a)
-      ##=> [[0, 3.0, 3.0], [1, 6.0, 9.0], [2, 0.0, 0.0]]
-      #
-      #exit
-
       sum_pdos1 = sum_ions(pdos1_for_ions)
       sum_pdos2 = sum_ions(pdos2_for_ions)
       plot_dos(sum_pdos1, sum_pdos2, "#{PDOS_PREFIX}-sum", pdos_labels)
     else
-      #plot not sum
       pdos1_for_ions.size.times do |i|
         plot_dos(pdos1_for_ions[i], pdos2_for_ions[i], "#{PDOS_PREFIX}-#{ion_indices[i]}", pdos_labels)
       end
     end
-    #    0.0000    0.0044    0.0016    0.0000   -0.0270   -0.0103   -0.0000 
   end
 
   private
@@ -116,7 +101,6 @@ class VasprunXmlCommand < Thor
     num_ions = @xml.num_ions
     num_orbitals = dos_for_ions[0][0].size - 1
     num_energies.times do |e|
-      # dos_for_ions[i][e][o]
       energy = dos_for_ions[0][e][0]
       orbitals = Array.new(num_orbitals).fill(0.0)
       num_ions.times do |i|

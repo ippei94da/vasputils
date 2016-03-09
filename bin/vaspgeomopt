@@ -21,17 +21,13 @@ class VaspGeomOptCommand < Thor
     show_dir_states << :terminated if options[:terminated]
     show_dir_states << :started    if options[:started]
 
-    ## if all select are not set, all are set.
     if show_dir_states.empty?
       show_dir_states = [:finished, :yet, :terminated, :started]
     end
 
     dirs = args
-    #dirs = Dir.glob("*").sort if args.empty?
     dirs = ["."] if args.empty?
 
-    #I_S is ionic steps
-    #E_S is electronic steps
     format_str = "%-11s %-10s %14s %9s %15s %s\n"
     unless options[:files_with_matches]
       printf(format_str,
@@ -55,7 +51,6 @@ class VaspGeomOptCommand < Thor
           ld_str = ld.dir.sub("#{dir}/", "")
           time = calc.latest_modified_time.strftime("%Y%m%d-%H%M%S")
         rescue
-          #toten    = i_step = time = ""
           toten = time = ld_str = ""
         end
 
@@ -92,21 +87,6 @@ class VaspGeomOptCommand < Thor
   desc 'execute [path]', 'Execute vasp geometry optimization'
   def execute(* args)
     VaspUtils::VaspGeometryOptimizer.execute(args)
-    #targets = args
-    #targets = [ENV['PWD']] if targets.empty?
-
-    #targets.each do |dir|
-    #  begin
-    #    calc_dir = VaspUtils::VaspGeometryOptimizer.new(dir)
-    #    calc_dir.start
-    #  rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
-    #    puts "Not suitable for VaspGeometryOptimizer: #{dir}"
-    #    exit
-    #  rescue Comana::ComputationManager::AlreadyStartedError
-    #    puts "Already started. Exit."
-    #    exit
-    #  end
-    #end
   end
 
   desc 'qsub [options] [dirs]', "Submit queue to grid engine. Empty 'dirs' in argument indicates current directory.' "
@@ -122,29 +102,6 @@ class VaspGeomOptCommand < Thor
     new_options = Marshal.load(Marshal.dump(options))
     new_options[:command] = "#{__FILE__} execute"
     VaspUtils::VaspGeometryOptimizer.qsub(args, new_options)
-
-    #tgts = args
-    #tgts = [ENV['PWD']] if tgts.empty?
-
-    #command = options[:command] || "#{`which #{__FILE__}`.chomp} execute"
-
-    #tgts.each do |dir|
-    #  begin
-    #    calc_dir = VaspUtils::VaspGeometryOptimizer.new(dir)
-    #    calc_dir.queue_submit(
-    #      q_name:           options[:q_name],
-    #      pe_name:          options[:pe_name],
-    #      ld_library_path:  options[:ld_library_path],
-    #      command:          command
-    #    )
-    #  rescue VaspUtils::VaspGeometryOptimizer::InitializeError
-    #    puts "Not VaspDir: #{dir}"
-    #    exit
-    #  rescue Comana::ComputationManager::AlreadySubmittedError
-    #    puts "Already started. Exit."
-    #    exit
-    #  end
-    #end
   end
 
 
@@ -175,8 +132,6 @@ class VaspGeomOptCommand < Thor
 
   desc 'init [path]', 'Initialize geomopt.'
   def init(* args)
-    #VaspUtils::VaspGeometryOptimizer.reset_initialize(args)
-
     targets = args
     targets = [ENV['PWD']] if targets.empty?
     targets.each do |tgt_dir|
@@ -194,27 +149,6 @@ class VaspGeomOptCommand < Thor
       tgt.reset_initialize
     end
   end
-
-  #desc 'reincarnate [option] [path]', 'Generate new geomopt from final structure.'
-  #def reincarnate(* args)
-  #  targets = args
-  #  targets = [ENV['PWD']] if targets.empty?
-  #
-  #  targets.each do |tgt_dir|
-  #    puts "Directory: #{tgt_dir}"
-  #
-  #    # Check tgt_dir is VaspDir?
-  #    begin
-  #      tgt = VaspUtils::VaspGeometryOptimizer.new(tgt_dir)
-  #    rescue VaspUtils::VaspGeometryOptimizer::NoVaspDirError
-  #      puts "  Not VaspGeometryOptimizer: #{tgt_dir}"
-  #      next
-  #    end
-  #
-  #    puts "  Reincarnate(generate dir as new calc): #{tgt_dir}"
-  #    tgt.reset_reincarnate
-  #  end
-  #end
 end
 
 VaspGeomOptCommand.start(ARGV)

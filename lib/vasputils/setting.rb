@@ -27,12 +27,5 @@ class VaspUtils::Setting
     end
     @data[key]
   end
-
-  #def get(key)
-  #    unless @data.include? key 
-  #        raise NoEntryError, key
-  #    end
-  #    @data[key]
-  #end
 end
 

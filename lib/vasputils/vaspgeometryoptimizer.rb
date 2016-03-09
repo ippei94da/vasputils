@@ -12,8 +12,8 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
   class LatestDirStartedError < StandardError; end
   class NoIntegerEndedNameError < StandardError; end
   class NoContcarError < StandardError; end
-  #class InitializeError < StandardError; end
-  class InitializeError < Comana::ComputationManager::InitializeError; end
+  class InitializeError < StandardError; end
+  #class InitializeError < Comana::ComputationManager::InitializeError; end
 
   PREFIX = "geomopt"
 
@@ -45,19 +45,6 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     $stdout.flush
 
     latest_dir.start
-    #dir = latest_dir
-    #while (! finished?)
-    #    raise LatestDirStartedError if dir.state == :started
-    #    dir.start
-    #    if dir.finished?
-    #        break
-    #    else
-    #        #dir = prepare_next
-    #        puts "Geometry optimization fihished. Exit."
-    #    end
-    #end
-    #puts "Geometry optimization fihished. Exit."
-    #sleep 1 # for interrupt
   end
 
   # latest_dir から返って来る最新の VaspDir が finished? で真を返し、
@@ -119,18 +106,6 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     files = Dir.glob("#{@dir}/*")
     files.delete( path)
     rm_list += files
-    #pp rm_list
-    #exit
-    #rm_list =
-    #pp Dir.glob "#{@dir}/*"
-    #rm_list.delete "#{path}"
-    ##queeue
-    #rm_list += Dir.glob "#{@dir}/lock*"
-    #rm_list += Dir.glob "#{@dir}/*.sh"
-    #rm_list += Dir.glob "#{@dir}/*.log"
-    #rm_list += Dir.glob "#{@dir}/*.o*"
-    #rm_list += Dir.glob "#{@dir}/*.o*"
-    ##remove
     rm_list.each do |file|
       FileUtils.rm_rf file
     end
@@ -204,20 +179,7 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     raise NoContcarError unless File.exist? "#{latest_dir.dir}/CONTCAR"
 
     new_dir = self.class.next_name(latest_dir.dir)
-    #sleep 60
     Dir.mkdir new_dir
-
-    #FileUtils.cp("#{latest_dir.dir}/CHG"           , "#{new_dir}/CHG"       )
-    #FileUtils.cp("#{latest_dir.dir}/CHGCAR"    , "#{new_dir}/CHGCAR"    )
-    #FileUtils.cp("#{latest_dir.dir}/DOSCAR"    , "#{new_dir}/DOSCAR"    )
-    #FileUtils.cp("#{latest_dir.dir}/EIGENVAL", "#{new_dir}/EIGENVAL")
-    #FileUtils.cp("#{latest_dir.dir}/INCAR"     , "#{new_dir}/INCAR"     )
-    #FileUtils.cp("#{latest_dir.dir}/KPOINTS" , "#{new_dir}/KPOINTS" )
-    #FileUtils.cp("#{latest_dir.dir}/OSZICAR" , "#{new_dir}/OSZICAR" )
-    #FileUtils.cp("#{latest_dir.dir}/PCDAT"     , "#{new_dir}/PCDAT"     )
-    #FileUtils.cp("#{latest_dir.dir}/POTCAR"    , "#{new_dir}/POTCAR"    )
-    #FileUtils.cp("#{latest_dir.dir}/WAVECAR" , "#{new_dir}/WAVECAR" )
-    #FileUtils.cp("#{latest_dir.dir}/XDATCAR" , "#{new_dir}/XDATCAR" )
 
     possible_files = ["CHG", "CHGCAR", "DOSCAR", "EIGENVAL", 
       "OSZICAR", "PCDAT", "WAVECAR", "XDATCAR"]
@@ -233,7 +195,6 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     end
 
     FileUtils.cp("#{latest_dir.dir}/CONTCAR" , "#{new_dir}/POSCAR"  ) # change name
-    # without POSCAR, OUTCAR, vasprun.xml
     VaspUtils::VaspDir.new(new_dir)
   end
 
