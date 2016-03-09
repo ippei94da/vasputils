@@ -8,11 +8,12 @@ require "fileutils"
 #This restriction of naming is necessary to distinguish from simple aggregation
 #of vasp directories.
 class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
-  class NoVaspDirError < Exception; end
-  class LatestDirStartedError < Exception; end
-  class NoIntegerEndedNameError < Exception; end
-  class NoContcarError < Exception; end
-  class InitializeError < Exception; end
+  class NoVaspDirError < StandardError; end
+  class LatestDirStartedError < StandardError; end
+  class NoIntegerEndedNameError < StandardError; end
+  class NoContcarError < StandardError; end
+  #class InitializeError < StandardError; end
+  class InitializeError < Comana::ComputationManager::InitializeError; end
 
   PREFIX = "geomopt"
 
@@ -93,6 +94,8 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     poscars = Dir.glob("#{@dir}/#{PREFIX}*/POSCAR").sort
     poscar = nil
     path = nil
+
+    # Find the first geometory optimization
     poscars.each do |poscar|
       begin
         VaspUtils::Poscar.load_file poscar
@@ -113,11 +116,20 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
     ["KPOINTS", "INCAR", "POTCAR", "POSCAR"].each do |file|
       rm_list.delete "#{path}/#{file}"
     end
+    files = Dir.glob("#{@dir}/*")
+    files.delete( path)
+    rm_list += files
+    #pp rm_list
+    #exit
+    #rm_list =
+    #pp Dir.glob "#{@dir}/*"
+    #rm_list.delete "#{path}"
     ##queeue
-    rm_list += Dir.glob "#{@dir}/lock*"
-    rm_list += Dir.glob "#{@dir}/*.sh"
-    rm_list += Dir.glob "#{@dir}/*.log"
-    rm_list += Dir.glob "#{@dir}/*.o*"
+    #rm_list += Dir.glob "#{@dir}/lock*"
+    #rm_list += Dir.glob "#{@dir}/*.sh"
+    #rm_list += Dir.glob "#{@dir}/*.log"
+    #rm_list += Dir.glob "#{@dir}/*.o*"
+    #rm_list += Dir.glob "#{@dir}/*.o*"
     ##remove
     rm_list.each do |file|
       FileUtils.rm_rf file

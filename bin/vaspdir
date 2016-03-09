@@ -171,7 +171,7 @@ class VaspdirCommand < Thor
 
   desc 'execute [dirs]', "Execute vasp"
   def execute(* args)
-    self.class.execute(* args)
+    VaspUtils::VaspDir.execute(args)
     #tgts = args
     #tgts = [ENV['PWD']] if tgts.empty?
 
@@ -197,10 +197,14 @@ class VaspdirCommand < Thor
   option :command, desc: "Command"
   option :load_group, desc: "Load setting from group in setting file."
   option :no_submit, desc: "Write script, but not submit."
-  option :auto, desc: "Select low load group and automatic setting."
+  option :auto, type: :boolean, desc: "Select low load group and automatic setting."
   def qsub(* args)
-    #pp options
-    VaspUtils::VaspDir.qsub(args, options)
+    new_options = Marshal.load(Marshal.dump(options))
+    #new_options[:command] = "#{File.basename(__FILE__)} execute"
+    new_options[:command] = "#{__FILE__} execute"
+    #pp new_options
+    #exit
+    VaspUtils::VaspDir.qsub(args, new_options)
     #tgts = args
     #tgts = [ENV['PWD']] if tgts.empty?
 

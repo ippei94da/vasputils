@@ -112,14 +112,16 @@ class VaspGeomOptCommand < Thor
   desc 'qsub [options] [dirs]', "Submit queue to grid engine. Empty 'dirs' in argument indicates current directory.' "
   option :q_name, desc: "Queue name for '#$ -q'"
   option :pe_name, desc: "Parallel environment name for '#$ -pe'"
+  option :ppn, desc: "Process per node, 2nd argument for'#$ -pe'"
   option :ld_library_path, desc: "Environmental variable 'LD_LIBRARY_PATH'"
-  option :command, desc: "Command"
   option :command, desc: "Command"
   option :load_group, desc: "Load setting from group in setting file."
   option :no_submit, desc: "Write script, but not submit."
-  option :auto, desc: "Select low load group and automatic setting."
+  option :auto, type: :boolean, desc: "Select low load group and automatic setting."
   def qsub(* args)
-    VaspUtils::VaspGeometryOptimizer.qsub(args, options)
+    new_options = Marshal.load(Marshal.dump(options))
+    new_options[:command] = "#{__FILE__} execute"
+    VaspUtils::VaspGeometryOptimizer.qsub(args, new_options)
 
     #tgts = args
     #tgts = [ENV['PWD']] if tgts.empty?

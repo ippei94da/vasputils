@@ -35,7 +35,8 @@ class VaspUtils::VaspDir < Comana::ComputationManager
   #}
 
 
-  class InitializeError < Exception; end
+  #class InitializeError < Exception; end
+  class InitializeError < Comana::ComputationManager::InitializeError; end
   class NoVaspBinaryError < Exception; end
   class PrepareNextError < Exception; end
   class ExecuteError < Exception; end
@@ -47,6 +48,7 @@ class VaspUtils::VaspDir < Comana::ComputationManager
     @lockdir        = "lock_execute"
     %w(INCAR KPOINTS POSCAR POTCAR).each do |file|
       infile = "#{@dir}/#{file}"
+      #pp infile
       raise InitializeError, infile unless FileTest.exist? infile
     end
   end
