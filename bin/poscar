@@ -107,20 +107,20 @@ class PoscarCommand < Thor
   #   - Ge-Ge間で距離 2.0〜3.0
   desc "povray", "generate povray objects."
   option :tolerance, desc: 'Tolerance for periodic shown atom.' #  '-t tolerance'
-  #option :bonds, desc: 'Generate bonds matching conditions.',
-  #  long_desc: 'E.g., -b "Li,Ge,0.0,1.0" indicateing two conditions'
-  #  #'-b conditions',
+  option :bonds, desc: 'Generate bonds matching conditions.',
+    long_desc: 'E.g., -b "Li,Ge,0.0,1.0" indicateing two conditions'
+    #'-b conditions',
   def povray(* args)
-    #[[tmp[0], tmp[1]], tmp[2].to_f, tmp[3].to_f] options[:bonds].split(',')
-    #tolerance = options[:tolerance].to_f
-
-    poscar = 'POSCAR' if args.empty?
+    poscar = args[0] || 'POSCAR'
     tolerance = options[:tolerance].to_f || 0.0
 
     cell = VaspUtils::Poscar.load_file(poscar).to_cell(CrystalCell::Povray::Cell)
     puts cell.atoms_to_povs(tolerance).join
     puts cell.lattice_to_povs.join
-    #puts cell.bonds_to_povs(*opts[:bonds]).join if opts[:bonds]
+    elem0, elem1, min, max = (options[:bonds].split(','))
+    if options[:bonds]
+      puts cell.bonds_to_povs(elem0, elem1, min.to_f, max.to_f).join
+    end
   end
 
   # 
@@ -185,7 +185,6 @@ class PoscarCommand < Thor
       dirname += es[i]
       dirname += ns[i].to_s
     end
-    #pp dirname
     FileUtils.mkdir_p dirname
     subdir = dirname + '/geomopt00'
     FileUtils.mkdir_p subdir
