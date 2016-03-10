@@ -9,8 +9,8 @@ class KpointsCommand < Thor
   long_desc " Generate KPOINTS file. \n" +
   "E.g., kpoints generate --mesh 2 3 4 --shift 0.1 0.2 0.3 --monkhorst"
 
-  option :mesh, banner: '[=array]', desc: 'Indicate mesh', type: :array
-  option :shift, banner: '[=array]', desc: 'Indicate shift', type: :array
+  option :mesh, banner: '[array]', desc: 'Indicate mesh', type: :array
+  option :shift, banner: '[array]', desc: 'Indicate shift', type: :array
   option :monkhorst, desc: 'Use Monkhorst packing'
   option :length, desc: 'Wavelength in real space. Need POSCAR.'
   def generate
