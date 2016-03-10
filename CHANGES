@@ -1,12 +1,13 @@
 = vasputils changelog
 
-== Master (for 0.1.1)
+== Master (for 0.1.2)
+
+== Version 0.1.1 [2016-03-11] released
 * Add command
     * bin/vasprunxml
     * bin/incar
     * bin/kpoints
 * poscar substitute -a option
-
 * Remove bin/resetvaspdir.     Use 'bin/vaspdir reset'
 * Remove bin/runvaspdir.       Use 'bin/vaspdir exec'
 * Remove bin/showvaspdir.      Use 'bin/vaspdir show'
@@ -18,7 +19,6 @@
 * Change INCAR interface, inherited from Hash
 * Remove bin/geomoptposcar.    Use 'bin/poscar snapgeomopt'
 * Remove bin/symposcar
-
 
 == Version 0.1.0 not released
 * Small revision of output of 'showvaspdir' to show zero at the tail of toten.
