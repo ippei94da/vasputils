@@ -117,8 +117,8 @@ class PoscarCommand < Thor
     cell = VaspUtils::Poscar.load_file(poscar).to_cell(CrystalCell::Povray::Cell)
     puts cell.atoms_to_povs(tolerance).join
     puts cell.lattice_to_povs.join
-    elem0, elem1, min, max = (options[:bonds].split(','))
     if options[:bonds]
+      elem0, elem1, min, max = (options[:bonds].split(','))
       puts cell.bonds_to_povs(elem0, elem1, min.to_f, max.to_f).join
     end
   end
@@ -166,7 +166,7 @@ class PoscarCommand < Thor
     end
   end
 
-  desc "vaspdir options", "Generate vaspdir"
+  desc "vaspdir", "Generate vaspdir"
   option :wavelength, :required => true,  desc: 'Wavelength in real space for KPOINTS.'
   def vaspdir
     system "potcar generate --poscar > POTCAR"
@@ -174,7 +174,7 @@ class PoscarCommand < Thor
     system "kpoints generate --length=#{options[:wavelength]} > KPOINTS"
   end
 
-  desc "vaspgeomopt options", "Generate vaspdir"
+  desc "vaspgeomopt", "Generate vaspdir"
   option :wavelength, :required => true,  desc: 'Wavelength in real space for KPOINTS.'
   def vaspgeomopt
     poscar = VaspUtils::Poscar.load_file('POSCAR')

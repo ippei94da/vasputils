@@ -1,6 +1,8 @@
 = vasputils
 
-Description goes here.
+Unofficial utilities for VASP, first-principles calculation code.
+
+see http://www.q-eng.imat.eng.osaka-cu.ac.jp/~ippei/html/vasputils.html
 
 == Contributing to vasputils
  
