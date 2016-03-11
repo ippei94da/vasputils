@@ -98,7 +98,7 @@ class VasprunXmlCommand < Thor
   def sum_ions(dos_for_ions)
     results = []
     num_energies = dos_for_ions[0].size
-    num_ions = @xml.num_ions
+    num_ions = dos_for_ions.size
     num_orbitals = dos_for_ions[0][0].size - 1
     num_energies.times do |e|
       energy = dos_for_ions[0][e][0]
