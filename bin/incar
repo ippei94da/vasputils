@@ -24,13 +24,13 @@ HERE
     desc: 'Like --enmax option, but multiplied by 1.3',
     lazy_default: 'POTCAR'
   option :load, banner: '[INCAR]', desc: 'Load INCAR'
+  option :overwrite, banner: '[INCAR]', desc: 'Load and overwrite INCAR'
   def generate(*args)
     incar = VaspUtils::Incar.new
 
-    if options[:load]
-      incar = VaspUtils::Incar.load_file(options[:load])
+    if options[:load] || options[:overwrite]
+      incar = VaspUtils::Incar.load_file(options[:load] || options[:overwrite])
     end
-
     args.each do |str|
       if /(.*)=(.*)/ =~ str
         key = $1.strip
@@ -59,8 +59,12 @@ HERE
       incar['ENCUT'] = potcar.enmaxes.max * 1.3
     end
 
-
-    incar.dump(STDOUT)
+    if options[:overwrite]
+      io = File.open( options[:overwrite], 'w')
+    else
+      io = STDOUT
+    end
+    incar.dump(io)
   end
 end
 

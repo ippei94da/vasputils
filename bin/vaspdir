@@ -92,7 +92,7 @@ class VaspdirCommand < Thor
 
     if options[:all_items]
       tgt_properties = INSPECT_ALL_ITEMS
-    elsif options[:dirnameonly]
+    elsif options[:dirs_with_matches]
       tgt_properties = [:dir]
     elsif tgt_properties == nil || tgt_properties.empty?
       tgt_properties = INSPECT_DEFAULT_ITEMS
@@ -100,7 +100,7 @@ class VaspdirCommand < Thor
       tgt_properties = tgt_properties.push :dir
     end
 
-    unless options[:dirnameonly]
+    unless options[:dirs_with_matches]
       # show title of items.
       results = {
         :klass_name => "TYPE",
@@ -183,6 +183,7 @@ class VaspdirCommand < Thor
   def qsub(* args)
     new_options = Marshal.load(Marshal.dump(options))
     new_options[:command] = "#{__FILE__} execute"
+    VaspUtils::VaspDir.qsub(args, new_options)
   end
 
   desc 'clean [dirs]', "Clean up output files of VASP"

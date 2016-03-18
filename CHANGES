@@ -1,6 +1,9 @@
 = vasputils changelog
 
 == Master (for 0.1.3)
+* Add 'incar generate --overwrite'
+* Bugfix 'vaspdir qsub'
+* Bugfix 'vaspdir show --dirs-with-matches'
 
 == Version 0.1.2 [2016-03-11] released
 * bugfix for 'vasprunxml pdos --sum' 
