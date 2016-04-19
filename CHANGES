@@ -4,6 +4,7 @@
 * Add 'incar generate --overwrite'
 * Bugfix 'vaspdir qsub'
 * Bugfix 'vaspdir show --dirs-with-matches'
+* Use vasputils.gemspec instead of Gemfile
 
 == Version 0.1.2 [2016-03-11] released
 * bugfix for 'vasprunxml pdos --sum' 
