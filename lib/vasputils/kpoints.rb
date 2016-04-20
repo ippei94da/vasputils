@@ -1,8 +1,6 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
-#require "vasputils.rb"
-
 # Class to dearl with KPOINTS.
 # This can deal with only Automatic mesh style of KPOINTS,
 # i.e., this cannot deal with other various styles of KPOINTS.

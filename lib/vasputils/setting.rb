@@ -2,8 +2,6 @@
 # coding: utf-8
 
 require 'yaml'
-#require 'vasputils'
-
 
 # Class to deal with private settings for VaspUtils.
 

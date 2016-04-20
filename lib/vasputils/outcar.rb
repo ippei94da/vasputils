@@ -1,8 +1,6 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 #
-#require "vasputils.rb"
-
 # OUTCAR をパースする。
 # 精確には行わず、必要な情報だけをピックアップする感じ。
 #

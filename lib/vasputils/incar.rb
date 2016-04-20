@@ -1,8 +1,6 @@
 #! /usr/bin/env ruby
 # coding: utf-8
 
-#require "vasputils.rb"
-
 # see http://cms.mpi.univie.ac.at/vasp/vasp/INCAR_File.html
 #
 # INCAR のフォーマット

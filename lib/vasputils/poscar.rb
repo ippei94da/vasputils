@@ -2,7 +2,6 @@
 # coding: utf-8
 
 require "rubygems"
-#gem "crystalcell"
 require "crystalcell"
 
 # Class to manage POSCAR format of VASP.
