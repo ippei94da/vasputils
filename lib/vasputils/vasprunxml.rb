@@ -106,5 +106,11 @@ class VaspUtils::VasprunXml
   def num_spins
     @data.xpath("/modeling/parameters/separator[@name='electronic']/separator[@name='electronic spin']/i[@name='ISPIN']").children.to_s.to_i
   end
+
+  # energies of each ionic step
+  def calculation_energies
+    #pp @data.xpath("/modeling/calculation/energy/i[@name='e_fr_energy']").children.to_s.to_f
+    pp @data.xpath("/modeling/*/energy/i[@name='e_fr_energy']").children.to_s.to_f
+  end
 end
 
