@@ -1,6 +1,7 @@
 = vasputils changelog
 
 == Master (for 0.1.4)
+* Refactoring of unused variables
 
 == Version 0.1.3 [2016-04-20] released
 * Add 'incar generate --overwrite'

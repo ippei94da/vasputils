@@ -133,6 +133,13 @@ class TC_VasprunXml < Test::Unit::TestCase
     assert_raise(error){ @v00.partial_dos(5, 1)}
   end
 
+  #487:   <i name="e_fr_energy">     -4.21361453 </i>
+  #584:   <i name="e_fr_energy">     -4.31607186 </i>
+  #690:   <i name="e_fr_energy">     -4.39832854 </i>
+  #778:   <i name="e_fr_energy">     -4.40043741 </i>
+  #866:   <i name="e_fr_energy">     -4.40063677 </i>
+
+
 
 end
 

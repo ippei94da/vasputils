@@ -79,7 +79,7 @@ class VaspUtils::VaspGeometryOptimizer < Comana::ComputationManager
   #Keep 'geomopt00/{POSCAR,POTCAR,INCAR,POTCAR}', remove others.
   def reset_initialize
     poscars = Dir.glob("#{@dir}/#{PREFIX}*/POSCAR").sort
-    poscar = nil
+    #poscar = nil
     path = nil
 
     # Find the first geometory optimization

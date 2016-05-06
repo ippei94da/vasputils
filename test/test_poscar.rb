@@ -255,7 +255,12 @@ class TC_Poscar < Test::Unit::TestCase
       ],
       :elements           => %w(Li Ge O),
       :nums_elements      => [1,1,2],
-      :selective_dynamics => true,
+      :selective_dynamics => [
+        [true , true , true ],
+        [true , true , false],
+        [true , false, false],
+        [false, false, false],
+      ],
       :direct             => true,
       :positions          => [
         [0.0,  0.0,  0.0],
@@ -277,9 +282,9 @@ class TC_Poscar < Test::Unit::TestCase
       "Selective dynamics\n",
       "Direct\n",
       "     0.000000000000000     0.000000000000000     0.000000000000000 T T T\n",
-      "     0.500000000000000     0.000000000000000     0.000000000000000 T T T\n",
-      "     0.500000000000000     0.500000000000000     0.000000000000000 T T T\n",
-      "     0.500000000000000     0.500000000000000     0.500000000000000 T T T\n",
+      "     0.500000000000000     0.000000000000000     0.000000000000000 T T F\n",
+      "     0.500000000000000     0.500000000000000     0.000000000000000 T F F\n",
+      "     0.500000000000000     0.500000000000000     0.500000000000000 F F F\n",
     ]
     lines = io.readlines
     corrects.each_with_index do |cor, index|

@@ -15,7 +15,7 @@ class VaspUtils::Potcar
 
   def self.load_file(path)
     result = self.new
-    elements = Array.new
+    #elements = Array.new
     File.open( path, "r" ).each do |line|
       if line =~ /VRHFIN\s*=\s*([A-Za-z]*)/
         result.elements << $1

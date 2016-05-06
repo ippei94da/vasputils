@@ -59,7 +59,7 @@ class TC_VaspGeometryOptimizer < Test::Unit::TestCase
 
   def test_prepare_next
     dir = TEST_DIR + "/prepare_next/normal"
-    old_number_dir = dir + "/geomopt00"
+    #old_number_dir = dir + "/geomopt00"
     new_number_dir = dir + "/geomopt01"
 
     if Dir.exist?(new_number_dir)

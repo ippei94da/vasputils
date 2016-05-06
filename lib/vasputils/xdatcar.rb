@@ -43,7 +43,7 @@ class VaspUtils::Xdatcar
       axes = []
       3.times do |i| #each axis of a, b, c.
         vec = io.readline.strip.split(/\s+/) #in x,y,z directions
-        axes << vec.collect! { |i| i.to_f * scale } #multiply scaling factor
+        axes << vec.collect! { |j| j.to_f * scale } #multiply scaling factor
       end
 
       vals = io.readline.strip.split(/\s+/)

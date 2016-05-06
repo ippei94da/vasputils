@@ -34,6 +34,7 @@ class VaspUtils::VasprunXml
         axis.text.strip.split.map {|i| i.to_f}
       end
     end
+    results
   end
 
   def positions_list

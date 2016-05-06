@@ -46,7 +46,7 @@ class VaspUtils::Poscar
       axes = []
       3.times do |i| #each axis of a, b, c.
         vec = io.readline.strip.split(/\s+/) #in x,y,z directions
-        axes << vec.collect! { |i| i.to_f * scale } #multiply scaling factor
+        axes << vec.collect! { |j| j.to_f * scale } #multiply scaling factor
       end
 
       # Element symbol (vasp 5). Nothing in vasp 4.
@@ -220,7 +220,7 @@ class VaspUtils::Poscar
       end
     end
 
-    cell = klass.new(axes, atoms)
+    klass.new(axes, atoms)
   end
 
   # selective_dynamics は常に on にする。
@@ -270,8 +270,8 @@ class VaspUtils::Poscar
       :direct             => true,
       :positions          => new_positions
     }
-    correct = VaspUtils::Poscar.new(hash)
 
+    VaspUtils::Poscar.new(hash)
   end
 
   # 
@@ -379,13 +379,11 @@ class VaspUtils::Poscar
   def sprint_position(i)
     str = sprintf("    % 18.15f    % 18.15f    % 18.15f", * @positions[i])
     if @selective_dynamics
-      if @movable_flags
-        @movable_flags[i].each do |flag|
-          (flag == true) ?  str += " T" : str += " F"
-        end
-      else
-        str += " T T T"
+      @selective_dynamics[i].each do |flag|
+        (flag == true) ?  str += " T" : str += " F"
       end
+    else
+      #str += " T T T"
     end
     str
   end
