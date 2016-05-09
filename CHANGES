@@ -1,7 +1,10 @@
 = vasputils changelog
 
-== Master (for 0.1.4)
+== Master (for 0.1.5)
+
+== Version 0.1.4 [2016-05-09] released
 * Refactoring of unused variables
+* Add VasprunXml::calculation_energies
 
 == Version 0.1.3 [2016-04-20] released
 * Add 'incar generate --overwrite'
@@ -48,7 +51,7 @@
 * Add bin/poscar
 * Add bin/potcar
 * Add vaspspcond including subcommand 'vary', instead of varycondition.
-* Add VaspUtils::Vasprun_xml
+* Add VaspUtils::VasprunXml
 * Add bin/geomoptposcar
 * Add subcommand `povray' to bin/poscar
 * Add element order to Poscar.dump

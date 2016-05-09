@@ -135,18 +135,13 @@ class TC_VasprunXml < Test::Unit::TestCase
 
   def test_calculation_energies
     results = @v01.calculation_energies
+    assert_equal(5  , results.size)
     assert_equal(-4.21361453, results[0])
     assert_equal(-4.31607186, results[1])
     assert_equal(-4.39832854, results[2])
     assert_equal(-4.40043741, results[3])
     assert_equal(-4.40063677, results[4])
   end
-
-  #487:   <i name="e_fr_energy">     -4.21361453 </i>
-  #584:   <i name="e_fr_energy">     -4.31607186 </i>
-  #690:   <i name="e_fr_energy">     -4.39832854 </i>
-  #778:   <i name="e_fr_energy">     -4.40043741 </i>
-  #866:   <i name="e_fr_energy">     -4.40063677 </i>
 
 
 
