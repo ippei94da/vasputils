@@ -110,7 +110,10 @@ class VaspUtils::VasprunXml
   # energies of each ionic step
   def calculation_energies
     #pp @data.xpath("/modeling/calculation/energy/i[@name='e_fr_energy']").children.to_s.to_f
-    pp @data.xpath("/modeling/*/energy/i[@name='e_fr_energy']").children.to_s.to_f
+    @data.xpath("/modeling").children.each do |i|
+      pp i
+    end
+    exit
   end
 end
 
