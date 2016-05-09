@@ -111,9 +111,9 @@ class VaspUtils::VasprunXml
   def calculation_energies
     #pp @data.xpath("/modeling/calculation/energy/i[@name='e_fr_energy']").children.to_s.to_f
     @data.xpath("/modeling").children.each do |i|
-      pp i.xpath("./calculation")
+      pp i.xpath("/modeling/calculation/energy/i[@name='e_fr_energy']").children.to_s.to_f
     end
-    exit
+      exit
   end
 end
 
