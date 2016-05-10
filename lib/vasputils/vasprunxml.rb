@@ -111,5 +111,17 @@ class VaspUtils::VasprunXml
   def calculation_energies
     @data.xpath("/modeling/calculation/energy/i[@name='e_fr_energy']").children.to_a.map{|i| i.to_s.to_f}
   end
+
+  def calculation_cells
+    #格子定数リスト取得
+    @data.xpath('/modeling/calculation/structure/crystal/varray[@name="basis"]').each do |i|
+      pp i.children.to_a
+    end
+    #元素リスト取得
+    @data.xpath('/modeling/atominfo/array/set')
+    positions_list
+  end
+
+  private
 end
 
