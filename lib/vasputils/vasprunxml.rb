@@ -117,7 +117,7 @@ class VaspUtils::VasprunXml
     @data.xpath('/modeling/calculation/structure/crystal/varray[@name="basis"]').each do |i|
       results << i.xpath('v').children.map{|j| j.to_s.strip.split.map{|k| k.to_f}}
     end
-    pp results
+    results
   end
 
   def calculation_cells

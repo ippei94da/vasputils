@@ -146,7 +146,28 @@ class TC_VasprunXml < Test::Unit::TestCase
   def test_calculation_basis
     v = VaspUtils::VasprunXml.load_file('test/vasprunxml/P-1.xml')
     results = v.calculation_basis
-    TODO
+    assert_equal(100, results.size)
+    assert_equal(
+      [ [  5.46899986,  0.00000000,  0.00000000],
+        [ -1.74915164,  9.50235270,  0.00000000],
+        [ -2.23197985, -1.92643023, 14.02443236],
+      ],
+      results[0]
+    )
+    assert_equal(
+      [ [  5.40956519, -0.00945616, -0.00482282],
+        [ -1.74657312,  9.66179824, -0.01002973],
+        [ -2.21676384, -1.97136374, 14.19879844],
+      ],
+      results[1]
+    )
+    assert_equal(
+      [ [  4.47641358, -0.16679058,  0.40905180],
+        [ -1.81434021, 10.68263862, -0.18256841],
+        [ -0.18061392, -2.30429722, 15.63276550],
+      ],
+      results[99]
+    )
 
   end
 
