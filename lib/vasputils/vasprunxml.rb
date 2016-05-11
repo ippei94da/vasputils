@@ -120,13 +120,38 @@ class VaspUtils::VasprunXml
     results
   end
 
-  def calculation_cells
-    #格子定数リスト取得
-    calculation_basis
+  #元素リスト
+  def elements
+    results = []
+    @data.xpath('/modeling/atominfo/array[@name="atoms"]/set/rc').each do |i|
+      results << i.children[0].children.to_s
+    end
+    results
+  end
 
-    #元素リスト取得
-    @data.xpath('/modeling/atominfo/array/set')
-    positions_list
+  def calculation_cells
+    #calculation_basis #格子定数リスト
+    #pp calculation_basis
+    #pp elements
+    #pp positions_list[0].size
+
+    basis = calculation_basis
+    elems = elements
+    poss_list = positions_list
+    
+    results = []
+    poss_list.size.times do |i_step|
+      basis[i_step]
+
+      atoms = []
+      elems.size.times do |atom_id|
+        #pp atom_id
+        atoms << CrystalCell::Atom.new(elems[atom_id], poss_list[i_step][atom_id])
+      end
+
+      results << CrystalCell::Cell.new(basis[i_step], atoms)
+    end
+    results
   end
 
   private

@@ -168,14 +168,18 @@ class TC_VasprunXml < Test::Unit::TestCase
       ],
       results[99]
     )
+  end
 
+  def test_elements
+    assert_equal( ["Ag", "Ag", "I ", "I "], @v00.elements)
   end
 
   def test_calculation_cells
-    #v = VaspUtils::VasprunXml.load_file('test/vasprunxml/P-1.xml')
-    #results = v.calculation_cells
-
-    #TODO
+    v = VaspUtils::VasprunXml.load_file('test/vasprunxml/P-1.xml')
+    results = v.calculation_cells
+    assert_equal(100, results.size)
+    assert_equal(CrystalCell::Cell, results[0].class)
+    #pp results
   end
 
 

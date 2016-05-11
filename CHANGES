@@ -1,6 +1,11 @@
 = vasputils changelog
 
-== Master (for 0.1.5)
+== Master (for 0.1.6)
+
+== Version 0.1.5 [2016-05-11] released
+* Add VasprunXml::calculation_basis
+* Add VasprunXml::elements
+* Add VasprunXml::calculation_cells
 
 == Version 0.1.4 [2016-05-09] released
 * Refactoring of unused variables
