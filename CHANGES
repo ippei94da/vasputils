@@ -1,6 +1,9 @@
 = vasputils changelog
 
-== Master (for 0.1.6)
+== Master (for 0.1.7)
+
+== Version 0.1.6 [2016-05-11] released
+* Bugfix of VasprunXml::elements; deleting space after 1 char element
 
 == Version 0.1.5 [2016-05-11] released
 * Add VasprunXml::calculation_basis

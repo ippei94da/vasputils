@@ -171,7 +171,7 @@ class TC_VasprunXml < Test::Unit::TestCase
   end
 
   def test_elements
-    assert_equal( ["Ag", "Ag", "I ", "I "], @v00.elements)
+    assert_equal( ["Ag", "Ag", "I", "I"], @v00.elements)
   end
 
   def test_calculation_cells

@@ -124,7 +124,7 @@ class VaspUtils::VasprunXml
   def elements
     results = []
     @data.xpath('/modeling/atominfo/array[@name="atoms"]/set/rc').each do |i|
-      results << i.children[0].children.to_s
+      results << i.children[0].children.to_s.strip
     end
     results
   end
