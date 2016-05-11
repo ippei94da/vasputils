@@ -143,11 +143,17 @@ class TC_VasprunXml < Test::Unit::TestCase
     assert_equal(-4.40063677, results[4])
   end
 
-  def test_calculation_cells
+  def test_calculation_basis
     v = VaspUtils::VasprunXml.load_file('test/vasprunxml/P-1.xml')
-    results = v.calculation_cells
-
+    results = v.calculation_basis
     TODO
+  end
+
+  def test_calculation_cells
+    #v = VaspUtils::VasprunXml.load_file('test/vasprunxml/P-1.xml')
+    #results = v.calculation_cells
+
+    #TODO
   end
 
 
