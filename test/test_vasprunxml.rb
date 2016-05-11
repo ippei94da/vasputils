@@ -147,6 +147,7 @@ class TC_VasprunXml < Test::Unit::TestCase
     v = VaspUtils::VasprunXml.load_file('test/vasprunxml/P-1.xml')
     results = v.calculation_basis
     TODO
+
   end
 
   def test_calculation_cells
