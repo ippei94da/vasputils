@@ -1,6 +1,7 @@
 = vasputils changelog
 
-== Master (for 0.1.7)
+== Master
+* Explicit requirement of "spglib".
 
 == Version 0.1.6 [2016-05-11] released
 * Bugfix of VasprunXml::elements; deleting space after 1 char element

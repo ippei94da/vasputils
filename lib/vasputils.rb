@@ -24,3 +24,13 @@ require "vasputils/vaspgeometryoptimizer.rb"
 require "vasputils/vasprunxml.rb"
 require "vasputils/vaspebmdir.rb"
 require "vasputils/xdatcar.rb"
+
+begin
+  require "getspg.so"
+rescue LoadError
+  puts "VaspUtils requires 'getspg.so', but not found."
+  puts "Insall spglib and put getspg.so into a directory in environment variable RUBYLIB."
+  puts "You may get it from 'https://sourceforge.net/projects/spglib'."
+  puts "Exit."
+  exit
+end
