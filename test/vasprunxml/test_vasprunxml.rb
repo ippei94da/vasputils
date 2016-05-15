@@ -64,7 +64,9 @@ class TC_VasprunXml < Test::Unit::TestCase
 
   def test_elements
     assert_equal(['Li'], @v01.elements)
+    assert_equal( ["Ag", "Ag", "I", "I"], @v00.elements)
   end
+
 
   def test_fermi_energy
     assert_equal( 3.78039662, @v00.fermi_energy)
@@ -168,10 +170,6 @@ class TC_VasprunXml < Test::Unit::TestCase
       ],
       results[99]
     )
-  end
-
-  def test_elements
-    assert_equal( ["Ag", "Ag", "I", "I"], @v00.elements)
   end
 
   def test_calculation_cells
