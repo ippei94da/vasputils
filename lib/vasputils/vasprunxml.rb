@@ -51,11 +51,15 @@ class VaspUtils::VasprunXml
     end
   end
 
+  #元素リスト
   def elements
-    @data.xpath("/modeling/atominfo/array[@name='atomtypes']/set/rc").map do |elem|
-      elem.xpath('./c').children[1].text
+    results = []
+    @data.xpath('/modeling/atominfo/array[@name="atoms"]/set/rc').each do |i|
+      results << i.children[0].children.to_s.strip
     end
+    results
   end
+
 
   # Return an array of [energy, total, integrated] for spin.
   # 'spin' is indicated by number started from 1 (should be 1 or 2).
@@ -116,15 +120,6 @@ class VaspUtils::VasprunXml
     results = []
     @data.xpath('/modeling/calculation/structure/crystal/varray[@name="basis"]').each do |i|
       results << i.xpath('v').children.map{|j| j.to_s.strip.split.map{|k| k.to_f}}
-    end
-    results
-  end
-
-  #元素リスト
-  def elements
-    results = []
-    @data.xpath('/modeling/atominfo/array[@name="atoms"]/set/rc').each do |i|
-      results << i.children[0].children.to_s.strip
     end
     results
   end
