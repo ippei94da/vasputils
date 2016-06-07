@@ -172,7 +172,7 @@ class VaspdirCommand < Thor
   end
 
   desc 'qsub [options] [dirs]', "Submit queue to grid engine. Empty 'dirs' in argument indicates current directory.' "
-  option :q_name, desc: "Queue name for '#$ -q'"
+  option :q_name, desc: "Queue name for '#$ -q', E.g. 'Pd.q'"
   option :pe_name, desc: "Parallel environment name for '#$ -pe'"
   option :ppn, desc: "Process per node, 2nd argument for'#$ -pe'"
   option :ld_library_path, desc: "Environmental variable 'LD_LIBRARY_PATH'"
@@ -183,6 +183,8 @@ class VaspdirCommand < Thor
   def qsub(* args)
     new_options = Marshal.load(Marshal.dump(options))
     new_options[:command] = "#{__FILE__} execute"
+    #pp args, new_options
+    #exit
     VaspUtils::VaspDir.qsub(args, new_options)
   end
 
