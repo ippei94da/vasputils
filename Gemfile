@@ -19,5 +19,5 @@ group :development do
   gem "maset", "~> 0.0"
   gem "comana", "~> 0.1"
   gem "builtinextension", "~> 0.1.4"
-  gem "crystalcell", "~> 0.0"
+  gem "crystalcell", "~> 0.1"
 end

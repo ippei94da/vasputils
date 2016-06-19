@@ -128,9 +128,9 @@ class PoscarCommand < Thor
     poscar_name = args.shift
     cell = VaspUtils::Poscar.load_file(poscar_name).to_cell
     povray = CrystalCell::Povray.new(cell: cell)
+    povray.set_axes([-1.0, -1.0, 0.0])
     povray.shoot_4in1(poscar_name)
   end
-
 
   desc 'snapgeomopt [options]', 'Generate POSCARS of each ionic steps'
   option :xdatcar, desc: "Use XDATCAR in spite of vasprun.xml"
