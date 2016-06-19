@@ -93,37 +93,45 @@ class PoscarCommand < Thor
     new_poscar.dump($stdout)
   end
 
-  # POSCAR から得られる情報から、povray objects を生み出す povray 形式ファイルを生成。
-  # 描画は行わない。外部でシェルスクリプトなどで実行すべき。
+  ## POSCAR から得られる情報から、povray objects を生み出す povray 形式ファイルを生成。
+  ## 描画は行わない。外部でシェルスクリプトなどで実行すべき。
+  ##
+  ##USAGE:
+  ## poscar2pov.rb POSCAR -e 'Li,O'
+  ##   POTCAR なしでも元素指定可能。POTCAR より優先。
+  ##   なお、POTCAR も -e 指定もない、すなわち元素が分からない状態ではプログラムは実行されない。
+  ##
+  ## poscar2pov.rb POSCAR -b "Li,Ge,0.0,1.0,Ge,Ge,2.0,3.0"
+  ##   以下の2つの条件の和集合となる連結の描画情報を示す POSCAR.bonds.inc を生成。
+  ##   - Li-Ge間で距離 0.0〜1.0
+  ##   - Ge-Ge間で距離 2.0〜3.0
+  #desc "povray", "generate povray objects."
+  #option :tolerance, desc: 'Tolerance for periodic shown atom.' #  '-t tolerance'
+  #option :bonds, desc: 'Generate bonds matching conditions.',
+  #  long_desc: 'E.g., -b "Li,Ge,0.0,1.0" indicateing two conditions'
+  #  #'-b conditions',
+  #def povray(* args)
+  #  poscar = args[0] || 'POSCAR'
+  #  tolerance = options[:tolerance].to_f || 0.0
   #
-  #USAGE:
-  # poscar2pov.rb POSCAR -e 'Li,O'
-  #   POTCAR なしでも元素指定可能。POTCAR より優先。
-  #   なお、POTCAR も -e 指定もない、すなわち元素が分からない状態ではプログラムは実行されない。
-  #
-  # poscar2pov.rb POSCAR -b "Li,Ge,0.0,1.0,Ge,Ge,2.0,3.0"
-  #   以下の2つの条件の和集合となる連結の描画情報を示す POSCAR.bonds.inc を生成。
-  #   - Li-Ge間で距離 0.0〜1.0
-  #   - Ge-Ge間で距離 2.0〜3.0
-  desc "povray", "generate povray objects."
-  option :tolerance, desc: 'Tolerance for periodic shown atom.' #  '-t tolerance'
-  option :bonds, desc: 'Generate bonds matching conditions.',
-    long_desc: 'E.g., -b "Li,Ge,0.0,1.0" indicateing two conditions'
-    #'-b conditions',
-  def povray(* args)
-    poscar = args[0] || 'POSCAR'
-    tolerance = options[:tolerance].to_f || 0.0
+  #  cell = VaspUtils::Poscar.load_file(poscar).to_cell(CrystalCell::Povray::Cell)
+  #  puts cell.atoms_to_povs(tolerance).join
+  #  puts cell.lattice_to_povs.join
+  #  if options[:bonds]
+  #    elem0, elem1, min, max = (options[:bonds].split(','))
+  #    puts cell.bonds_to_povs(elem0, elem1, min.to_f, max.to_f).join
+  #  end
+  #end
 
-    cell = VaspUtils::Poscar.load_file(poscar).to_cell(CrystalCell::Povray::Cell)
-    puts cell.atoms_to_povs(tolerance).join
-    puts cell.lattice_to_povs.join
-    if options[:bonds]
-      elem0, elem1, min, max = (options[:bonds].split(','))
-      puts cell.bonds_to_povs(elem0, elem1, min.to_f, max.to_f).join
-    end
+  desc 'png4in1', 'Generate a PNG file from 4 view points.'
+  def png4in1(*args)
+    poscar_name = args.shift
+    cell = VaspUtils::Poscar.load_file(poscar_name).to_cell
+    povray = CrystalCell::Povray.new(cell: cell)
+    povray.shoot_4in1(poscar_name)
   end
 
-  # 
+
   desc 'snapgeomopt [options]', 'Generate POSCARS of each ionic steps'
   option :xdatcar, desc: "Use XDATCAR in spite of vasprun.xml"
   long_desc "Note that XDATCAR doesn't preserve cell change."

@@ -14,7 +14,7 @@ group :development do
   gem "simplecov", "~> 0.11"
   gem "thor", "~> 0.19"
   gem "gnuplot", "~> 2.6"
-  gem "mageo", "~> 0.0"
+  gem "mageo", "~> 0.1"
   gem "malge", "~> 0.0"
   gem "maset", "~> 0.0"
   gem "comana", "~> 0.1"

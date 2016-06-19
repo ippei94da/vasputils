@@ -1,8 +1,9 @@
 = vasputils changelog
 
 == Master
-* Explicit requirement of "spglib".
-* Delete meaningless code.
+* Explicit requirement of "spglib"
+* Delete meaningless code
+* Delete 'poscar povray'
 
 == Version 0.1.6 [2016-05-11] released
 * Bugfix of VasprunXml::elements; deleting space after 1 char element
