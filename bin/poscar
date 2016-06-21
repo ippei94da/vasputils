@@ -123,7 +123,7 @@ class PoscarCommand < Thor
   #  end
   #end
 
-  desc 'png4in1', 'Generate a PNG file from 4 view points.'
+  desc 'png4in1 POSCAR_file', 'Generate a PNG file from 4 view points.'
   def png4in1(*args)
     poscar_name = args.shift
     cell = VaspUtils::Poscar.load_file(poscar_name).to_cell
