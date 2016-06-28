@@ -164,7 +164,6 @@ class VaspUtils::Poscar
   # 'version' indicates a poscar style for vasp 4 or 5.
   #def dump(io, elements = nil, version = 5)
   def dump(io, version = 5)
-    elements = @elements unless elements
     elem_indices = elements.map {|elem| @elements.find_index(elem)}
     unless (Mapping::map?(@elements.uniq, elements){ |i, j| i == j })
         raise ElementMismatchError,

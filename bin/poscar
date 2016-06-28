@@ -146,7 +146,7 @@ class PoscarCommand < Thor
       xml = VaspUtils::VasprunXml.load_file("./vasprun.xml")
       bases =  xml.bases
       positions_list = xml.positions_list
-      elements = xml.elements
+      elements = xml.elements.uniq
       nums_elements = xml.nums_elements
     end
 

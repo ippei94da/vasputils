@@ -52,6 +52,7 @@ class VaspUtils::VasprunXml
   end
 
   #元素リスト
+  #uniq していないものを返す。
   def elements
     results = []
     @data.xpath('/modeling/atominfo/array[@name="atoms"]/set/rc').each do |i|

@@ -291,6 +291,57 @@ class TC_Poscar < Test::Unit::TestCase
       assert_equal(cor, lines[index], "line: #{index}")
     end
     assert_equal(corrects.size, lines.size)
+
+    io = StringIO.new
+    p01 = VaspUtils::Poscar.new({
+      :comment => 'p00',
+      :scale   => 1.0,
+      :axes    => [
+        [1.0, 0.0, 0.0 ],
+        [0.0, 1.0, 0.0 ],
+        [0.0, 0.0, 1.0 ],
+      ],
+      :elements           => %w(Li Ge O),
+      :nums_elements      => [1,2,2],
+      :selective_dynamics => [
+        [true , true , true ],
+        [true , true , true ],
+        [true , true , false],
+        [true , false, false],
+        [false, false, false],
+      ],
+      :direct             => true,
+      :positions          => [
+        [0.0,  0.0,  0.0],
+        [0.1,  0.1,  0.1],
+        [0.5,  0.0,  0.0],
+        [0.5,  0.5,  0.0],
+        [0.5,  0.5,  0.5],
+      ]
+    })
+    p01.dump(io)
+    io.rewind
+    corrects = [
+      "p00\n",
+      "1.0\n",
+      "   1.000000000000000     0.000000000000000     0.000000000000000\n",
+      "   0.000000000000000     1.000000000000000     0.000000000000000\n",
+      "   0.000000000000000     0.000000000000000     1.000000000000000\n",
+      "Li Ge O\n",
+      "1 2 2\n",
+      "Selective dynamics\n",
+      "Direct\n",
+      "     0.000000000000000     0.000000000000000     0.000000000000000 T T T\n",
+      "     0.100000000000000     0.100000000000000     0.100000000000000 T T T\n",
+      "     0.500000000000000     0.000000000000000     0.000000000000000 T T F\n",
+      "     0.500000000000000     0.500000000000000     0.000000000000000 T F F\n",
+      "     0.500000000000000     0.500000000000000     0.500000000000000 F F F\n",
+    ]
+    lines = io.readlines
+    corrects.each_with_index do |cor, index|
+      assert_equal(cor, lines[index], "line: #{index}")
+    end
+    assert_equal(corrects.size, lines.size)
   end
 
   def test_parse
