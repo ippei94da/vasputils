@@ -221,6 +221,20 @@ class VaspdirCommand < Thor
       vd.reset_initialize
     end
   end
+
+  desc 'nelect', 'count NELECT value from POSCR and POTCAR'
+  def nelect
+    poscar = VaspUtils::Poscar.load_file('POSCAR')
+    potcar = VaspUtils::Potcar.load_file('POTCAR')
+    #pp poscar.elements
+    #pp potcar.elements
+    sum = 0
+    poscar.nums_elements.size.times do |i|
+      sum += poscar.nums_elements[i] * (potcar.zvals[i].to_i)
+    end
+    puts sum
+
+  end
 end
 
 VaspdirCommand.start(ARGV)

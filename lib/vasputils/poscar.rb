@@ -5,7 +5,7 @@ require "rubygems"
 require "crystalcell"
 
 # Class to manage POSCAR format of VASP.
-# 
+#
 # parse と dump のどちらかだけでなく、両方を統括して扱うクラス。
 class VaspUtils::Poscar
 
@@ -130,20 +130,22 @@ class VaspUtils::Poscar
     nums_elements = elements.map{|elem| nums_elements[elem]}
 
     positions = []
-    movable_flags = []
+    #movable_flags = []
     selective_dynamics = false
     atoms.each do |atom|
       positions << atom.position
-      movable_flags << atom.movable_flags
-      selective_dynamics = true if movable_flags
+      #movable_flags << atom.movable_flags
+      #selective_dynamics = true if movable_flags
     end
 
-    selective_dynamics = movable_flags if movable_flags
+    #selective_dynamics = movable_flags if movable_flags
+    selective_dynamics = false
 
     options = {
       :comment            => cell.comment           ,
       :scale              => 1.0               ,
-      :axes               => cell.axes.to_a,
+      #:axes               => cell.axes.to_a,
+      :axes               => cell.axes,
       :elements           => elements          ,
       :nums_elements      => nums_elements     ,
       :selective_dynamics => selective_dynamics,
@@ -211,7 +213,7 @@ class VaspUtils::Poscar
           movable_flags = @selective_dynamics[total_id]
         end
         atoms << CrystalCell::Atom.new(
-          element, 
+          element,
           @positions[total_id],
           movable_flags
         )
@@ -273,17 +275,17 @@ class VaspUtils::Poscar
     VaspUtils::Poscar.new(hash)
   end
 
-  # 
+  #
   def ==(other)
     result = true
-    result = false unless @comment             == other.comment            
-    result = false unless @scale               == other.scale              
-    result = false unless @axes                == other.axes               
-    result = false unless @elements            == other.elements           
-    result = false unless @nums_elements       == other.nums_elements      
-    result = false unless @selective_dynamics  == other.selective_dynamics 
-    result = false unless @direct              == other.direct             
-    result = false unless @positions           == other.positions          
+    result = false unless @comment             == other.comment
+    result = false unless @scale               == other.scale
+    result = false unless @axes                == other.axes
+    result = false unless @elements            == other.elements
+    result = false unless @nums_elements       == other.nums_elements
+    result = false unless @selective_dynamics  == other.selective_dynamics
+    result = false unless @direct              == other.direct
+    result = false unless @positions           == other.positions
     result
   end
 
@@ -295,7 +297,7 @@ class VaspUtils::Poscar
 
   def substitute!(elem1, elem2)
     @elements.map! do |elem|
-      if elem == elem1 
+      if elem == elem1
         elem2
       else
         elem
@@ -325,7 +327,7 @@ class VaspUtils::Poscar
       end
     end
   end
-  
+
   def periodic_nearest(coord0, coord1)
     pcell = CrystalCell::PeriodicCell.new( [
       [1.0, 0.0, 0.0],

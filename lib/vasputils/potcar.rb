@@ -5,11 +5,12 @@
 # Class for dealing with POTCAR.
 #
 class VaspUtils::Potcar
-  attr_reader :elements, :enmaxes
+  attr_reader :elements, :enmaxes, :zvals
 
   def initialize
     @elements = []
     @enmaxes = []
+    @zvals = []
   end
 
 
@@ -21,6 +22,8 @@ class VaspUtils::Potcar
         result.elements << $1
       elsif line =~ /ENMAX\s*=\s*(\d+\.\d+)/
         result.enmaxes << $1.to_f
+      elsif line =~ /ZVAL\s*=\s*(\d+\.\d+)/
+        result.zvals << $1.to_f
       end
     end
     result

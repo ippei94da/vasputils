@@ -5,6 +5,9 @@
 * Delete meaningless code
 * Delete 'poscar povray'
 * Add 'poscar png4in1' (need povray)
+* Remove mobable_flag from Poscar.load_cell
+* Add 'poscar show' command
+* Add 'vaspdir nelect' command
 
 == Version 0.1.6 [2016-05-11] released
 * Bugfix of VasprunXml::elements; deleting space after 1 char element

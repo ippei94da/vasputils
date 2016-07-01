@@ -27,6 +27,20 @@ class PotcarCommand < Thor
     )
     vpc.dump(elements, STDOUT)
   end
+
+  desc 'show', 'show infomation of POTCAR'
+  option :potcar, desc: 'indicate POTCAR file', default: 'POTCAR'
+  def show
+    potcar = VaspUtils::Potcar.load_file(options[:potcar])
+    printf("%7s %7s %4s\n", "element", "ENMAX", "ZVAL")
+    potcar.elements.size.times do |i|
+      printf("%7s %7.3f %4.1f\n", 
+             potcar.elements[i],
+             potcar.enmaxes[i],
+             potcar.zvals[i]
+            )
+    end
+  end
 end
 
 PotcarCommand.start(ARGV)
