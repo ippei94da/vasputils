@@ -338,7 +338,6 @@ class VaspUtils::Poscar
     result.to_a
   end
 
-
   def interpolate_coords(coord0, coord1, ratio)
     ((coord0.to_v3d * (1-ratio) + coord1.to_v3d * ratio)).to_a
   end
