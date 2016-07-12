@@ -1,6 +1,9 @@
 = vasputils changelog
 
-== Master
+<!-- Master -->
+
+== Version 0.1.7 [2016-07-12] released
+
 * Explicit requirement of "spglib"
 * Delete meaningless code
 * Delete 'poscar povray'
@@ -10,27 +13,33 @@
 * Add 'vaspdir nelect' command
 
 == Version 0.1.6 [2016-05-11] released
+
 * Bugfix of VasprunXml::elements; deleting space after 1 char element
 
 == Version 0.1.5 [2016-05-11] released
+
 * Add VasprunXml::calculation_basis
 * Add VasprunXml::elements
 * Add VasprunXml::calculation_cells
 
 == Version 0.1.4 [2016-05-09] released
+
 * Refactoring of unused variables
 * Add VasprunXml::calculation_energies
 
 == Version 0.1.3 [2016-04-20] released
+
 * Add 'incar generate --overwrite'
 * Bugfix 'vaspdir qsub'
 * Bugfix 'vaspdir show --dirs-with-matches'
 * Use vasputils.gemspec instead of Gemfile
 
 == Version 0.1.2 [2016-03-11] released
+
 * bugfix for 'vasprunxml pdos --sum' 
 
 == Version 0.1.1 [2016-03-11] released
+
 * Add command
     * bin/vasprunxml
     * bin/incar
@@ -49,6 +58,7 @@
 * Remove bin/symposcar
 
 == Version 0.1.0 not released
+
 * Small revision of output of 'showvaspdir' to show zero at the tail of toten.
 * LAST_UPDATE in 'showvaspdir -a' is changed to be "time ago".
 * Small revision of output of 'symposcar' to include 'operation_id'
@@ -72,6 +82,7 @@
 * Add element order to Poscar.dump
 
 == Version 0.0.12 [2014-08-30] released
+
 * Update bin/symposcar .
 * Add options to bin/checkvasp and modified output format.
 * Rename VaspGeomOpt to VaspGeometryOptimizer
@@ -92,6 +103,7 @@
 * Update dependency on other gems.
 
 == Version 0.0.11
+
 * Modify bin/qsubvasp
 * Add VaspUtils::generate_kmeshes
 * Add example/dot.vasputils
@@ -103,6 +115,7 @@
 * Add bin/nextvasp
 
 == Version 0.0.10
+
 * Delete Outcar.volume
 * Delete Outcar.irreducible_kpoints
 * Accelerate Outcar, using UNIX commands: grep, tail, and head
@@ -111,28 +124,33 @@
 * Change name space for classes
 
 == Version 0.0.9
+
 * Add VaspDir.poscar
 * Add bin/checkvasp
 * Delete bin/lsvasp, bin/lsvaspdir, bin/lsvaspseries
 
 == Version 0.0.8
+
 * Modified bin/qsubvasp, add -g option
 
 == Version 0.0.7
+
 * Modified bin/qsubvasp
 
 == Version 0.0.6
+
 * bin/qsubvasp is added
 * lib/vaspdir is modified to raise ExecuteError when vasp failed
 
 == Version 0.0.5
+
 * Modifiy error process in VaspDir.calculate
 * Add qsubvasp
 
 == Version 0.0.4
+
 * Modified to use Comana
 * bin/runvasp is added
 * VaspDir is modified
 * VaspGeomOpt is added
 
-== Version 0.0.3
